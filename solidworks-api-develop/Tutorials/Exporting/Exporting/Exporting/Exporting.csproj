@@ -143,7 +143,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileExporting.cs" />
+    <Compile Include="Filexporting.cs" />
     <Compile Include="SolidDnaIntegration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

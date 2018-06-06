@@ -4,6 +4,9 @@ using static AngelSix.SolidDna.SolidWorksEnvironment;
 using System;
 using Microsoft.Win32;
 using SolidWorks.Interop.swconst;
+using SolidWorks.Interop.sldworks;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Exporting
 {
@@ -43,7 +46,9 @@ namespace Exporting
                 Application.ShowMessageBox("Failed to save part as DXF", SolidWorksMessageBoxIcon.Stop);
         }
 
-
+        /// <summary>
+        /// Exports the currently active part as a STEP
+        /// </summary>
         public static void ExportModelAsStep()
         {
             // Make Sure it's a part or assembly
@@ -70,6 +75,9 @@ namespace Exporting
                 Application.ShowMessageBox("Successfully saved model as STEP");
         }
 
+        /// <summary>
+        /// Exports the currently active part as a STL
+        /// </summary>
         public static void ExportModelAsStl()
         {
             // Make Sure it's a part or assembly
@@ -96,9 +104,41 @@ namespace Exporting
                 Application.ShowMessageBox("Successfully saved model as STL");
         }
 
+        /// <summary>
+        /// Exports the currently active drawing as a PDF
+        /// </summary>
         public static void ExportDrawingAsPdf()
         {
+            // Make Sure it's a drawing
+            if (Application.ActiveModel?.IsDrawing != true)
+            {
+                // Tell user
+                Application.ShowMessageBox("Active model is not a drawing", SolidWorksMessageBoxIcon.Stop);
 
+                return;
+            }
+
+            // Ask user for location
+            var location = GetSaveLocation("PDF File|*.pdf", "Save Drawing as PDF");
+
+            // Check if user clicked cancel
+            if (string.IsNullOrEmpty(location))
+                return;
+
+            var sheetNames = new List<string>((string[])Application.ActiveModel.AsDrawing().GetSheetNames());
+
+            // Only export sheets starting with A
+            // sheetNames = sheetNames.Where(sheetName => sheetName.StartsWith("a", StringComparison.CurrentCultureIgnoreCase)).ToList();
+
+            var exportData = (ExportPdfData)Application.UnsafeObject.GetExportFileData((int)swExportDataFileType_e.swExportPdfData);
+            exportData.SetSheets((int)swExportDataSheetsToExport_e.swExportData_ExportSpecifiedSheets, sheetNames.ToArray());
+
+            if (!SaveModelAs(location))
+                // Tell user failed
+                Application.ShowMessageBox("Failed to save drawing as PDF", SolidWorksMessageBoxIcon.Stop);
+            else
+                // Tell user success
+                Application.ShowMessageBox("Successfully saved drawing as PDF");
         }
         #endregion
 
