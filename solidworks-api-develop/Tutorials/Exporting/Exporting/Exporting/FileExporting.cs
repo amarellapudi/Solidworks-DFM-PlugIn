@@ -70,6 +70,32 @@ namespace Exporting
                 Application.ShowMessageBox("Successfully saved model as STEP");
         }
 
+        public static void ExportModelAsStl()
+        {
+            // Make Sure it's a part or assembly
+            if (Application.ActiveModel?.IsPart != true && Application.ActiveModel?.IsAssembly != true)
+            {
+                // Tell user
+                Application.ShowMessageBox("Active model is not a part or assembly", SolidWorksMessageBoxIcon.Stop);
+
+                return;
+            }
+
+            // Ask user for location
+            var location = GetSaveLocation("STL File|*.stl", "Save Model as STL");
+
+            // Check if user clicked cancel
+            if (string.IsNullOrEmpty(location))
+                return;
+
+            if (!SaveModelAs(location))
+                // Tell user failed
+                Application.ShowMessageBox("Failed to save model as STL", SolidWorksMessageBoxIcon.Stop);
+            else
+                // Tell user success
+                Application.ShowMessageBox("Successfully saved model as STL");
+        }
+
         public static void ExportDrawingAsPdf()
         {
 

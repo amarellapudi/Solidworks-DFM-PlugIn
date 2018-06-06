@@ -69,6 +69,19 @@ namespace Exporting
                     {
                         FileExporting.ExportModelAsStep();
                     }
+                },
+
+                new CommandManagerItem
+                {
+                    Name = "STL",
+                    Tooltip = "STL",
+                    Hint = "Export part as STL",
+                    VisibleForDrawings = false,
+                    VisibleForAssemblies = false,
+                    OnClick = () =>
+                    {
+                        FileExporting.ExportModelAsStl();
+                    }
                 }
             }), "", "Exports parts in other formats", "Export Part");
 
