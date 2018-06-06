@@ -42,6 +42,7 @@ namespace Exporting
 
         public override void ConnectedToSolidWorks()
         {
+            // Part commands
             var partGroup = Application.CommandManager.CreateCommands("Export Part", new List<CommandManagerItem>(new[]
             {
                 new CommandManagerItem
@@ -53,10 +54,57 @@ namespace Exporting
                     VisibleForAssemblies = false,
                     OnClick = () =>
                     {
+                        FileExporting.ExportPartAsDxf();
+                    }
+                },
 
+                new CommandManagerItem
+                {
+                    Name = "STEP",
+                    Tooltip = "STEP",
+                    Hint = "Export part as STEP",
+                    VisibleForDrawings = false,
+                    VisibleForAssemblies = false,
+                    OnClick = () =>
+                    {
+                        FileExporting.ExportModelAsStep();
                     }
                 }
             }), "", "Exports parts in other formats", "Export Part");
+
+            // Assembly commands
+            var assemblyGroup = Application.CommandManager.CreateCommands("Export Assembly", new List<CommandManagerItem>(new[]
+            {
+                new CommandManagerItem
+                {
+                    Name = "STEP",
+                    Tooltip = "STEP",
+                    Hint = "Export part as STEP",
+                    VisibleForDrawings = false,
+                    VisibleForParts = false,
+                    OnClick = () =>
+                    {
+                        FileExporting.ExportModelAsStep();
+                    }
+                }
+            }), "", "Exports assembly in other formats", "Export Assembly");
+
+            // Drawing commands
+            var drawingGroup = Application.CommandManager.CreateCommands("Export Drawing", new List<CommandManagerItem>(new[]
+            {
+                new CommandManagerItem
+                {
+                    Name = "PDF",
+                    Tooltip = "PDF",
+                    Hint = "Export part as PDF",
+                    VisibleForAssemblies = false,
+                    VisibleForParts = false,
+                    OnClick = () =>
+                    {
+                        FileExporting.ExportDrawingAsPdf();
+                    }
+                }
+            }), "", "Exports drawing in other formats", "Export Drawing");
         }
 
         public override void DisconnectedFromSolidWorks()
