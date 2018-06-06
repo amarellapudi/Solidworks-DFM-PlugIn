@@ -2,9 +2,7 @@
 using Dna;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static AngelSix.SolidDna.SolidWorksEnvironment;
 
 namespace Exporting
 {   
@@ -44,7 +42,21 @@ namespace Exporting
 
         public override void ConnectedToSolidWorks()
         {
-            throw new NotImplementedException();
+            var partGroup = Application.CommandManager.CreateCommands("Export Part", new List<CommandManagerItem>(new[]
+            {
+                new CommandManagerItem
+                {
+                    Name = "DXF",
+                    Tooltip = "DXF",
+                    Hint = "Export part as DXF",
+                    VisibleForDrawings = false,
+                    VisibleForAssemblies = false,
+                    OnClick = () =>
+                    {
+
+                    }
+                }
+            }), "", "Exports parts in other formats", "Export Part");
         }
 
         public override void DisconnectedFromSolidWorks()
