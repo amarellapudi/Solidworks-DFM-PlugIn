@@ -44,9 +44,9 @@ namespace SongTelenkoDFM
     }
 
     /// <summary>
-    /// My first SolidDna Plug-in
+    /// Side Bar UI + Command Manager Tools
     /// </summary>
-    public class MySolidDnaPlguin : SolidPlugIn
+    public class MySideBar : SolidPlugIn
     {
         #region Private Members
 
@@ -67,7 +67,7 @@ namespace SongTelenkoDFM
         /// <summary>
         /// My Add-in title
         /// </summary>
-        public override string AddInTitle => "Song Telenko DFM Plug-In v1.0";
+        public override string AddInTitle => "SongTelenkoDFM v1.0";
 
         #endregion
 
@@ -85,83 +85,6 @@ namespace SongTelenkoDFM
             };
 
             mTaskpane.AddToTaskpaneAsync();
-
-            /// <summary>
-            /// Command Manager Items
-            /// <summary>
-
-            // Part commands
-            var partGroup = Application.CommandManager.CreateCommands("Export Part", new List<CommandManagerItem>(new[]
-            {
-                new CommandManagerItem
-                {
-                    Name = "DXF",
-                    Tooltip = "DXF",
-                    Hint = "Export part as DXF",
-                    VisibleForDrawings = false,
-                    VisibleForAssemblies = false,
-                    OnClick = () =>
-                    {
-                        FileExporting.ExportPartAsDxf();
-                    }
-                },
-
-                new CommandManagerItem
-                {
-                    Name = "STEP",
-                    Tooltip = "STEP",
-                    Hint = "Export part as STEP",
-                    VisibleForDrawings = false,
-                    VisibleForAssemblies = false,
-                    OnClick = () =>
-                    {
-                        FileExporting.ExportModelAsStep();
-                    }
-                },
-
-                new CommandManagerItem
-                {
-                    Name = "STL",
-                    Tooltip = "STL",
-                    Hint = "Export part as STL",
-                    VisibleForDrawings = false,
-                    VisibleForAssemblies = false,
-                    OnClick = () =>
-                    {
-                        FileExporting.ExportModelAsStl();
-                    }
-                }
-            }), "", "Exports parts in other formats", "Export Part");
-
-            // Assembly commands
-            var assemblyGroup = Application.CommandManager.CreateCommands("Export Assembly", new List<CommandManagerItem>(new[]
-            {
-                new CommandManagerItem
-                {
-                    Name = "STEP",
-                    Tooltip = "STEP",
-                    Hint = "Export part as STEP",
-                    VisibleForDrawings = false,
-                    VisibleForParts = false,
-                    OnClick = () =>
-                    {
-                        FileExporting.ExportModelAsStep();
-                    }
-                },
-
-                new CommandManagerItem
-                {
-                    Name = "STL",
-                    Tooltip = "STL",
-                    Hint = "Export part as STL",
-                    VisibleForDrawings = false,
-                    VisibleForParts = false,
-                    OnClick = () =>
-                    {
-                        FileExporting.ExportModelAsStl();
-                    }
-                }
-            }), "", "Exports assembly in other formats", "Export Assembly");
         }
 
         public override void DisconnectedFromSolidWorks()

@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Windows.Controls;
 using static AngelSix.SolidDna.SolidWorksEnvironment;
+using static System.Windows.Visibility;
 
 namespace SongTelenkoDFM
 {
@@ -17,23 +18,16 @@ namespace SongTelenkoDFM
         private const string CustomPropertyDescription = "Description";
         private const string CustomPropertyStatus = "Status";
         private const string CustomPropertyRevision = "Revision";
-        private const string CustomPropertyPartNumber = "PartNo";
         private const string CustomPropertyManufacturingInformation = "Manufacturing Information";
         private const string CustomPropertyLength = "Length";
-        private const string CustomPropertyFinish = "Finish";
-        private const string CustomPropertyPurchaseInformation = "Purchase Information";
+        private const string CustomPropertyPrecisionInformation = "Precision Information";
         private const string CustomPropertySupplierName = "Supplier";
-        private const string CustomPropertySupplierCode = "Supplier Number / Code";
         private const string CustomPropertyNote = "Note";
 
         private const string ManufacturingWeld = "WELD";
         private const string ManufacturingAssembly = "ASSEMBLY";
         private const string ManufacturingPlasma = "PLASMA";
         private const string ManufacturingLaser = "LASER";
-        private const string ManufacturingPurchase = "PURCHASE";
-        private const string ManufacturingLathe = "LATHE";
-        private const string ManufacturingDrill = "DRILL";
-        private const string ManufacturingFold = "FOLD";
         private const string ManufacturingRoll = "ROLL";
         private const string ManufacturingSaw = "SAW";
 
@@ -61,6 +55,7 @@ namespace SongTelenkoDFM
         private void UserControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
             // By default show the no part open screen
+            AnalyzePartContent.Visibility = Hidden;
             NoPartContent.Visibility = System.Windows.Visibility.Visible;
             MainContent.Visibility = System.Windows.Visibility.Hidden;
 
@@ -125,14 +120,10 @@ namespace SongTelenkoDFM
                     // Revision
                     RevisionText.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyRevision, property.Name, StringComparison.InvariantCultureIgnoreCase))?.ResolvedValue;
 
-                    // Part Number
-                    PartNumberText.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyPartNumber, property.Name, StringComparison.InvariantCultureIgnoreCase))?.ResolvedValue;
-
                     // Manufacturing Information
                     // Clear previous checks
-                    MaterialWeldCheck.IsChecked = MaterialAssemblyCheck.IsChecked = MaterialPlasmaCheck.IsChecked = MaterialPurchaseCheck.IsChecked =
-                        MaterialLatheCheck.IsChecked = MaterialDrillCheck.IsChecked = MaterialFoldCheck.IsChecked = MaterialRollCheck.IsChecked =
-                        MaterialSawCheck.IsChecked = MaterialLaserCheck.IsChecked = false;
+                    MaterialWeldCheck.IsChecked = MaterialAssemblyCheck.IsChecked = MaterialPlasmaCheck.IsChecked = 
+                       MaterialRollCheck.IsChecked = MaterialSawCheck.IsChecked = MaterialLaserCheck.IsChecked = false;
 
                     // Read in value
                     var manufacturingInfo = properties.FirstOrDefault(property => string.Equals(CustomPropertyManufacturingInformation, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
@@ -157,18 +148,6 @@ namespace SongTelenkoDFM
                                 case ManufacturingLaser:
                                     MaterialLaserCheck.IsChecked = true;
                                     break;
-                                case ManufacturingPurchase:
-                                    MaterialPurchaseCheck.IsChecked = true;
-                                    break;
-                                case ManufacturingLathe:
-                                    MaterialLatheCheck.IsChecked = true;
-                                    break;
-                                case ManufacturingDrill:
-                                    MaterialDrillCheck.IsChecked = true;
-                                    break;
-                                case ManufacturingFold:
-                                    MaterialFoldCheck.IsChecked = true;
-                                    break;
                                 case ManufacturingRoll:
                                     MaterialRollCheck.IsChecked = true;
                                     break;
@@ -183,47 +162,26 @@ namespace SongTelenkoDFM
                     SheetMetalLengthText.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyLength, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
                     SheetMetalLengthEvaluatedText.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyLength, property.Name, StringComparison.InvariantCultureIgnoreCase))?.ResolvedValue;
 
-                    // Finish
-                    var finish = properties.FirstOrDefault(property => string.Equals(CustomPropertyFinish, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
-
-                    // Clear the selection first
-                    FinishList.SelectedIndex = -1;
-
-                    // Try and find matching item
-                    foreach (var item in FinishList.Items)
-                    {
-                        // Check if the combo box item has the same name
-                        if ((string)((ComboBoxItem)item).Content == finish)
-                        {
-                            // If so select it
-                            FinishList.SelectedItem = item;
-                            break;
-                        }
-                    }
-
                     // Purchase Information
-                    var purchaseInfo = properties.FirstOrDefault(property => string.Equals(CustomPropertyPurchaseInformation, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
+                    var purchaseInfo = properties.FirstOrDefault(property => string.Equals(CustomPropertyPrecisionInformation, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
 
                     // Clear the selection first
-                    PurchaseInformationList.SelectedIndex = -1;
+                    PrecisionInformationList.SelectedIndex = -1;
 
                     // Try and find matching item
-                    foreach (var item in PurchaseInformationList.Items)
+                    foreach (var item in PrecisionInformationList.Items)
                     {
                         // Check if the combo box item has the same name
                         if ((string)((ComboBoxItem)item).Content == purchaseInfo)
                         {
                             // If so select it
-                            PurchaseInformationList.SelectedItem = item;
+                            PrecisionInformationList.SelectedItem = item;
                             break;
                         }
                     }
 
                     // Supplier Name
                     SupplierNameText.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertySupplierName, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
-
-                    // Supplier Code 
-                    SupplierCodeText.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertySupplierCode, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
 
                     // Note
                     NoteText.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyNote, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
@@ -289,22 +247,18 @@ namespace SongTelenkoDFM
             DescriptionText.Text = string.Empty;
             StatusText.Text = string.Empty;
             RevisionText.Text = string.Empty;
-            PartNumberText.Text = string.Empty;
 
             RawMaterialList.SelectedIndex = -1;
 
-            MaterialWeldCheck.IsChecked = MaterialAssemblyCheck.IsChecked = MaterialPlasmaCheck.IsChecked = MaterialPurchaseCheck.IsChecked =
-                MaterialLatheCheck.IsChecked = MaterialDrillCheck.IsChecked = MaterialFoldCheck.IsChecked = MaterialRollCheck.IsChecked =
-                MaterialSawCheck.IsChecked = MaterialLaserCheck.IsChecked = false;
+            MaterialWeldCheck.IsChecked = MaterialAssemblyCheck.IsChecked = MaterialPlasmaCheck.IsChecked =
+                MaterialRollCheck.IsChecked = MaterialSawCheck.IsChecked = MaterialLaserCheck.IsChecked = false;
 
             SheetMetalLengthText.Text = string.Empty;
             SheetMetalLengthEvaluatedText.Text = string.Empty;
 
-            FinishList.SelectedIndex = -1;
-            PurchaseInformationList.SelectedIndex = -1;
+            PrecisionInformationList.SelectedIndex = -1;
 
             SupplierNameText.Text = string.Empty;
-            SupplierCodeText.Text = string.Empty;
             NoteText.Text = string.Empty;
 
         }
@@ -343,14 +297,6 @@ namespace SongTelenkoDFM
                 manufacturingInfo.Add(ManufacturingPlasma);
             if (MaterialLaserCheck.IsChecked.Value)
                 manufacturingInfo.Add(ManufacturingLaser);
-            if (MaterialPurchaseCheck.IsChecked.Value)
-                manufacturingInfo.Add(ManufacturingPurchase);
-            if (MaterialLatheCheck.IsChecked.Value)
-                manufacturingInfo.Add(ManufacturingLathe);
-            if (MaterialDrillCheck.IsChecked.Value)
-                manufacturingInfo.Add(ManufacturingDrill);
-            if (MaterialFoldCheck.IsChecked.Value)
-                manufacturingInfo.Add(ManufacturingFold);
             if (MaterialRollCheck.IsChecked.Value)
                 manufacturingInfo.Add(ManufacturingRoll);
             if (MaterialSawCheck.IsChecked.Value)
@@ -362,18 +308,12 @@ namespace SongTelenkoDFM
             // Length
             model.SetCustomProperty(CustomPropertyLength, SheetMetalLengthText.Text);
 
-            // Finish
-            model.SetCustomProperty(CustomPropertyFinish, (string)((ComboBoxItem)FinishList.SelectedValue)?.Content);
-
             // Purchase Info
-            model.SetCustomProperty(CustomPropertyPurchaseInformation, (string)((ComboBoxItem)PurchaseInformationList.SelectedValue)?.Content);
+            model.SetCustomProperty(CustomPropertyPrecisionInformation, (string)((ComboBoxItem)PrecisionInformationList.SelectedValue)?.Content);
 
             // Supplier Name
             model.SetCustomProperty(CustomPropertySupplierName, SupplierNameText.Text);
-
-            // Supplier Code
-            model.SetCustomProperty(CustomPropertySupplierCode, SupplierCodeText.Text);
-
+            
             // Note
             model.SetCustomProperty(CustomPropertyNote, NoteText.Text);
 
@@ -417,6 +357,16 @@ namespace SongTelenkoDFM
                     SheetMetalLengthText.Text = $"\"{dimensionSelectionName}\"";
                 });
             });
+        }
+
+        private void AnalyzeButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+
+        }
+
+        private void STLButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            FileExporting.ExportModelAsStl();
         }
     }
 }

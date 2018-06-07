@@ -1,12 +1,10 @@
-﻿using Dna;
-using AngelSix.SolidDna;
-using static AngelSix.SolidDna.SolidWorksEnvironment;
-using System;
+﻿using AngelSix.SolidDna;
 using Microsoft.Win32;
-using SolidWorks.Interop.swconst;
 using SolidWorks.Interop.sldworks;
+using SolidWorks.Interop.swconst;
 using System.Collections.Generic;
 using System.Linq;
+using static AngelSix.SolidDna.SolidWorksEnvironment;
 
 namespace SongTelenkoDFM
 {
