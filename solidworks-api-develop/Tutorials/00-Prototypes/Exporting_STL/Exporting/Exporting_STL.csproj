@@ -7,8 +7,8 @@
     <ProjectGuid>{74A1DA06-D36F-4180-806D-8F78FFF769A3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Exporting</RootNamespace>
-    <AssemblyName>Exporting</AssemblyName>
+    <RootNamespace>Exporting_STL</RootNamespace>
+    <AssemblyName>Exporting_STL</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

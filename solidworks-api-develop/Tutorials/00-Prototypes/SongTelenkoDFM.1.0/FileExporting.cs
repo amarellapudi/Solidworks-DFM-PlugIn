@@ -8,7 +8,7 @@ using SolidWorks.Interop.sldworks;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Exporting
+namespace SongTelenkoDFM
 {
     /// <summary>
     /// Exports Exports SolidWorks files into various formats

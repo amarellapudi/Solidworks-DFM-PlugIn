@@ -8,7 +8,7 @@ using SolidWorks.Interop.sldworks;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Exporting
+namespace Exporting_STL
 {
     /// <summary>
     /// Exports Exports SolidWorks files into various formats
