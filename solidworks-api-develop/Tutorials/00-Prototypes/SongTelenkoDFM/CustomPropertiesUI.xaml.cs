@@ -56,8 +56,8 @@ namespace SongTelenkoDFM
         {
             // By default show the no part open screen
             AnalyzePartContent.Visibility = Hidden;
-            NoPartContent.Visibility = System.Windows.Visibility.Visible;
-            MainContent.Visibility = System.Windows.Visibility.Hidden;
+            NoPartContent.Visibility = Visible;
+            MainContent.Visibility = Hidden;
 
             // Listen out for the active model changing
             Application.ActiveModelInformationChanged += Application_ActiveModelInformationChanged;
@@ -361,7 +361,17 @@ namespace SongTelenkoDFM
 
         private void AnalyzeButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
+            AnalyzePartContent.Visibility = Visible;
+            NoPartContent.Visibility = Hidden;
+            MainContent.Visibility = Hidden;
+        }
 
+        private void ReturnButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            ReadDetails();
+            AnalyzePartContent.Visibility = Hidden;
+            NoPartContent.Visibility = Hidden;
+            MainContent.Visibility = Visible;
         }
 
         private void STLButton_Click(object sender, System.Windows.RoutedEventArgs e)

@@ -115,17 +115,22 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="DFM_Results.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="logo-small.png">
+    <Resource Include="DFM_Results.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </Resource>
+    <Resource Include="DFM_Results2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AngelSix.SolidDna">
       <Version>1.0.0.9</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="logo-small.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
