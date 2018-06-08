@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Controls;
 using static AngelSix.SolidDna.SolidWorksEnvironment;
 using static System.Windows.Visibility;
+using SolidWorks.Interop.swconst;
 
 namespace SongTelenkoDFM
 {
@@ -19,7 +20,7 @@ namespace SongTelenkoDFM
         private const string CustomPropertyStatus = "Status";
         private const string CustomPropertyRevision = "Revision";
         private const string CustomPropertyManufacturingInformation = "Manufacturing Information";
-        private const string CustomPropertyLength = "Length";
+        private const string CustomPropertyFeatureOk = "Feature DFM-Ready";
         private const string CustomPropertyPrecisionInformation = "Precision Information";
         private const string CustomPropertySupplierName = "Supplier";
         private const string CustomPropertyNote = "Note";
@@ -159,8 +160,8 @@ namespace SongTelenkoDFM
                     }
 
                     // Length
-                    SheetMetalLengthText.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyLength, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
-                    SheetMetalLengthEvaluatedText.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyLength, property.Name, StringComparison.InvariantCultureIgnoreCase))?.ResolvedValue;
+                    FeatureText.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyFeatureOk, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
+                    FeatureEvaluatedText.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyFeatureOk, property.Name, StringComparison.InvariantCultureIgnoreCase))?.ResolvedValue;
 
                     // Purchase Information
                     var purchaseInfo = properties.FirstOrDefault(property => string.Equals(CustomPropertyPrecisionInformation, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
@@ -215,11 +216,11 @@ namespace SongTelenkoDFM
         {
             Application.ActiveModel?.SelectedObjects((objects) =>
             {
-                var haveDimension = objects.Any(f => f.IsDimension);
+                var haveFeature = objects.Any(f => f.IsFeature);
 
                 ThreadHelpers.RunOnUIThread(() =>
                 {
-                    LengthButton.IsEnabled = haveDimension;
+                    FeatureButton.IsEnabled = haveFeature;
                 });
             });
         }
@@ -253,8 +254,8 @@ namespace SongTelenkoDFM
             MaterialWeldCheck.IsChecked = MaterialAssemblyCheck.IsChecked = MaterialPlasmaCheck.IsChecked =
                 MaterialRollCheck.IsChecked = MaterialSawCheck.IsChecked = MaterialLaserCheck.IsChecked = false;
 
-            SheetMetalLengthText.Text = string.Empty;
-            SheetMetalLengthEvaluatedText.Text = string.Empty;
+            FeatureText.Text = string.Empty;
+            FeatureEvaluatedText.Text = string.Empty;
 
             PrecisionInformationList.SelectedIndex = -1;
 
@@ -306,7 +307,7 @@ namespace SongTelenkoDFM
             model.SetCustomProperty(CustomPropertyManufacturingInformation, string.Join(",", manufacturingInfo));
 
             // Length
-            model.SetCustomProperty(CustomPropertyLength, SheetMetalLengthText.Text);
+            model.SetCustomProperty(CustomPropertyFeatureOk, FeatureText.Text);
 
             // Purchase Info
             model.SetCustomProperty(CustomPropertyPrecisionInformation, (string)((ComboBoxItem)PrecisionInformationList.SelectedValue)?.Content);
@@ -335,26 +336,35 @@ namespace SongTelenkoDFM
             MaterialAssemblyCheck.IsChecked = false;
         }
 
-        private void LengthButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void FeatureButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             Application.ActiveModel?.SelectedObjects((objects) =>
             {
-                // Get the newest dimension
-                var lastDimension = objects.LastOrDefault(f => f.IsDimension);
+                // Get the newest feature
+                var lastFeature = objects.LastOrDefault(f => f.IsFeature);
 
                 // Double check we have one
-                if (lastDimension == null)
+                if (lastFeature == null)
                     return;
 
-                var dimensionSelectionName = string.Empty;
-                
-                // Get the dimension name
-                lastDimension.AsDimension((dimension) => dimensionSelectionName = dimension.SelectionName);
+                var featureSelectionName = string.Empty;
 
-                // Set the length button text
+                // Get the feature type name
+                var copy = lastFeature;
+                lastFeature.AsFeature((feature) => featureSelectionName = feature.FeatureTypeName);
+
+                // Perform DFM functionality for drill holes
+                if (featureSelectionName.Equals("Extrusion"))
+                {
+                    var type = lastFeature.GetType();
+                    var type2 = lastFeature.ObjectType;
+                    var type3 = lastFeature.UnsafeObject.GetType();
+                }
+
+                // Set the feature button text
                 ThreadHelpers.RunOnUIThread(() =>
                 {
-                    SheetMetalLengthText.Text = $"\"{dimensionSelectionName}\"";
+                    FeatureText.Text = $"{featureSelectionName}";
                 });
             });
         }
