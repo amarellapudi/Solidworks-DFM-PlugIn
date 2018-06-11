@@ -1,0 +1,13 @@
+Wednesday June 6, 2018
+
+put together tut 6 + 4
+note: package reference in cs.proj
+unload project first
+<RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+
+2018 SolidWorks References are backwards compatible
+
+maybe look up official solidworks api
+
+if you have multiple plug-ins
+public override string AddInTitle => null;
