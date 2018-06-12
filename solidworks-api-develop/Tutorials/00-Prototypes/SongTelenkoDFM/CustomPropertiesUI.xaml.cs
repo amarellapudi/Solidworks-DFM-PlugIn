@@ -434,13 +434,14 @@ namespace SongTelenkoDFM
                 lastFeature.AsFeature((feature) => featureSelectionName = feature.FeatureTypeName);
 
                 // Perform DFM functionality for drill holes
-                if (featureSelectionName.Equals("Extrusion"))
-                {
-                    Feature_Check();
+                //if (featureSelectionName.Equals("Extrusion"))
+                //{ 
                     //var type = lastFeature.GetType();
                     //var type2 = lastFeature.ObjectType;
                     //var type3 = lastFeature.UnsafeObject.GetType();
-                }
+                //}
+
+                Feature_Check();
 
                 // Set the feature button text
                 ThreadHelpers.RunOnUIThread(() =>
