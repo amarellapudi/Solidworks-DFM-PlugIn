@@ -16,31 +16,27 @@
             </StackPanel>
 
             <StackPanel x:Name="MainContent" VerticalAlignment="Center">
+                <!--
                 <Button Margin="0 10 0 0" Padding="0 3 0 3" Content="Check part" />
+                -->
 
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-
+                <Grid HorizontalAlignment="Center">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
                     <!-- Feature DFM Ready -->
-                    <TextBlock Text="Feature DFM-Ready" Margin="0 5 0 0" />
-                    <TextBox Grid.Row="1" x:Name="FeatureText" Padding="2"  />
-
-                    <Button x:Name="FeatureButton" IsEnabled="False" Click="FeatureButton_Click" Grid.Column="1" Grid.Row="1" Content="Check"/>
+                    <Button x:Name="FeatureButton" IsEnabled="False" Click="FeatureButton_Click" 
+                            Grid.Row="1" Content="Check Feature" Padding="2" Margin="0 10 0 0"/>
 
                 </Grid>
 
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="105*" />
+                        <ColumnDefinition Width="35*"/>
+                        <ColumnDefinition Width="8*"/>
+                        <ColumnDefinition Width="132*"/>
                     </Grid.ColumnDefinitions>
 
                     <Grid.RowDefinitions>
@@ -51,22 +47,22 @@
                     </Grid.RowDefinitions>
 
                     <!-- Feature Data -->
-                    <TextBlock Text="Data 1" Margin="0 5 0 0" Grid.Column="0" />
-                    <TextBox Grid.Row="1" Grid.Column="0" x:Name="FeatureData1" Padding="2" IsReadOnly="True"/>
+                    <TextBlock Text="Data 1" Margin="0 5 0 0" Grid.Column="0" Grid.ColumnSpan="2" />
+                    <TextBox Grid.Row="1" Grid.Column="0" x:Name="FeatureData1" Padding="2" IsReadOnly="True" Grid.ColumnSpan="2"/>
 
-                    <TextBlock Text="Data 2" Margin="0 5 0 0" Grid.Column="1" />
-                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="FeatureData2" Padding="2" IsReadOnly="True"/>
+                    <TextBlock Text="Data 2" Margin="0 5 0 0" Grid.Column="2" Grid.ColumnSpan="2" />
+                    <TextBox Grid.Row="1" Grid.Column="2" x:Name="FeatureData2" Padding="2" IsReadOnly="True" Grid.ColumnSpan="2"/>
 
-                    <TextBlock Text="Data 3" Margin="0 5 0 0" Grid.Row="2" Grid.Column="0" />
-                    <TextBox Grid.Row="3" Grid.Column="0" x:Name="FeatureData3" Padding="2" IsReadOnly="True"/>
+                    <TextBlock Text="Data 3" Margin="0 5 0 0" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" />
+                    <TextBox Grid.Row="3" Grid.Column="0" x:Name="FeatureData3" Padding="2" IsReadOnly="True" Grid.ColumnSpan="2"/>
 
-                    <TextBlock Text="Data 4" Margin="0 5 0 0" Grid.Row="2" Grid.Column="1" />
-                    <TextBox Grid.Row="3" Grid.Column="1" x:Name="FeatureData4" Padding="2" IsReadOnly="True"/>
+                    <TextBlock Text="Data 4" Margin="0 5 0 0" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" />
+                    <TextBox Grid.Row="3" Grid.Column="2" x:Name="FeatureData4" Padding="2" IsReadOnly="True" Grid.ColumnSpan="2"/>
 
                 </Grid>
             </StackPanel>
 
         </Grid>
     </Border>
-    
+
 </UserControl>

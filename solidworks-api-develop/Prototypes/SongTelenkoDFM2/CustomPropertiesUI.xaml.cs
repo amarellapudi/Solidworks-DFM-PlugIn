@@ -6,8 +6,6 @@ using System.Windows.Controls;
 using static AngelSix.SolidDna.SolidWorksEnvironment;
 using static System.Windows.Visibility;
 using SolidWorks.Interop.sldworks;
-using SolidWorks.Interop.swconst;
-using System.Runtime.InteropServices;
 using System.Diagnostics;
 
 namespace SongTelenkoDFM
@@ -103,8 +101,7 @@ namespace SongTelenkoDFM
                 // Query all custom properties
                 model.CustomProperties((properties) =>
                 {
-                    // Length
-                    FeatureText.Text = properties.FirstOrDefault(property => string.Equals(FeatureCheck, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
+                    // Feature Data
                     FeatureData1.Text = properties.FirstOrDefault(property => string.Equals(FeatureCheck, property.Name, StringComparison.InvariantCultureIgnoreCase))?.ResolvedValue;
                 });
             });
@@ -118,16 +115,19 @@ namespace SongTelenkoDFM
         {
             Application.ActiveModel?.SelectedObjects((objects) =>
             {
-                var a = HaveFeature(objects);
+                var haveFeature = objects.Any(f => f.IsFeature);
 
                 ThreadHelpers.RunOnUIThread(() =>
                 {
-                    if (a.Item1)
-                    {
-                        FeatureButton.IsEnabled = a.Item1;
-                        FeatureText.Text = $"{a.Item2}";
-                    }
-                    else FeatureText.Text = $"";
+                    if (haveFeature)
+                        FeatureButton.IsEnabled = haveFeature;
+                    else
+                        FeatureButton.IsEnabled = false;
+                        FeatureData1.Text = $"";
+                        FeatureData2.Text = $"";
+                        FeatureData3.Text = $"";
+                        FeatureData4.Text = $"";
+                        
                 });
             });
         }
@@ -144,14 +144,28 @@ namespace SongTelenkoDFM
         {
             Application.ActiveModel?.SelectedObjects((objects) =>
             {
-                var a = HaveFeature(objects);
+                var haveFeature = objects.Any(f => f.IsFeature);
+                
+                // Get the newest feature
+                var lastFeature = objects.LastOrDefault(f => f.IsFeature);
+
+                // Double check we have one
+                if (lastFeature == null)
+                    return;
+
+                var featureSelectionName = string.Empty;
+
+                // Get the feature type name
+                var copy = lastFeature;
+                lastFeature.AsFeature((feature) => featureSelectionName = feature.FeatureTypeName);
 
                 Feature_Check();
 
                 // Set the feature button text
                 ThreadHelpers.RunOnUIThread(() =>
                 {
-                    FeatureData1.Text = $"{a.Item2}";
+                    if (haveFeature)
+                        FeatureData1.Text = $"{featureSelectionName}";
                 });
             });
         }
@@ -200,8 +214,7 @@ namespace SongTelenkoDFM
             var swFeatMgr = default(FeatureManager);
             string[] featnames = null;
             int[] feattypes = null;
-            object[]
-            features = null;
+            object[] features = null;
             double[] featureUpdateTimes = null;
             double[] featureUpdatePercentTimes = null;
             var iter = 0;
@@ -215,21 +228,18 @@ namespace SongTelenkoDFM
             Debug.Print("Number of features: " + swFeatStat.FeatureCount);
             Debug.Print("Number of solid bodies: " + swFeatStat.SolidBodiesCount);
             Debug.Print("Number of surface bodies: " + swFeatStat.SurfaceBodiesCount);
-            Debug.Print("Total rebuild time: " + swFeatStat.TotalRebuildTime);
             Debug.Print("");
             features = (object[])swFeatStat.Features;
             featnames = (string[])swFeatStat.FeatureNames;
             feattypes = (int[])swFeatStat.FeatureTypes;
-            featureUpdateTimes = (double[])swFeatStat.FeatureUpdateTimes;
-            featureUpdatePercentTimes = (double[])swFeatStat.FeatureUpdatePercentageTimes;
             if ((featnames != null))
             {
                 for (iter = 0; iter <= featnames.GetUpperBound(0); iter++)
                 {
                     Debug.Print("Feature name: " + featnames[iter]);
-                    Debug.Print("Feature created: " + ((Feature)features[iter]).DateCreated);
-                    Debug.Print("Feature description: " + ((Feature)features[iter]).EnumDisplayDimensions());
                     Debug.Print("Feature type as defined in sw_SelectType_e: " + feattypes[iter]);
+                    Debug.Print("Feature description: " + (Dimension)mModel.Parameter("D1@Boss-Extrude1"));
+                    Debug.Print("Feature description: " + ((Feature)features[iter]).Parameter());
                     Debug.Print("");
                 }
             }
