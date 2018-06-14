@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using AngelSix.SolidDna;
 
-namespace SongTelenkoDFM
+namespace SongTelenkoDFM2
 {
     [ProgId(MyProgId)]
     public partial class MyTaskpaneUI : UserControl, ITaskpaneControl

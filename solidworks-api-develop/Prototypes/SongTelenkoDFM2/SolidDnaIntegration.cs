@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using static AngelSix.SolidDna.SolidWorksEnvironment;
 
-namespace SongTelenkoDFM
+namespace SongTelenkoDFM2
 {
     /// <summary>
     /// Register as a SolidWorks Add-in

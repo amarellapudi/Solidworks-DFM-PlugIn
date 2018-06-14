@@ -9,7 +9,7 @@ using SolidWorks.Interop.sldworks;
 using System.Diagnostics;
 using SolidWorks.Interop.swconst;
 
-namespace SongTelenkoDFM
+namespace SongTelenkoDFM2
 {
     /// <summary>
     /// Interaction logic for CustomPropertiesUI.xaml
@@ -160,6 +160,8 @@ namespace SongTelenkoDFM
                 var copy = lastFeature;
                 lastFeature.AsFeature((feature) => featureSelectionName = feature.FeatureTypeName);
 
+                IterateDimensions();
+
                 Feature_Check();
 
                 // Set the feature button text
@@ -205,31 +207,121 @@ namespace SongTelenkoDFM
         /// </summary>
         private void Feature_Check()
         {
-            var mModel = default(ModelDoc2);
-            mModel = (ModelDoc2)Application.UnsafeObject.ActiveDoc;
-            var swFeatMgr = default(FeatureManager);
-            swFeatMgr = mModel.FeatureManager;
-            object[] featureArray;
-            featureArray = (object[])swFeatMgr.GetFeatures(false);
+            var model = (ModelDoc2)Application.UnsafeObject.ActiveDoc;
+            var featureManager = model.FeatureManager;
+            var featureStatistics = featureManager.FeatureStatistics;
+            var modelExtension = model.Extension;
+
+            // FeatureDebug(featureStatistics, model);
+         
+            var featureArray = (object[])featureManager.GetFeatures(false);
 
             for (var i = featureArray.GetLowerBound(0); i <= featureArray.GetUpperBound(0); i++)
             {
-                var FeatureIter = default(Feature);
-                FeatureIter = (Feature)featureArray[i];
-                if (FeatureIter.Name.Contains("Extrude"))
+                var featureIter = default(Feature);
+                featureIter = (Feature)featureArray[i];
+                var featureName = featureIter.Name;
+
+                if (featureName.Contains("Hole"))
                 {
-                    var swDim = default(Dimension);
-                    object vConfigNames = null;
-                    double[] vValue = null;
-                    swDim = (Dimension)mModel.Parameter("D1@Boss-Extrude1");
-                    Debug.Assert((swDim != null));
-                    vConfigNames = mModel.GetConfigurationNames();
-                    vValue = (double[])swDim.GetSystemValue3((int)swInConfigurationOpts_e.swThisConfiguration, (vConfigNames));
-                    Debug.Print("  Extrude Depth = " + vValue[0] * 1000.0 + "" + " mm");
+                    var depth = GetFeatureDimension(featureIter, model, "Hole Depth@Sketch4");
+                    var diameter = GetFeatureDimension(featureIter, model, "Hole Dia.@Sketch4");
+                    if ((double)depth/diameter >= 2.75)
+                    {
+                        Application.ShowMessageBox("The drill hole is too narrow and deep", SolidWorksMessageBoxIcon.Stop);
+                    }
+                }
+
+                if (featureName.Contains("Sketch"))
+                {
+                    var parents = (object[])featureIter.GetParents();
+                    if (parents != null)
+                        foreach (var parent in parents)
+                            Debug.Print(((Feature)parent).Name);
+                }
+
+                //GetFeatureDimension(featureIter, model, "Extrude", "D1@Boss-Extrude1");
+            }
+        }
+
+        private double GetFeatureDimension(Feature f, ModelDoc2 model, string parameter)
+        {
+            var swDim = default(Dimension);
+            object configNames = null;
+            double[] values = null;
+            swDim = (Dimension)model.Parameter(parameter);
+            Debug.Assert((swDim != null));
+            configNames = model.GetConfigurationNames();
+            values = (double[])swDim.GetSystemValue3((int)swInConfigurationOpts_e.swThisConfiguration, (configNames));
+            Debug.Print("Dimension = " + values[0] * 1000.0 + "" + " mm");
+            return (values[0] * 1000.0);
+        }
+
+        private void FeatureDebug(FeatureStatistics featureStatistics, ModelDoc2 model)
+        {
+            featureStatistics.Refresh();
+
+            Debug.Print("Number of features: " + featureStatistics.FeatureCount);
+            Debug.Print("Number of solid bodies: " + featureStatistics.SolidBodiesCount);
+
+            var features2 = (object[])featureStatistics.Features;
+            var featnames = (string[])featureStatistics.FeatureNames;
+            var feattypes = (int[])featureStatistics.FeatureTypes;
+            if ((featnames != null))
+            {
+                for (var iter = 0; iter <= featnames.GetUpperBound(0); iter++)
+                {
+                    Debug.Print("Feature name: " + featnames[iter]);
+                    Debug.Print("Feature type as defined in sw_SelectType_e: " + feattypes[iter]);
+                    Debug.Print("");
                 }
             }
         }
 
+        private void IterateDimensions()
+        {
+            var model = (ModelDoc2)Application.UnsafeObject.ActiveDoc;
+            var featureManager = model.FeatureManager;
+            var featureStatistics = featureManager.FeatureStatistics;
+            var modelExtension = model.Extension;
+
+            Feature swSubFeat;
+            DisplayDimension swDispDim;
+            Dimension swDim;
+            Annotation swAnn;
+
+            var swFeat = (Feature)model.FirstFeature();
+
+            while (swFeat != null)
+            {
+                Debug.Print("Name: " + swFeat.Name);
+                swSubFeat = (Feature)swFeat.GetFirstSubFeature();
+                while (swSubFeat != null)
+                {
+                    Debug.Print("Sub Feature: " + swSubFeat.Name);
+                    swDispDim = (DisplayDimension)swSubFeat.GetFirstDisplayDimension();
+                    while (swDispDim != null)
+                    {
+                        swAnn = (Annotation)swDispDim.GetAnnotation();
+                        swDim = (Dimension)swDispDim.GetDimension();
+                        Debug.Print(swDim.FullName + " " + swDim.GetSystemValue2(""));
+                        swDispDim = (DisplayDimension)swSubFeat.GetNextDisplayDimension(swDispDim);
+                    }
+
+                    swSubFeat = (Feature)swSubFeat.GetNextSubFeature();
+                }
+                swDispDim = (DisplayDimension)swFeat.GetFirstDisplayDimension();
+                while (swDispDim != null)
+                {
+                    swAnn = (Annotation)swDispDim.GetAnnotation();
+                    swDim = (Dimension)swDispDim.GetDimension();
+                    swDispDim = (DisplayDimension)swSubFeat.GetNextDisplayDimension(swDispDim);
+                    Debug.Print(swDim.FullName + " " + swDim.GetSystemValue2(""));
+                    swSubFeat = (Feature)swSubFeat.GetNextSubFeature();
+                }
+                swFeat = (Feature)swFeat.GetNextFeature();
+            }
+        }
         #endregion
     }
 }
