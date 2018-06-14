@@ -1,0 +1,6 @@
+June 13, 2018
+
+Should look into SolidWorks feature object structure
+Does SolidWorks build models feature-by-feature, or some other way?
+
+Maybe email Luke Malpass after defining specifically the problem.

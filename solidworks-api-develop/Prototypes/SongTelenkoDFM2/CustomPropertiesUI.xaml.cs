@@ -7,6 +7,7 @@ using static AngelSix.SolidDna.SolidWorksEnvironment;
 using static System.Windows.Visibility;
 using SolidWorks.Interop.sldworks;
 using System.Diagnostics;
+using SolidWorks.Interop.swconst;
 
 namespace SongTelenkoDFM
 {
@@ -205,57 +206,28 @@ namespace SongTelenkoDFM
         private void Feature_Check()
         {
             var mModel = default(ModelDoc2);
-            var mDim = default(Dimension);
-            object mConfigNames = null;
-            double[] mValue = null;
             mModel = (ModelDoc2)Application.UnsafeObject.ActiveDoc;
-
-            var swFeatStat = default(FeatureStatistics);
             var swFeatMgr = default(FeatureManager);
-            string[] featnames = null;
-            int[] feattypes = null;
-            object[] features = null;
-            double[] featureUpdateTimes = null;
-            double[] featureUpdatePercentTimes = null;
-            var iter = 0;
-
             swFeatMgr = mModel.FeatureManager;
-            swFeatStat = swFeatMgr.FeatureStatistics;
+            object[] featureArray;
+            featureArray = (object[])swFeatMgr.GetFeatures(false);
 
-            swFeatStat.Refresh();
-
-            Debug.Print("Model name: " + swFeatStat.PartName);
-            Debug.Print("Number of features: " + swFeatStat.FeatureCount);
-            Debug.Print("Number of solid bodies: " + swFeatStat.SolidBodiesCount);
-            Debug.Print("Number of surface bodies: " + swFeatStat.SurfaceBodiesCount);
-            Debug.Print("");
-            features = (object[])swFeatStat.Features;
-            featnames = (string[])swFeatStat.FeatureNames;
-            feattypes = (int[])swFeatStat.FeatureTypes;
-            if ((featnames != null))
+            for (var i = featureArray.GetLowerBound(0); i <= featureArray.GetUpperBound(0); i++)
             {
-                for (iter = 0; iter <= featnames.GetUpperBound(0); iter++)
+                var FeatureIter = default(Feature);
+                FeatureIter = (Feature)featureArray[i];
+                if (FeatureIter.Name.Contains("Extrude"))
                 {
-                    Debug.Print("Feature name: " + featnames[iter]);
-                    Debug.Print("Feature type as defined in sw_SelectType_e: " + feattypes[iter]);
-                    Debug.Print("Feature description: " + (Dimension)mModel.Parameter("D1@Boss-Extrude1"));
-                    Debug.Print("Feature description: " + ((Feature)features[iter]).Parameter());
-                    Debug.Print("");
+                    var swDim = default(Dimension);
+                    object vConfigNames = null;
+                    double[] vValue = null;
+                    swDim = (Dimension)mModel.Parameter("D1@Boss-Extrude1");
+                    Debug.Assert((swDim != null));
+                    vConfigNames = mModel.GetConfigurationNames();
+                    vValue = (double[])swDim.GetSystemValue3((int)swInConfigurationOpts_e.swThisConfiguration, (vConfigNames));
+                    Debug.Print("  Extrude Depth = " + vValue[0] * 1000.0 + "" + " mm");
                 }
             }
-
-            //mDim = (Dimension)mModel.Parameter("D1@Boss-Extrude1");
-            //var q = mModel.GetFeatureCount();
-
-            //Debug.Assert((mDim != null));
-            //Debug.Print("File = " + mModel.GetPathName());
-            //Debug.Print("  Full name = " + mDim.FullName);
-            //Debug.Print("  Name = " + mDim.Name);
-
-            //mConfigNames = mModel.GetConfigurationNames();
-            //mValue = (double[])mDim.GetSystemValue3((int)swInConfigurationOpts_e.swThisConfiguration, (mConfigNames));
-
-            //Debug.Print("  System value = " + mValue[0] * 1000.0 + "" + " mm");
         }
 
         #endregion
