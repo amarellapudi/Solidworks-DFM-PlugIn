@@ -98,12 +98,13 @@ namespace SongTelenkoDFM2
                 // Show the main content
                 NoPartContent.Visibility = Hidden;
                 MainContent.Visibility = Visible;
+                DesignCheckButton.IsEnabled = true;
 
                 // Query all custom properties
                 model.CustomProperties((properties) =>
                 {
                     // Feature Data
-                    FeatureData1.Text = properties.FirstOrDefault(property => string.Equals(FeatureCheck, property.Name, StringComparison.InvariantCultureIgnoreCase))?.ResolvedValue;
+                    // FeatureData1.Text = properties.FirstOrDefault(property => string.Equals(FeatureCheck, property.Name, StringComparison.InvariantCultureIgnoreCase))?.ResolvedValue;
                 });
             });
         }
@@ -116,19 +117,12 @@ namespace SongTelenkoDFM2
         {
             Application.ActiveModel?.SelectedObjects((objects) =>
             {
-                var haveFeature = objects.Any(f => f.IsFeature);
+                // var haveFeature = objects.Any(f => f.IsFeature);
+                // var haveDimension = objects.Any(f => f.IsDimension);
 
                 ThreadHelpers.RunOnUIThread(() =>
                 {
-                    if (haveFeature)
-                        FeatureButton.IsEnabled = haveFeature;
-                    else
-                        FeatureButton.IsEnabled = false;
-                        FeatureData1.Text = $"";
-                        FeatureData2.Text = $"";
-                        FeatureData3.Text = $"";
-                        FeatureData4.Text = $"";
-                        
+                    // DesignCheckButton.IsEnabled = haveFeature | haveDimension;                      
                 });
             });
         }
@@ -141,34 +135,18 @@ namespace SongTelenkoDFM2
         /// Get selected feature and analyze it with a DMF routine
         /// TO DO: actually get feature data (dimensions, coordinates, etc)
         /// </summary>
-        private void FeatureButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void DesignCheckButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             Application.ActiveModel?.SelectedObjects((objects) =>
             {
                 var haveFeature = objects.Any(f => f.IsFeature);
-                
-                // Get the newest feature
-                var lastFeature = objects.LastOrDefault(f => f.IsFeature);
-
-                // Double check we have one
-                if (lastFeature == null)
-                    return;
-
-                var featureSelectionName = string.Empty;
-
-                // Get the feature type name
-                var copy = lastFeature;
-                lastFeature.AsFeature((feature) => featureSelectionName = feature.FeatureTypeName);
-
-                IterateDimensions();
 
                 Feature_Check();
 
                 // Set the feature button text
                 ThreadHelpers.RunOnUIThread(() =>
                 {
-                    if (haveFeature)
-                        FeatureData1.Text = $"{featureSelectionName}";
+
                 });
             });
         }
@@ -178,30 +156,6 @@ namespace SongTelenkoDFM2
         #region Private Helper Functions
 
         /// <summary>
-        /// Determines if the user has selected a feature in SolidWorks
-        /// </summary>
-        /// <param name="objects"></param>
-        /// <returns>A tuple of a boolean, a string containing the name, and an object of the feature itself</returns>
-        private Tuple<bool, string, SelectedObject> HaveFeature(List<SelectedObject> objects)
-        {
-            var haveFeature = objects.Any(f => f.IsFeature);
-
-            // Get the newest feature
-            var lastFeature = objects.LastOrDefault(f => f.IsFeature);
-
-            // Double check we have one
-            if (lastFeature == null)
-                return Tuple.Create(false, string.Empty, lastFeature);
-
-            var featureSelectionName = string.Empty;
-
-            // Get the feature type name
-            lastFeature.AsFeature((feature) => featureSelectionName = feature.FeatureTypeName);
-
-            return Tuple.Create(true, featureSelectionName, lastFeature);
-        }
-
-        /// <summary>
         /// Gathers feature data
         /// TO DO: gather all relevant feature data for feature-specific DFM check
         /// </summary>
@@ -209,39 +163,108 @@ namespace SongTelenkoDFM2
         {
             var model = (ModelDoc2)Application.UnsafeObject.ActiveDoc;
             var featureManager = model.FeatureManager;
-            var featureStatistics = featureManager.FeatureStatistics;
-            var modelExtension = model.Extension;
-
+            
+            //var featureStatistics = featureManager.FeatureStatistics;
+            //var modelExtension = model.Extension;
             // FeatureDebug(featureStatistics, model);
-         
-            var featureArray = (object[])featureManager.GetFeatures(false);
 
-            for (var i = featureArray.GetLowerBound(0); i <= featureArray.GetUpperBound(0); i++)
+            List<Feature> filteredFeatures = RemoveUnnecessaryFeatures((object[])featureManager.GetFeatures(false));
+            var filteredFeaturesNames = new List<string>();
+            foreach (Feature feature in filteredFeatures)
             {
-                var featureIter = default(Feature);
-                featureIter = (Feature)featureArray[i];
-                var featureName = featureIter.Name;
+                filteredFeaturesNames.Add(feature.Name);
+            }
 
-                if (featureName.Contains("Hole"))
+
+            foreach (Feature feature in filteredFeatures)
+            {
+                string name = feature.Name;
+                Debug.Print("Parent Feature: " + name);
+                if (name.Contains("Hole"))
                 {
-                    var depth = GetFeatureDimension(featureIter, model, "Hole Depth@Sketch4");
-                    var diameter = GetFeatureDimension(featureIter, model, "Hole Dia.@Sketch4");
+                    var child = feature.GetFirstSubFeature();
+                    if (child != null)
+                    {
+                        Debug.Print("Child Feature: "+((Feature)child).Name);
+                    }
+
+                    var child2 = feature.GetNextSubFeature();
+                    if (child2 != null)
+                    {
+                        Debug.Print("Child Feature: " + ((Feature)child2).Name);
+
+                    }
+
+                    var depth = GetFeatureDimension(feature, model, "Hole Depth@Sketch4");
+                    var diameter = GetFeatureDimension(feature, model, "Hole Dia.@Sketch4");
                     if ((double)depth/diameter >= 2.75)
                     {
                         Application.ShowMessageBox("The drill hole is too narrow and deep", SolidWorksMessageBoxIcon.Stop);
                     }
                 }
 
-                if (featureName.Contains("Sketch"))
+                if (name.Contains("Extrude"))
                 {
-                    var parents = (object[])featureIter.GetParents();
-                    if (parents != null)
-                        foreach (var parent in parents)
-                            Debug.Print(((Feature)parent).Name);
+                    var child = feature.GetFirstSubFeature();
+                    if (child != null)
+                    {
+                        Debug.Print("Child Feature: " + ((Feature)child).Name);
+                    }
+
+                    var child2 = feature.GetNextSubFeature();
+                    if (child2 != null)
+                    {
+                        Debug.Print("Child Feature: " + ((Feature)child2).Name);
+
+                    }
+                    //GetFeatureDimension(featureIter, model, "Extrude", "D1@Boss-Extrude1");
                 }
 
-                //GetFeatureDimension(featureIter, model, "Extrude", "D1@Boss-Extrude1");
+                if (name.Contains("Sketch4"))
+                {
+                    var child = feature.GetChildren();
+                    if (child != null)
+                    {
+                        Debug.Print("Child Feature: " + ((Feature)child).Name);
+                    }
+                }
             }
+        }
+
+        private List<Feature> RemoveUnnecessaryFeatures(object[] features)
+        {
+            if (features != null)
+            {
+                var featureList = new List<Feature>();
+                foreach (var feature in features)
+                {
+                    if (((Feature)feature).Name == "Comments") continue;
+                    else if (((Feature)feature).Name == "Favorites") continue;
+                    else if (((Feature)feature).Name == "History") continue;
+                    else if (((Feature)feature).Name == "Selection Sets") continue;
+                    else if (((Feature)feature).Name == "Sensors") continue;
+                    else if (((Feature)feature).Name == "Design Binder") continue;
+                    else if (((Feature)feature).Name == "Annotations") continue;
+                    else if (((Feature)feature).Name == "Surface Bodies") continue;
+                    else if (((Feature)feature).Name == "Solid Bodies") continue;
+                    else if (((Feature)feature).Name == "Lights, Cameras and Scene") continue;
+                    else if (((Feature)feature).Name == "Equations") continue;
+                    else if (((Feature)feature).Name.Contains("Material")) continue;
+                    else if (((Feature)feature).Name == "Front Plane") continue;
+                    else if (((Feature)feature).Name == "Top Plane") continue;
+                    else if (((Feature)feature).Name == "Right Plane") continue;
+                    else if (((Feature)feature).Name == "Origin") continue;
+                    else if (((Feature)feature).Name.Contains("Notes")) continue;
+                    else if (((Feature)feature).Name == "Ambient") continue;
+                    else if (((Feature)feature).Name.Contains("Directional")) continue;
+                    else
+                    {
+                        featureList.Add((Feature)feature);
+                    }
+                }
+                return featureList;
+            }
+            else return new List<Feature>();
         }
 
         private double GetFeatureDimension(Feature f, ModelDoc2 model, string parameter)
@@ -253,7 +276,7 @@ namespace SongTelenkoDFM2
             Debug.Assert((swDim != null));
             configNames = model.GetConfigurationNames();
             values = (double[])swDim.GetSystemValue3((int)swInConfigurationOpts_e.swThisConfiguration, (configNames));
-            Debug.Print("Dimension = " + values[0] * 1000.0 + "" + " mm");
+            // Debug.Print("Dimension = " + values[0] * 1000.0 + "" + " mm");
             return (values[0] * 1000.0);
         }
 
@@ -278,50 +301,7 @@ namespace SongTelenkoDFM2
             }
         }
 
-        private void IterateDimensions()
-        {
-            var model = (ModelDoc2)Application.UnsafeObject.ActiveDoc;
-            var featureManager = model.FeatureManager;
-            var featureStatistics = featureManager.FeatureStatistics;
-            var modelExtension = model.Extension;
-
-            Feature swSubFeat;
-            DisplayDimension swDispDim;
-            Dimension swDim;
-            Annotation swAnn;
-
-            var swFeat = (Feature)model.FirstFeature();
-
-            while (swFeat != null)
-            {
-                Debug.Print("Name: " + swFeat.Name);
-                swSubFeat = (Feature)swFeat.GetFirstSubFeature();
-                while (swSubFeat != null)
-                {
-                    Debug.Print("Sub Feature: " + swSubFeat.Name);
-                    swDispDim = (DisplayDimension)swSubFeat.GetFirstDisplayDimension();
-                    while (swDispDim != null)
-                    {
-                        swAnn = (Annotation)swDispDim.GetAnnotation();
-                        swDim = (Dimension)swDispDim.GetDimension();
-                        Debug.Print(swDim.FullName + " " + swDim.GetSystemValue2(""));
-                        swDispDim = (DisplayDimension)swSubFeat.GetNextDisplayDimension(swDispDim);
-                    }
-
-                    swSubFeat = (Feature)swSubFeat.GetNextSubFeature();
-                }
-                swDispDim = (DisplayDimension)swFeat.GetFirstDisplayDimension();
-                while (swDispDim != null)
-                {
-                    swAnn = (Annotation)swDispDim.GetAnnotation();
-                    swDim = (Dimension)swDispDim.GetDimension();
-                    swDispDim = (DisplayDimension)swSubFeat.GetNextDisplayDimension(swDispDim);
-                    Debug.Print(swDim.FullName + " " + swDim.GetSystemValue2(""));
-                    swSubFeat = (Feature)swSubFeat.GetNextSubFeature();
-                }
-                swFeat = (Feature)swFeat.GetNextFeature();
-            }
-        }
+       
         #endregion
     }
 }
