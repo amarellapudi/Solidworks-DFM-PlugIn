@@ -8,6 +8,7 @@ using static System.Windows.Visibility;
 using SolidWorks.Interop.sldworks;
 using System.Diagnostics;
 using SolidWorks.Interop.swconst;
+using System.Threading;
 
 namespace SongTelenkoDFM2
 {
@@ -139,7 +140,7 @@ namespace SongTelenkoDFM2
         {
             Application.ActiveModel?.SelectedObjects((objects) =>
             {
-                var haveFeature = objects.Any(f => f.IsFeature);
+                // var haveFeature = objects.Any(f => f.IsFeature);
 
                 Feature_Check();
 
@@ -162,126 +163,230 @@ namespace SongTelenkoDFM2
         private void Feature_Check()
         {
             var model = (ModelDoc2)Application.UnsafeObject.ActiveDoc;
+            var selectionManager = model.SelectionManager;
             var featureManager = model.FeatureManager;
-            
-            //var featureStatistics = featureManager.FeatureStatistics;
-            //var modelExtension = model.Extension;
-            // FeatureDebug(featureStatistics, model);
 
-            List<Feature> filteredFeatures = RemoveUnnecessaryFeatures((object[])featureManager.GetFeatures(false));
-            var filteredFeaturesNames = new List<string>();
-            foreach (Feature feature in filteredFeatures)
+            var AllFeatures = (object[])featureManager.GetFeatures(false);
+
+            List<List<Feature>> filteredFeatures = GetFeatureDictionary(AllFeatures);
+
+            foreach (List<Feature> featureSketchList in filteredFeatures)
             {
-                filteredFeaturesNames.Add(feature.Name);
+                Feature headFeature = featureSketchList.First();
+                var name = headFeature.Name;
+                if (headFeature.Name.Contains("Extrude"))
+                {
+                    model.Extension.SelectByID2(headFeature.Name, "BODYFEATURE", 0, 0, 0, false, 0, null, 0);
+                }
+
+                Dictionary<string, double> dims = GetDimensions(headFeature);
             }
+        
+            //if ((headFeature.Name.Contains("Extrude"))) {
+            //    var depth = GetDimension(featureSketchList.First(), model, "D1");
+            //    Debug.Print("Extrusion Depth = " + depth + "mm"); }
+            //if ((headFeature.Name.Contains("Hole"))) {
+            //    Feature underlyingSketch2 = featureSketchList.ElementAt(2);
+            //    var holeDepth3 = GetDimension(underlyingSketch2, model, "Hole Dia.");
+            //    var holeWidth3 = GetDimension(underlyingSketch2, model, "Hole Depth");}
+            //if ((double)depth / diameter >= 2.75)
+            //    Application.ShowMessageBox("The drill hole is too narrow and deep", SolidWorksMessageBoxIcon.Stop);
 
+        }
 
-            foreach (Feature feature in filteredFeatures)
+        /// <summary>
+        /// Determine if a feature is necessary
+        /// </summary>
+        /// <param name="feature"></param>
+        /// <returns>The passed-in feature if it is necessary</returns>
+        private Feature IsNecessaryFeature(object feature)
+        {
+            if (feature != null)
             {
-                string name = feature.Name;
-                Debug.Print("Parent Feature: " + name);
-                if (name.Contains("Hole"))
+                if (((Feature)feature).Name == "Comments") return null;
+                else if (((Feature)feature).Name == "Favorites") return null;
+                else if (((Feature)feature).Name == "History") return null;
+                else if (((Feature)feature).Name == "Selection Sets") return null;
+                else if (((Feature)feature).Name == "Sensors") return null;
+                else if (((Feature)feature).Name == "Design Binder") return null;
+                else if (((Feature)feature).Name == "Annotations") return null;
+                else if (((Feature)feature).Name == "Surface Bodies") return null;
+                else if (((Feature)feature).Name == "Solid Bodies") return null;
+                else if (((Feature)feature).Name == "Lights, Cameras and Scene") return null;
+                else if (((Feature)feature).Name == "Equations") return null;
+                else if (((Feature)feature).Name.Contains("Material")) return null;
+                else if (((Feature)feature).Name == "Front Plane") return null;
+                else if (((Feature)feature).Name == "Top Plane") return null;
+                else if (((Feature)feature).Name == "Right Plane") return null;
+                else if (((Feature)feature).Name == "Origin") return null;
+                else if (((Feature)feature).Name.Contains("Notes")) return null;
+                else if (((Feature)feature).Name == "Ambient") return null;
+                else if (((Feature)feature).Name.Contains("Directional")) return null;
+                else if (((Feature)feature).Name.Contains("Sketch")) return null;
+                else
                 {
-                    var child = feature.GetFirstSubFeature();
-                    if (child != null)
-                    {
-                        Debug.Print("Child Feature: "+((Feature)child).Name);
-                    }
-
-                    var child2 = feature.GetNextSubFeature();
-                    if (child2 != null)
-                    {
-                        Debug.Print("Child Feature: " + ((Feature)child2).Name);
-
-                    }
-
-                    var depth = GetFeatureDimension(feature, model, "Hole Depth@Sketch4");
-                    var diameter = GetFeatureDimension(feature, model, "Hole Dia.@Sketch4");
-                    if ((double)depth/diameter >= 2.75)
-                    {
-                        Application.ShowMessageBox("The drill hole is too narrow and deep", SolidWorksMessageBoxIcon.Stop);
-                    }
+                    return (Feature)feature;
                 }
-
-                if (name.Contains("Extrude"))
-                {
-                    var child = feature.GetFirstSubFeature();
-                    if (child != null)
-                    {
-                        Debug.Print("Child Feature: " + ((Feature)child).Name);
-                    }
-
-                    var child2 = feature.GetNextSubFeature();
-                    if (child2 != null)
-                    {
-                        Debug.Print("Child Feature: " + ((Feature)child2).Name);
-
-                    }
-                    //GetFeatureDimension(featureIter, model, "Extrude", "D1@Boss-Extrude1");
-                }
-
-                if (name.Contains("Sketch4"))
-                {
-                    var child = feature.GetChildren();
-                    if (child != null)
-                    {
-                        Debug.Print("Child Feature: " + ((Feature)child).Name);
-                    }
-                }
+            }
+            else
+            {
+                return null;
             }
         }
 
-        private List<Feature> RemoveUnnecessaryFeatures(object[] features)
+        /// <summary>
+        /// Make a list of necessary features in insertion order
+        /// Each value is a list of features containing the parent feature and the child sketches
+        /// </summary>
+        /// <param name="FeatureSet"></param>
+        /// <returns></returns>
+        private List<List<Feature>> GetFeatureDictionary(object[] FeatureSet)
         {
-            if (features != null)
+            // Start empty dictionary
+            List<List<Feature>> featureDictionary = new List<List<Feature>>();
+
+            // Check each feature in the unfiltered feature array that is passed in
+            foreach (object feature in FeatureSet)
             {
-                var featureList = new List<Feature>();
-                foreach (var feature in features)
+                // Is the feature necessary?
+                Feature featureIteration = IsNecessaryFeature(feature);
+                
+                // If it is, then find the feature's sketches
+                if (featureIteration != null)
                 {
-                    if (((Feature)feature).Name == "Comments") continue;
-                    else if (((Feature)feature).Name == "Favorites") continue;
-                    else if (((Feature)feature).Name == "History") continue;
-                    else if (((Feature)feature).Name == "Selection Sets") continue;
-                    else if (((Feature)feature).Name == "Sensors") continue;
-                    else if (((Feature)feature).Name == "Design Binder") continue;
-                    else if (((Feature)feature).Name == "Annotations") continue;
-                    else if (((Feature)feature).Name == "Surface Bodies") continue;
-                    else if (((Feature)feature).Name == "Solid Bodies") continue;
-                    else if (((Feature)feature).Name == "Lights, Cameras and Scene") continue;
-                    else if (((Feature)feature).Name == "Equations") continue;
-                    else if (((Feature)feature).Name.Contains("Material")) continue;
-                    else if (((Feature)feature).Name == "Front Plane") continue;
-                    else if (((Feature)feature).Name == "Top Plane") continue;
-                    else if (((Feature)feature).Name == "Right Plane") continue;
-                    else if (((Feature)feature).Name == "Origin") continue;
-                    else if (((Feature)feature).Name.Contains("Notes")) continue;
-                    else if (((Feature)feature).Name == "Ambient") continue;
-                    else if (((Feature)feature).Name.Contains("Directional")) continue;
-                    else
+                    // Start the feature list entry
+                    List<Feature> entry = new List<Feature>();
+
+                    // add the parent feature
+                    entry.Add(featureIteration);
+
+                    // Print parent feature's name
+                    Debug.Print("Parent feauture: " + featureIteration.Name);
+
+                    // Find and add the sketches underlying the feature
+                    List<Feature> sketches = GetSubFeatures(featureIteration);
+                    if (sketches != null)
                     {
-                        featureList.Add((Feature)feature);
+                        entry.AddRange(sketches);
                     }
+
+                    // Add list of feature and sketches to the main featureDictionary list
+                    featureDictionary.Add(entry);
+
+                    Debug.Print(" ");
                 }
-                return featureList;
             }
-            else return new List<Feature>();
+
+            // return the main featureDictionary list
+            return featureDictionary;
         }
 
-        private double GetFeatureDimension(Feature f, ModelDoc2 model, string parameter)
+        /// <summary>
+        /// Get three levels of subfeatures
+        /// TO DO: might need to check more levels, find better way to do this
+        /// </summary>
+        /// <param name="feature"></param>
+        /// <returns></returns>
+        private List<Feature> GetSubFeatures(Feature feature)
         {
-            var swDim = default(Dimension);
+            // Make an empty list of features
+            List<Feature> sketches = new List<Feature>();
+
+            // Find first subfeature
+            var sketch = feature.GetFirstSubFeature();
+            if (sketch != null)
+            {
+                // If the subfeature is not null, add it to the dictionary
+                Debug.Print("Child Sketch: " + ((Feature)sketch).Name);
+                sketches.Add((Feature)sketch);
+
+                // Find second subfeature
+                var sketch2 = ((Feature)sketch).GetNextSubFeature();
+                if (sketch2 != null)
+                {
+                    // If the subfeature is not null, add it to the dictionary
+                    Debug.Print("Child Sketch: " + ((Feature)sketch2).Name);
+                    sketches.Add((Feature)sketch2);
+
+                    // Find third subfeature
+                    var sketch3 = ((Feature)sketch2).GetNextSubFeature();
+                    if (sketch3 != null)
+                    {
+                        // If the subfeature is not null, add it to the dictionary
+                        Debug.Print("Child Sketch: " + ((Feature)sketch3).Name);
+                        sketches.Add((Feature)sketch3);
+                    }
+                }
+            }
+
+            if (sketches.Count == 0)
+            {
+                return null;
+            } else {
+                return sketches;
+            }
+        }
+
+        /// <summary>
+        /// Get three levels of dimensions
+        /// </summary>
+        /// <param name="feature"></param>
+        /// <returns></returns>
+        private Dictionary<string, double> GetDimensions(Feature feature)
+        {
+            // Make an empty list of dimensions
+            Dictionary<string, double> dims = new Dictionary<string, double>();
+
+            // Find first dimension
+            var displayDimension = (DisplayDimension)feature.GetFirstDisplayDimension();
+
+            while (displayDimension != null)
+            {
+                // If the first display dimension is not null, add it to the list
+                Dimension dimension = (Dimension)displayDimension.GetDimension();
+                Debug.Print(dimension.FullName + " " + dimension.GetSystemValue2(""));
+                dims.Add(dimension.FullName, dimension.GetSystemValue2(""));
+
+                // Get the next display dimension
+                displayDimension = (DisplayDimension)feature.GetNextDisplayDimension(displayDimension);
+            }
+
+            Debug.Print(" ");
+
+            if (dims.Count == 0)
+            {
+                return null;
+            }
+            else
+            {
+                return dims;
+            }
+        }
+
+            private double GetDimension(Feature feature, ModelDoc2 model, string param)
+        {
+            var dimension = default(Dimension);
             object configNames = null;
             double[] values = null;
-            swDim = (Dimension)model.Parameter(parameter);
-            Debug.Assert((swDim != null));
             configNames = model.GetConfigurationNames();
-            values = (double[])swDim.GetSystemValue3((int)swInConfigurationOpts_e.swThisConfiguration, (configNames));
+
+            //dimension = (Dimension)model.Parameter(parameter);
+            dimension = (Dimension)feature.Parameter(param);
+            Debug.Assert((dimension != null));
+            
+            values = (double[])dimension.GetSystemValue3((int)swInConfigurationOpts_e.swThisConfiguration, (configNames));
             // Debug.Print("Dimension = " + values[0] * 1000.0 + "" + " mm");
             return (values[0] * 1000.0);
         }
 
-        private void FeatureDebug(FeatureStatistics featureStatistics, ModelDoc2 model)
+        /// <summary>
+        /// Debugging function for printing information about features in current part
+        /// </summary>
+        /// <param name="featureManager"></param>
+        /// <param name="model"></param>
+        private void FeatureStatistics(FeatureManager featureManager, ModelDoc2 model)
         {
+            var featureStatistics = featureManager.FeatureStatistics;
             featureStatistics.Refresh();
 
             Debug.Print("Number of features: " + featureStatistics.FeatureCount);
@@ -300,8 +405,7 @@ namespace SongTelenkoDFM2
                 }
             }
         }
-
-       
+        
         #endregion
     }
 }
