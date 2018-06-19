@@ -20,8 +20,7 @@ namespace SongTelenkoDFM2
     public partial class CustomPropertiesUI : UserControl
     {
         #region Public Members
-        public bool mFeatureIsNecessary = false;
-        public bool mFeatureNotNecessary = false;
+
         #endregion
 
         #region Private Members
@@ -30,7 +29,9 @@ namespace SongTelenkoDFM2
         /// Define private strings for custom properties buttons in CustomPropertiesUI.xaml
         /// </summary>
 
-        private const string FeatureCheck = "Feature DFM-Ready";
+        private const string CustomPropertyNote1 = "Note1";
+        private const string CustomPropertyNote2 = "Note2";
+        private const string CustomPropertyNote3 = "Note3";
 
         #endregion
 
@@ -59,7 +60,6 @@ namespace SongTelenkoDFM2
             // and hide the analyze part and main content screens
             NoPartContent.Visibility = Visible;
             MainContent.Visibility = Hidden;
-            Screen_IsFeatureCritical.Visibility = Hidden;
 
             // Listen out for the active model changing
             SolidWorksEnvironment.Application.ActiveModelInformationChanged += Application_ActiveModelInformationChanged;
@@ -112,9 +112,35 @@ namespace SongTelenkoDFM2
                 // Query all custom properties
                 model.CustomProperties((properties) =>
                 {
-                    // Feature Data
-                    // FeatureData1.Text = properties.FirstOrDefault(property => string.Equals(FeatureCheck, property.Name, StringComparison.InvariantCultureIgnoreCase))?.ResolvedValue;
+                    // Design Recommendations
+                    
+                    // Design Tolerances
+
+                    // Note2
+                    NoteText1.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyNote1, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
+                    NoteText2.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyNote2, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
+                    NoteText3.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyNote3, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
                 });
+
+                // Mass
+                MassText.Text = model.MassProperties?.MassInMetric();
+
+                // Get all materials
+                var materials = SolidWorksEnvironment.Application.GetMaterials();
+                materials.Insert(0, new Material { Name = "Remove Material", Classification = "Not specified", DatabaseFileFound = false });
+
+                RawMaterialList.ItemsSource = materials;
+                RawMaterialList.DisplayMemberPath = "DisplayName";
+
+                // Clear selection
+                RawMaterialList.SelectedIndex = -1;
+
+                // Select existing material
+                var existingMaterial = model.GetMaterial();
+
+                // If we have a material
+                if (existingMaterial != null)
+                    RawMaterialList.SelectedItem = materials?.FirstOrDefault(f => f.Database == existingMaterial.Database && f.Name == existingMaterial.Name);
             });
         }
 
@@ -126,12 +152,10 @@ namespace SongTelenkoDFM2
         {
             SolidWorksEnvironment.Application.ActiveModel?.SelectedObjects((objects) =>
             {
-                // var haveFeature = objects.Any(f => f.IsFeature);
-                // var haveDimension = objects.Any(f => f.IsDimension);
-
+                
                 ThreadHelpers.RunOnUIThread(() =>
                 {
-                    // DesignCheckButton.IsEnabled = haveFeature | haveDimension;                      
+                                        
                 });
             });
         }
@@ -139,6 +163,59 @@ namespace SongTelenkoDFM2
         #endregion
 
         #region Button Events
+
+        /// <summary>
+        /// Called when the read button is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ReadButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            ReadDetails();
+        }
+
+        /// <summary>
+        /// Called when the reset button is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ResetButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            // Clear all values
+            RawMaterialList.SelectedIndex = -1;
+            NoteText1.Text = string.Empty;
+            NoteText2.Text = string.Empty;
+            NoteText3.Text = string.Empty;
+        }
+
+        /// <summary>
+        /// Called when the apply button is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ApplyButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var model = SolidWorksEnvironment.Application.ActiveModel;
+
+            // Check if we have a part
+            if (model == null || !model.IsPart)
+                return;
+
+            // Note textboxes
+            model.SetCustomProperty(CustomPropertyNote1, NoteText1.Text);
+            model.SetCustomProperty(CustomPropertyNote2, NoteText2.Text);
+            model.SetCustomProperty(CustomPropertyNote3, NoteText3.Text);
+
+            // If user does not have a material selected, clear it
+            if (RawMaterialList.SelectedIndex < 0)
+                model.SetMaterial(null);
+            // Otherwise set the material to the selected one
+            else
+                model.SetMaterial((Material)RawMaterialList.SelectedItem);
+
+            // Re-read details to confirm they are correct
+            ReadDetails();
+        }
 
         /// <summary>
         /// Get selected feature and analyze it with a DMF routine
@@ -156,27 +233,6 @@ namespace SongTelenkoDFM2
 
                 });
             });
-        }
-
-        private void BackToMainButton_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            NoPartContent.Visibility = Hidden;
-            Screen_IsFeatureCritical.Visibility = Hidden;
-            MainContent.Visibility = Visible;
-
-        }
-
-        private void IsCriticalButton_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            mFeatureIsNecessary = true;
-            mFeatureNotNecessary = false;
-        }
-
-        private void NotCriticalButton_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            mFeatureIsNecessary = false;
-            mFeatureNotNecessary = true;
-            var a = e.ToString();
         }
 
         #endregion
@@ -203,37 +259,28 @@ namespace SongTelenkoDFM2
                 var name = headFeature.Name;
                 Dictionary<string, double> dims = GetDimensions(headFeature);
 
-                Screen_IsFeatureCritical.Visibility = Visible;
-                MainContent.Visibility = Hidden;
-
                 model.Extension.SelectByID2(headFeature.Name, "BODYFEATURE", 0, 0, 0, false, 0, null, 0);
 
                 // Configure the message box to be displayed
-                string messageBoxText = "Is the highlighted feature necessary for this part?";
-                string caption = "Critical Features";
-                MessageBoxButton button = MessageBoxButton.YesNo;
-                MessageBoxImage icon = MessageBoxImage.Question;
-                // Display message box
-                MessageBoxResult result = MessageBox.Show(messageBoxText, caption, button, icon);
+                string messageBoxText = "Is the highlighted feature, " + name + ", necessary for this part?";
+                string formTitle = "Critical Features";
 
-                switch (result)
-                {
-                    case MessageBoxResult.Yes:
-                        break;
-                    case MessageBoxResult.No:
-                        break;
-                }
-            }
+                ToleranceMessageBox.ShowMessage(messageBoxText, formTitle);
 
-            //if ((headFeature.Name.Contains("Extrude"))) {
-            //    var depth = GetDimension(featureSketchList.First(), model, "D1");
-            //    Debug.Print("Extrusion Depth = " + depth + "mm"); }
-            //if ((headFeature.Name.Contains("Hole"))) {
-            //    Feature underlyingSketch2 = featureSketchList.ElementAt(2);
-            //    var holeDepth3 = GetDimension(underlyingSketch2, model, "Hole Dia.");
-            //    var holeWidth3 = GetDimension(underlyingSketch2, model, "Hole Depth");}
-            //if ((double)depth / diameter >= 2.75)
-            //    Application.ShowMessageBox("The drill hole is too narrow and deep", SolidWorksMessageBoxIcon.Stop);
+
+                //MessageBoxButton button = MessageBoxButton.YesNo;
+                //MessageBoxImage icon = MessageBoxImage.Question;
+                //// Display message box
+                //MessageBoxResult result = MessageBox.Show(messageBoxText, caption, button, icon);
+
+                //switch (result)
+                //{
+                //    case MessageBoxResult.Yes:
+                //        break;
+                //    case MessageBoxResult.No:
+                //        break;
+                //}
+            } 
         }
 
         /// <summary>
@@ -410,6 +457,13 @@ namespace SongTelenkoDFM2
             }
         }
 
+        /// <summary>
+        /// Get a specific dimension by string
+        /// </summary>
+        /// <param name="feature"></param>
+        /// <param name="model"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
         private double GetDimension(Feature feature, ModelDoc2 model, string param)
         {
             var dimension = default(Dimension);

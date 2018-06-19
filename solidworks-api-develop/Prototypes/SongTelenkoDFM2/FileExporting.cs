@@ -9,7 +9,7 @@ using static AngelSix.SolidDna.SolidWorksEnvironment;
 namespace SongTelenkoDFM
 {
     /// <summary>
-    /// Exports Exports SolidWorks files into various formats
+    /// Exports SolidWorks files into various formats
     /// </summary>
     public static class FileExporting
     {

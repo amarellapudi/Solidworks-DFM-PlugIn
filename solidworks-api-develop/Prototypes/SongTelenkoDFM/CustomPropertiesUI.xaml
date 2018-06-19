@@ -157,14 +157,13 @@
                 <Button Margin="0 15 0 0" Padding="0 3 0 3" Content="Export Model as STL" Click="STLButton_Click" />
 
             </StackPanel>
-
+    
             <StackPanel x:Name="AnalyzePartContent" VerticalAlignment="Center">
                 <Image Source="DFM_Results2.png" MaxWidth="600" Margin="0 0 0 5"/>
                 <TextBlock HorizontalAlignment="Center" Text="Please make the suggested changes"/>
 
                 <Button Margin="0 10 0 0" Padding="0 3 0 3" Content="Return to Previous Screen" Click="ReturnButton_Click" />
             </StackPanel>
-
         </Grid>
     </Border>
     

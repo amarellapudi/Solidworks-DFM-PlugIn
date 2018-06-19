@@ -15,54 +15,161 @@
                 <TextBlock HorizontalAlignment="Center" Text="Please open a part"/>
             </StackPanel>
 
-            <StackPanel x:Name="MainContent" VerticalAlignment="Center">
-                <Grid HorizontalAlignment="Center">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <!-- Feature DFM Ready -->
-                    <Button x:Name="DesignCheckButton" IsEnabled="False" Click="DesignCheckButton_Click" 
-                            Grid.Row="1" Content="Check Design" Padding="2" Margin="0 10 0 0" FontSize="12"/>
-                </Grid>
-            </StackPanel>
-
-            <StackPanel  x:Name="Screen_IsFeatureCritical" VerticalAlignment="Center">
-                <Grid Margin="0 0 0 20" HorizontalAlignment="Center">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+            <StackPanel x:Name="MainContent">
+                <!-- #################### -->
+                <!--    Action Buttons    -->
+                <!-- #################### -->
+                <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <Button Grid.Column="0" Margin="15 0 10 0" Padding="10 2" Content="Back to Main Screen" Click="BackToMainButton_Click"/>
+                    <Button Grid.Column="0" Margin="0 0 10 0" Content="Apply" Click="ApplyButton_Click" />
+                    <Button Grid.Column="1" Margin="5 0 5 0" Content="Reset" Click="ResetButton_Click" />
+                    <Button Grid.Column="2" Margin="10 0 0 0" Content="Refesh" Click="ReadButton_Click" />
                 </Grid>
                 
-                <Grid HorizontalAlignment="center">
+                <!-- #################### -->
+                <!--    Part Properties   -->
+                <!-- #################### -->
+                <Grid Margin="0 10 0 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="9*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
+                        
+                    <!-- Part Properties Titles -->
+                    <TextBlock Text="Part Properties" Grid.Column="1" Grid.Row="0"  Margin="0 0 0 5" 
+                               FontWeight="Bold" FontSize="13" TextAlignment="Center"/>
+
+                    <!--  Raw Material -->
+                    <TextBlock Text="Raw Material" Grid.Column="1"  Grid.Row="1"
+                               TextAlignment="center"/>
+                    <ComboBox x:Name="RawMaterialList" Grid.Column="1" Grid.Row="2" Margin="0 0 0 5"
+                              HorizontalContentAlignment="Center"/>
+
+                    <!-- Mass-->
+                    <TextBlock Text="Mass" Grid.Column="1"  Grid.Row="3" Padding="2"
+                               TextAlignment="Center"/>                    
+                    <TextBox x:Name="MassText" Grid.Column="1"  Grid.Row="4" Padding="2"
+                             IsReadOnly="True" Background="#eee" TextAlignment="center"/>
+                </Grid>
+
+                <!-- ########################## -->
+                <!--    Design Recommendations  -->
+                <!-- ########################## -->
+                <Grid Margin="0 10 0 0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="9*" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
                     
-                    <TextBlock Text="Is the highlighted feature critical to this part?" Margin="0 0 0 5"
-                               FontSize="13" TextWrapping="WrapWithOverflow" TextAlignment="Center"/>
+                    <!-- Design Recommendations Title -->
+                    <TextBlock Text="Design Recommendations" Grid.Column="1" Grid.Row="0" Margin="0 0 0 7" 
+                               FontWeight="Bold" FontSize="13" TextAlignment="Center"/>
+
+                    <!-- Recommendation Textboxes -->
+                    <TextBox x:Name="RecommendationText1" Grid.Column="1" Grid.Row="1" Margin="0 0 0 3" Padding="2" 
+                             Background="#eee" IsReadOnly="True" TextAlignment="center"/>
+                    <TextBox x:Name="RecommendationText2" Grid.Column="1" Grid.Row="2" Margin="0 0 0 3" Padding="2" 
+                             Background="#eee" IsReadOnly="True" TextAlignment="center"/>
+                    <TextBox x:Name="RecommendationText3" Grid.Column="1" Grid.Row="3" Padding="2" 
+                             Background="#eee" IsReadOnly="True" TextAlignment="center"/>
                 </Grid>
 
-                <Grid Margin="0 5 0 0" HorizontalAlignment="Center">
+                <!-- ##################### -->
+                <!--    Design Tolerances  -->
+                <!-- ##################### -->
+                <Grid Margin="0 10 0 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="9*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Design Tolerances Title -->
+                    <TextBlock Text="Design Tolerances" Grid.Column="1" Grid.Row="0" Margin="0 0 0 7" 
+                               FontWeight="Bold" FontSize="13" TextAlignment="Center"/>
+
+                    <!-- Tolerance Textboxes -->
+                    <TextBox x:Name="ToleranceText1" Grid.Column="1" Grid.Row="1" Margin="0 0 0 3" Padding="2" 
+                             Background="#eee" IsReadOnly="True" TextAlignment="center"/>
+                    <TextBox x:Name="ToleranceText2" Grid.Column="1" Grid.Row="2" Margin="0 0 0 3" Padding="2" 
+                             Background="#eee" IsReadOnly="True" TextAlignment="center"/>
+                    <TextBox x:Name="ToleranceText3" Grid.Column="1" Grid.Row="3" Padding="2" 
+                             Background="#eee" IsReadOnly="True" TextAlignment="center"/>
+                </Grid>
+
+                <!-- ################## -->
+                <!--  Additional Notes  -->
+                <!-- ################## -->
+                <Grid Margin="0 10 0 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="9*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Additional Notes Title -->
+                    <TextBlock Text="Additional Notes" Grid.Column="1" Grid.Row="0" Margin="0 0 0 7" 
+                               FontWeight="Bold" FontSize="13" TextAlignment="Center"/>
+
+                    <!-- Note Textboxes -->
+                    <TextBox x:Name="NoteText1" Grid.Column="1" Grid.Row="1" Margin="0 0 0 3" Padding="2" 
+                             TextAlignment="center"/>
+                    <TextBox x:Name="NoteText2" Grid.Column="1" Grid.Row="2" Margin="0 0 0 3" Padding="2" 
+                             TextAlignment="center"/>
+                    <TextBox x:Name="NoteText3" Grid.Column="1" Grid.Row="3" Padding="2" 
+                             TextAlignment="center"/>
+                </Grid>
+
+                <!-- #################### -->
+                <!-- Design Check Button  -->
+                <!-- #################### -->
+                <Grid HorizontalAlignment="Center" Margin="0 15 0 0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
 
-                    <Button Grid.Column="0" Margin="10 0" Padding="10 2" Content="Yes" Click="IsCriticalButton_Click"/>
-                    <Button Grid.Column="1" Margin="10 0"  Padding="10 2" Content="No" Click="NotCriticalButton_Click"/>
+                    <Button x:Name="DesignCheckButton" Grid.Row="1" Padding="10 5 10 5" FontSize="13" 
+                            Click="DesignCheckButton_Click"  IsEnabled="False" Content="Check Design"/>
                 </Grid>
+
+               
+
             </StackPanel>
 
         </Grid>
