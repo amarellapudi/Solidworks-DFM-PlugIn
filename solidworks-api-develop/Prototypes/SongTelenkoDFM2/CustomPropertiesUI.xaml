@@ -16,10 +16,6 @@
             </StackPanel>
 
             <StackPanel x:Name="MainContent" VerticalAlignment="Center">
-                <!--
-                <Button Margin="0 10 0 0" Padding="0 3 0 3" Content="Check part" />
-                -->
-
                 <Grid HorizontalAlignment="Center">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -27,8 +23,34 @@
 
                     <!-- Feature DFM Ready -->
                     <Button x:Name="DesignCheckButton" IsEnabled="False" Click="DesignCheckButton_Click" 
-                            Grid.Row="1" Content="Check Design" Padding="2" Margin="0 10 0 0"/>
+                            Grid.Row="1" Content="Check Design" Padding="2" Margin="0 10 0 0" FontSize="13"/>
+                </Grid>
+            </StackPanel>
 
+            <StackPanel  x:Name="Screen_IsFeatureCritical" VerticalAlignment="Center">
+                <Grid HorizontalAlignment="center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock Text="Is the highlighted feature critical to this part?" Margin="0 0 0 5"
+                               FontSize="13" TextWrapping="WrapWithOverflow" TextAlignment="Center"/>
+                </Grid>
+
+                <Grid Margin="0 10 0 0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0" Margin="15 0 10 0" Padding="2" Content="Yes" Click="IsCriticalButton_Click"/>
+                    <Button Grid.Column="1" Margin="10 0 15 0"  Padding="2" Content="No" Click="NotCriticalButton_Click"/>
                 </Grid>
             </StackPanel>
 

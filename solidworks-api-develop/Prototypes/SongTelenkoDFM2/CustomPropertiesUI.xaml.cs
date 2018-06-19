@@ -52,6 +52,7 @@ namespace SongTelenkoDFM2
             // and hide the analyze part and main content screens
             NoPartContent.Visibility = Visible;
             MainContent.Visibility = Hidden;
+            Screen_IsFeatureCritical.Visibility = Hidden;
 
             // Listen out for the active model changing
             Application.ActiveModelInformationChanged += Application_ActiveModelInformationChanged;
@@ -152,6 +153,16 @@ namespace SongTelenkoDFM2
             });
         }
 
+        private void IsCriticalButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+
+        }
+
+        private void NotCriticalButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+
+        }
+
         #endregion
 
         #region Private Helper Functions
@@ -173,15 +184,14 @@ namespace SongTelenkoDFM2
             foreach (List<Feature> featureSketchList in filteredFeatures)
             {
                 Feature headFeature = featureSketchList.First();
-                var name = headFeature.Name;
-                if (headFeature.Name.Contains("Extrude"))
-                {
-                    model.Extension.SelectByID2(headFeature.Name, "BODYFEATURE", 0, 0, 0, false, 0, null, 0);
-                }
+                model.Extension.SelectByID2(headFeature.Name, "BODYFEATURE", 0, 0, 0, false, 0, null, 0);
+
+                Screen_IsFeatureCritical.Visibility = Visible;
+                MainContent.Visibility = Hidden;
 
                 Dictionary<string, double> dims = GetDimensions(headFeature);
             }
-        
+
             //if ((headFeature.Name.Contains("Extrude"))) {
             //    var depth = GetDimension(featureSketchList.First(), model, "D1");
             //    Debug.Print("Extrusion Depth = " + depth + "mm"); }
@@ -344,12 +354,9 @@ namespace SongTelenkoDFM2
             {
                 // If the first display dimension is not null, add it to the list
                 Dimension dimension = (Dimension)displayDimension.GetDimension();
-                if (dimension.FullName.Contains("Angle"))
-                {
+                if (dimension.FullName.Contains("Angle")) {
                     Debug.Print(dimension.FullName + " " + dimension.GetSystemValue2("") + "rads");
-                }
-                else
-                {
+                } else {
                     Debug.Print(dimension.FullName + " " + 1000.0 * dimension.GetSystemValue2("") + "mm");
                 }
                 
@@ -371,7 +378,7 @@ namespace SongTelenkoDFM2
             }
         }
 
-            private double GetDimension(Feature feature, ModelDoc2 model, string param)
+        private double GetDimension(Feature feature, ModelDoc2 model, string param)
         {
             var dimension = default(Dimension);
             object configNames = null;
