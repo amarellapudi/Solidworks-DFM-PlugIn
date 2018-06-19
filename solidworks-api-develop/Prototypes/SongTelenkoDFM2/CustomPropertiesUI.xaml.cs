@@ -9,6 +9,8 @@ using SolidWorks.Interop.sldworks;
 using System.Diagnostics;
 using SolidWorks.Interop.swconst;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace SongTelenkoDFM2
 {
@@ -17,6 +19,11 @@ namespace SongTelenkoDFM2
     /// </summary>
     public partial class CustomPropertiesUI : UserControl
     {
+        #region Public Members
+        public bool mFeatureIsNecessary = false;
+        public bool mFeatureNotNecessary = false;
+        #endregion
+
         #region Private Members
 
         /// <summary>
@@ -55,7 +62,7 @@ namespace SongTelenkoDFM2
             Screen_IsFeatureCritical.Visibility = Hidden;
 
             // Listen out for the active model changing
-            Application.ActiveModelInformationChanged += Application_ActiveModelInformationChanged;
+            SolidWorksEnvironment.Application.ActiveModelInformationChanged += Application_ActiveModelInformationChanged;
         }
 
         #endregion
@@ -79,7 +86,7 @@ namespace SongTelenkoDFM2
             ThreadHelpers.RunOnUIThread(() =>
             {
                 // Get the active model
-                var model = Application.ActiveModel;
+                var model = SolidWorksEnvironment.Application.ActiveModel;
 
                 // If we have no model, or the model is nor a part
                 // then we show the No Part screen and return
@@ -117,7 +124,7 @@ namespace SongTelenkoDFM2
         /// </summary>
         private void Model_SelectionChanged()
         {
-            Application.ActiveModel?.SelectedObjects((objects) =>
+            SolidWorksEnvironment.Application.ActiveModel?.SelectedObjects((objects) =>
             {
                 // var haveFeature = objects.Any(f => f.IsFeature);
                 // var haveDimension = objects.Any(f => f.IsDimension);
@@ -139,10 +146,8 @@ namespace SongTelenkoDFM2
         /// </summary>
         private void DesignCheckButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            Application.ActiveModel?.SelectedObjects((objects) =>
+            SolidWorksEnvironment.Application.ActiveModel?.SelectedObjects((objects) =>
             {
-                // var haveFeature = objects.Any(f => f.IsFeature);
-
                 Feature_Check();
 
                 // Set the feature button text
@@ -153,14 +158,25 @@ namespace SongTelenkoDFM2
             });
         }
 
+        private void BackToMainButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            NoPartContent.Visibility = Hidden;
+            Screen_IsFeatureCritical.Visibility = Hidden;
+            MainContent.Visibility = Visible;
+
+        }
+
         private void IsCriticalButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-
+            mFeatureIsNecessary = true;
+            mFeatureNotNecessary = false;
         }
 
         private void NotCriticalButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-
+            mFeatureIsNecessary = false;
+            mFeatureNotNecessary = true;
+            var a = e.ToString();
         }
 
         #endregion
@@ -173,7 +189,7 @@ namespace SongTelenkoDFM2
         /// </summary>
         private void Feature_Check()
         {
-            var model = (ModelDoc2)Application.UnsafeObject.ActiveDoc;
+            var model = (ModelDoc2)SolidWorksEnvironment.Application.UnsafeObject.ActiveDoc;
             var selectionManager = model.SelectionManager;
             var featureManager = model.FeatureManager;
 
@@ -184,12 +200,29 @@ namespace SongTelenkoDFM2
             foreach (List<Feature> featureSketchList in filteredFeatures)
             {
                 Feature headFeature = featureSketchList.First();
-                model.Extension.SelectByID2(headFeature.Name, "BODYFEATURE", 0, 0, 0, false, 0, null, 0);
+                var name = headFeature.Name;
+                Dictionary<string, double> dims = GetDimensions(headFeature);
 
                 Screen_IsFeatureCritical.Visibility = Visible;
                 MainContent.Visibility = Hidden;
 
-                Dictionary<string, double> dims = GetDimensions(headFeature);
+                model.Extension.SelectByID2(headFeature.Name, "BODYFEATURE", 0, 0, 0, false, 0, null, 0);
+
+                // Configure the message box to be displayed
+                string messageBoxText = "Is the highlighted feature necessary for this part?";
+                string caption = "Critical Features";
+                MessageBoxButton button = MessageBoxButton.YesNo;
+                MessageBoxImage icon = MessageBoxImage.Question;
+                // Display message box
+                MessageBoxResult result = MessageBox.Show(messageBoxText, caption, button, icon);
+
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        break;
+                    case MessageBoxResult.No:
+                        break;
+                }
             }
 
             //if ((headFeature.Name.Contains("Extrude"))) {
@@ -201,7 +234,6 @@ namespace SongTelenkoDFM2
             //    var holeWidth3 = GetDimension(underlyingSketch2, model, "Hole Depth");}
             //if ((double)depth / diameter >= 2.75)
             //    Application.ShowMessageBox("The drill hole is too narrow and deep", SolidWorksMessageBoxIcon.Stop);
-
         }
 
         /// <summary>
