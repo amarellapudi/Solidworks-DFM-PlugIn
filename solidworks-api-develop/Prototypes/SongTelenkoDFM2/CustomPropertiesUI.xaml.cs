@@ -344,7 +344,15 @@ namespace SongTelenkoDFM2
             {
                 // If the first display dimension is not null, add it to the list
                 Dimension dimension = (Dimension)displayDimension.GetDimension();
-                Debug.Print(dimension.FullName + " " + dimension.GetSystemValue2(""));
+                if (dimension.FullName.Contains("Angle"))
+                {
+                    Debug.Print(dimension.FullName + " " + dimension.GetSystemValue2("") + "rads");
+                }
+                else
+                {
+                    Debug.Print(dimension.FullName + " " + 1000.0 * dimension.GetSystemValue2("") + "mm");
+                }
+                
                 dims.Add(dimension.FullName, dimension.GetSystemValue2(""));
 
                 // Get the next display dimension
