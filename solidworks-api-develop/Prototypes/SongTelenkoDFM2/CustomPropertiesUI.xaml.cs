@@ -54,7 +54,8 @@ namespace SongTelenkoDFM2
         public CustomPropertiesUI()
         {
             InitializeComponent();
-            DataContext = mFeatureTolerances;
+
+            FeatureTolerance_Display.ItemsSource = mFeatureTolerances;
         }
 
         #endregion
@@ -256,6 +257,9 @@ namespace SongTelenkoDFM2
         /// </summary>
         private void Tolerance_Check()
         {
+            // Clear the old tolerances
+            mFeatureTolerances.Clear();
+
             var model = (ModelDoc2)SolidWorksEnvironment.Application.UnsafeObject.ActiveDoc;
             var selectionManager = model.SelectionManager;
             var featureManager = model.FeatureManager;
@@ -285,7 +289,7 @@ namespace SongTelenkoDFM2
                 mFeatureTolerances.Add(thisFeatureTolerance);
             }
 
-            FeatureTolerance_Display.UpdateLayout();
+            FeatureTolerance_Display.Items.Refresh();
         }
 
         /// <summary>
