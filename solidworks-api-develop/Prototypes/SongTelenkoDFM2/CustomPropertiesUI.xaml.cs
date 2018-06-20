@@ -11,15 +11,23 @@ using SolidWorks.Interop.swconst;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
 
 namespace SongTelenkoDFM2
-{
-    /// <summary>
+{    /// <summary>
     /// Interaction logic for CustomPropertiesUI.xaml
     /// </summary>
-    public partial class CustomPropertiesUI : UserControl
+    public partial class CustomPropertiesUI : System.Windows.Controls.UserControl
     {
         #region Public Members
+
+        public class FeatureNameAndTolerance
+        {
+            public string FeatureName { get; set; }
+            public string FeatureTolerance { get; set; }
+        }
+
+        public List<FeatureNameAndTolerance> mFeatureTolerances = new List<FeatureNameAndTolerance>();
 
         #endregion
 
@@ -33,6 +41,9 @@ namespace SongTelenkoDFM2
         private const string CustomPropertyNote2 = "Note2";
         private const string CustomPropertyNote3 = "Note3";
 
+        private const string CustomPropertyTolerance_Feature1 = "Tolerance_Feature1";
+        private const string CustomPropertyTolerance_Value1 = "Tolerance_Value1";
+
         #endregion
 
         #region Constructor
@@ -43,6 +54,7 @@ namespace SongTelenkoDFM2
         public CustomPropertiesUI()
         {
             InitializeComponent();
+            DataContext = mFeatureTolerances;
         }
 
         #endregion
@@ -112,9 +124,7 @@ namespace SongTelenkoDFM2
                 // Query all custom properties
                 model.CustomProperties((properties) =>
                 {
-                    // Design Recommendations
-                    
-                    // Design Tolerances
+                    // TO DO: What's the best place to put the feature tolerances?
 
                     // Note2
                     NoteText1.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyNote1, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
@@ -182,6 +192,8 @@ namespace SongTelenkoDFM2
         private void ResetButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             // Clear all values
+            //mFeatureTolerances.Clear();
+
             RawMaterialList.SelectedIndex = -1;
             NoteText1.Text = string.Empty;
             NoteText2.Text = string.Empty;
@@ -225,7 +237,7 @@ namespace SongTelenkoDFM2
         {
             SolidWorksEnvironment.Application.ActiveModel?.SelectedObjects((objects) =>
             {
-                Feature_Check();
+                Tolerance_Check();
 
                 // Set the feature button text
                 ThreadHelpers.RunOnUIThread(() =>
@@ -240,10 +252,9 @@ namespace SongTelenkoDFM2
         #region Private Helper Functions
 
         /// <summary>
-        /// Gathers feature data
-        /// TO DO: gather all relevant feature data for feature-specific DFM check
+        /// Asks user to specify tolerances for each feature
         /// </summary>
-        private void Feature_Check()
+        private void Tolerance_Check()
         {
             var model = (ModelDoc2)SolidWorksEnvironment.Application.UnsafeObject.ActiveDoc;
             var selectionManager = model.SelectionManager;
@@ -253,34 +264,82 @@ namespace SongTelenkoDFM2
 
             List<List<Feature>> filteredFeatures = GetFeatureDictionary(AllFeatures);
 
-            foreach (List<Feature> featureSketchList in filteredFeatures)
-            {
-                Feature headFeature = featureSketchList.First();
-                var name = headFeature.Name;
-                Dictionary<string, double> dims = GetDimensions(headFeature);
+            List<string[]> featureTolerances = new List<string[]>();
 
+            for (int i=0; i<filteredFeatures.Count; i++)
+            {
+                // Get the head feature of each feature-sketch-list
+                Feature headFeature = (filteredFeatures[i]).First();
+
+                // Get the dictionary of feature dimensions and values 
+                //Dictionary<string, double> dims = GetDimensions(headFeature);
+
+                // Highlight the feature
                 model.Extension.SelectByID2(headFeature.Name, "BODYFEATURE", 0, 0, 0, false, 0, null, 0);
 
-                // Configure the message box to be displayed
-                string messageBoxText = "Is the highlighted feature, " + name + ", necessary for this part?";
-                string formTitle = "Critical Features";
+                // Get the user specified or default tolerance for this feature
+                //string[] thisFeatureTolerance = GetFeatureTolerance(headFeature);
+                FeatureNameAndTolerance thisFeatureTolerance = GetFeatureTolerance(headFeature);
 
-                ToleranceMessageBox.ShowMessage(messageBoxText, formTitle);
+                // Add this tolerance to the list of all tolerances
+                mFeatureTolerances.Add(thisFeatureTolerance);
+            }
 
+            FeatureTolerance_Display.UpdateLayout();
+        }
 
-                //MessageBoxButton button = MessageBoxButton.YesNo;
-                //MessageBoxImage icon = MessageBoxImage.Question;
-                //// Display message box
-                //MessageBoxResult result = MessageBox.Show(messageBoxText, caption, button, icon);
+        /// <summary>
+        /// Generate dictionary of user-specified tolerances
+        /// </summary>
+        /// <param name="feature"></param>
+        /// <returns></returns>
+        private FeatureNameAndTolerance GetFeatureTolerance(Feature feature)
+        {
+            // Default tolerance string
+            string default_tolerance = "+/- 0.1mm";
 
-                //switch (result)
-                //{
-                //    case MessageBoxResult.Yes:
-                //        break;
-                //    case MessageBoxResult.No:
-                //        break;
-                //}
-            } 
+            // Configure the message box to ask user if this feature is critical
+            string messageBoxText = "Is the highlighted feature, " + feature.Name + ", necessary for this part?";
+            string formTitle = "Critical Features";
+
+            // Use the custom FeatureCriticalMessageBox class to ask the user
+            FeatureCriticalMessageBox isFeatureCritical = new FeatureCriticalMessageBox(messageBoxText, formTitle);
+            DialogResult criticalFeature_result = isFeatureCritical.ShowDialog();
+
+            // Based on the result, either ask the user for a more specific tolerance or use the default tolerance
+            if (criticalFeature_result == DialogResult.Yes)
+            {
+                // User has identified this feature as critical, so it may require a tighter tolerance
+                string messageBoxText2 = "The default tolerance is +/- 0.1mm. Would you like to change this value for " + feature.Name + "?";
+                string formTitle2 = "Critical Feature Tolerance";
+
+                // Display Tolerance Message Box to the user and wait for tolerance selection
+                ToleranceMessageBox CriticalFeatureTolerance = new ToleranceMessageBox(messageBoxText2, formTitle2);
+                DialogResult tolerance_result = CriticalFeatureTolerance.ShowDialog();
+
+                string[] res = { feature.Name, CriticalFeatureTolerance.Tolerance_Value };
+
+                FeatureNameAndTolerance result = new FeatureNameAndTolerance()
+                {
+                    FeatureName = feature.Name,
+                    FeatureTolerance = CriticalFeatureTolerance.Tolerance_Value
+                };
+
+                return result;
+            }
+            // User has not identified this feature as critical, so return the default tolerance
+            else
+            {
+                string[] res2 = { feature.Name, default_tolerance };
+
+                FeatureNameAndTolerance result2 = new FeatureNameAndTolerance()
+                {
+                    FeatureName = feature.Name,
+                    FeatureTolerance = default_tolerance
+                };
+
+                return result2;
+            }
         }
 
         /// <summary>
@@ -303,7 +362,7 @@ namespace SongTelenkoDFM2
                 else if (((Feature)feature).Name == "Solid Bodies") return null;
                 else if (((Feature)feature).Name == "Lights, Cameras and Scene") return null;
                 else if (((Feature)feature).Name == "Equations") return null;
-                else if (((Feature)feature).Name.Contains("Material")) return null;
+                else if (((Feature)feature).GetTypeName2().Contains("Material")) return null;
                 else if (((Feature)feature).Name == "Front Plane") return null;
                 else if (((Feature)feature).Name == "Top Plane") return null;
                 else if (((Feature)feature).Name == "Right Plane") return null;
@@ -350,7 +409,7 @@ namespace SongTelenkoDFM2
                     entry.Add(featureIteration);
 
                     // Print parent feature's name
-                    Debug.Print("Parent feauture: " + featureIteration.Name);
+                    //Debug.Print("Parent feauture: " + featureIteration.Name);
 
                     // Find and add the sketches underlying the feature
                     List<Feature> sketches = GetSubFeatures(featureIteration);
@@ -362,7 +421,7 @@ namespace SongTelenkoDFM2
                     // Add list of feature and sketches to the main featureDictionary list
                     featureDictionary.Add(entry);
 
-                    Debug.Print(" ");
+                    //Debug.Print(" ");
                 }
             }
 
@@ -371,8 +430,7 @@ namespace SongTelenkoDFM2
         }
 
         /// <summary>
-        /// Get three levels of subfeatures
-        /// TO DO: might need to check more levels, find better way to do this
+        /// Get all levels of subfeatures of a given feature
         /// </summary>
         /// <param name="feature"></param>
         /// <returns></returns>
@@ -383,29 +441,15 @@ namespace SongTelenkoDFM2
 
             // Find first subfeature
             var sketch = feature.GetFirstSubFeature();
-            if (sketch != null)
+
+            while (sketch != null)
             {
                 // If the subfeature is not null, add it to the dictionary
-                Debug.Print("Child Sketch: " + ((Feature)sketch).Name);
+                // Debug.Print("Child Sketch: " + ((Feature)sketch).Name);
                 sketches.Add((Feature)sketch);
 
-                // Find second subfeature
-                var sketch2 = ((Feature)sketch).GetNextSubFeature();
-                if (sketch2 != null)
-                {
-                    // If the subfeature is not null, add it to the dictionary
-                    Debug.Print("Child Sketch: " + ((Feature)sketch2).Name);
-                    sketches.Add((Feature)sketch2);
-
-                    // Find third subfeature
-                    var sketch3 = ((Feature)sketch2).GetNextSubFeature();
-                    if (sketch3 != null)
-                    {
-                        // If the subfeature is not null, add it to the dictionary
-                        Debug.Print("Child Sketch: " + ((Feature)sketch3).Name);
-                        sketches.Add((Feature)sketch3);
-                    }
-                }
+                // Find the next subfeature
+                sketch = ((Feature)sketch).GetNextSubFeature();
             }
 
             if (sketches.Count == 0)
@@ -417,7 +461,7 @@ namespace SongTelenkoDFM2
         }
 
         /// <summary>
-        /// Get three levels of dimensions
+        /// Get all dimensions relating to a feature
         /// </summary>
         /// <param name="feature"></param>
         /// <returns></returns>
@@ -434,9 +478,9 @@ namespace SongTelenkoDFM2
                 // If the first display dimension is not null, add it to the list
                 Dimension dimension = (Dimension)displayDimension.GetDimension();
                 if (dimension.FullName.Contains("Angle")) {
-                    Debug.Print(dimension.FullName + " " + dimension.GetSystemValue2("") + "rads");
+                    //Debug.Print(dimension.FullName + " " + dimension.GetSystemValue2("") + "rads");
                 } else {
-                    Debug.Print(dimension.FullName + " " + 1000.0 * dimension.GetSystemValue2("") + "mm");
+                    //Debug.Print(dimension.FullName + " " + 1000.0 * dimension.GetSystemValue2("") + "mm");
                 }
                 
                 dims.Add(dimension.FullName, dimension.GetSystemValue2(""));
@@ -445,7 +489,7 @@ namespace SongTelenkoDFM2
                 displayDimension = (DisplayDimension)feature.GetNextDisplayDimension(displayDimension);
             }
 
-            Debug.Print(" ");
+            //Debug.Print(" ");
 
             if (dims.Count == 0)
             {
@@ -454,56 +498,6 @@ namespace SongTelenkoDFM2
             else
             {
                 return dims;
-            }
-        }
-
-        /// <summary>
-        /// Get a specific dimension by string
-        /// </summary>
-        /// <param name="feature"></param>
-        /// <param name="model"></param>
-        /// <param name="param"></param>
-        /// <returns></returns>
-        private double GetDimension(Feature feature, ModelDoc2 model, string param)
-        {
-            var dimension = default(Dimension);
-            object configNames = null;
-            double[] values = null;
-            configNames = model.GetConfigurationNames();
-
-            //dimension = (Dimension)model.Parameter(parameter);
-            dimension = (Dimension)feature.Parameter(param);
-            Debug.Assert((dimension != null));
-            
-            values = (double[])dimension.GetSystemValue3((int)swInConfigurationOpts_e.swThisConfiguration, (configNames));
-            // Debug.Print("Dimension = " + values[0] * 1000.0 + "" + " mm");
-            return (values[0] * 1000.0);
-        }
-
-        /// <summary>
-        /// Debugging function for printing information about features in current part
-        /// </summary>
-        /// <param name="featureManager"></param>
-        /// <param name="model"></param>
-        private void FeatureStatistics(FeatureManager featureManager, ModelDoc2 model)
-        {
-            var featureStatistics = featureManager.FeatureStatistics;
-            featureStatistics.Refresh();
-
-            Debug.Print("Number of features: " + featureStatistics.FeatureCount);
-            Debug.Print("Number of solid bodies: " + featureStatistics.SolidBodiesCount);
-
-            var features2 = (object[])featureStatistics.Features;
-            var featnames = (string[])featureStatistics.FeatureNames;
-            var feattypes = (int[])featureStatistics.FeatureTypes;
-            if ((featnames != null))
-            {
-                for (var iter = 0; iter <= featnames.GetUpperBound(0); iter++)
-                {
-                    Debug.Print("Feature name: " + featnames[iter]);
-                    Debug.Print("Feature type as defined in sw_SelectType_e: " + feattypes[iter]);
-                    Debug.Print("");
-                }
             }
         }
         

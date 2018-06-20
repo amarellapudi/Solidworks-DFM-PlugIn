@@ -2,7 +2,7 @@
 
 namespace SongTelenkoDFM2
 {
-    partial class ToleranceMessageBox
+    partial class FeatureCriticalMessageBox
     {
         /// <summary>
         /// Required designer variable.
@@ -30,22 +30,32 @@ namespace SongTelenkoDFM2
         /// </summary>
         private void InitializeComponent()
         {
-            this.btnAccept = new System.Windows.Forms.Button();
+            this.btnYes = new System.Windows.Forms.Button();
+            this.btnNo = new System.Windows.Forms.Button();
             this.lblMessage = new System.Windows.Forms.Label();
-            this.domainUpDown1 = new System.Windows.Forms.DomainUpDown();
             this.SuspendLayout();
             // 
-            // btnAccept
+            // btnYes
             // 
-            this.btnAccept.Enabled = false;
-            this.btnAccept.Location = new System.Drawing.Point(177, 122);
-            this.btnAccept.Margin = new System.Windows.Forms.Padding(4);
-            this.btnAccept.Name = "btnAccept";
-            this.btnAccept.Size = new System.Drawing.Size(93, 31);
-            this.btnAccept.TabIndex = 0;
-            this.btnAccept.Text = "Accept";
-            this.btnAccept.UseVisualStyleBackColor = true;
-            this.btnAccept.Click += new System.EventHandler(this.ButtonAccept_Click);
+            this.btnYes.Location = new System.Drawing.Point(88, 110);
+            this.btnYes.Margin = new System.Windows.Forms.Padding(4);
+            this.btnYes.Name = "btnYes";
+            this.btnYes.Size = new System.Drawing.Size(107, 31);
+            this.btnYes.TabIndex = 0;
+            this.btnYes.Text = "Yes";
+            this.btnYes.UseVisualStyleBackColor = true;
+            this.btnYes.Click += new System.EventHandler(this.ButtonYes_Click);
+            // 
+            // btnNo
+            // 
+            this.btnNo.Location = new System.Drawing.Point(213, 110);
+            this.btnNo.Margin = new System.Windows.Forms.Padding(4);
+            this.btnNo.Name = "btnNo";
+            this.btnNo.Size = new System.Drawing.Size(107, 31);
+            this.btnNo.TabIndex = 1;
+            this.btnNo.Text = "No";
+            this.btnNo.UseVisualStyleBackColor = true;
+            this.btnNo.Click += new System.EventHandler(this.ButtonNo_Click);
             // 
             // lblMessage
             // 
@@ -55,35 +65,20 @@ namespace SongTelenkoDFM2
             this.lblMessage.Location = new System.Drawing.Point(13, 9);
             this.lblMessage.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblMessage.Name = "lblMessage";
-            this.lblMessage.Size = new System.Drawing.Size(419, 60);
+            this.lblMessage.Size = new System.Drawing.Size(386, 97);
             this.lblMessage.TabIndex = 2;
             this.lblMessage.Text = "message";
             this.lblMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // domainUpDown1
-            // 
-            this.domainUpDown1.Items.Add("+/- 0.1 mm");
-            this.domainUpDown1.Items.Add("+/- 0.01 mm");
-            this.domainUpDown1.Items.Add("+/- 0.001 mm");
-            this.domainUpDown1.Location = new System.Drawing.Point(148, 82);
-            this.domainUpDown1.Name = "domainUpDown1";
-            this.domainUpDown1.ReadOnly = true;
-            this.domainUpDown1.Size = new System.Drawing.Size(152, 22);
-            this.domainUpDown1.TabIndex = 3;
-            this.domainUpDown1.Text = "Select Tolerance";
-            this.domainUpDown1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.domainUpDown1.UpDownAlign = System.Windows.Forms.LeftRightAlignment.Left;
-            this.domainUpDown1.SelectedItemChanged += new System.EventHandler(this.DropDown_SelectedItemChanged);
             // 
             // ToleranceMessageBox
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(445, 166);
-            this.Controls.Add(this.domainUpDown1);
+            this.ClientSize = new System.Drawing.Size(412, 156);
             this.Controls.Add(this.lblMessage);
-            this.Controls.Add(this.btnAccept);
+            this.Controls.Add(this.btnNo);
+            this.Controls.Add(this.btnYes);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Location = new System.Drawing.Point(1100, 600);
             this.Margin = new System.Windows.Forms.Padding(4);
@@ -93,13 +88,12 @@ namespace SongTelenkoDFM2
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Form1";
             this.ResumeLayout(false);
-
         }
 
         #endregion
 
-        private Button btnAccept;
+        private Button btnYes;
+        private Button btnNo;
         private Label lblMessage;
-        private DomainUpDown domainUpDown1;
     }
 }

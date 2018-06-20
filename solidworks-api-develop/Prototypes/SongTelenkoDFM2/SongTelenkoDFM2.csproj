@@ -84,12 +84,18 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileExporting.cs" />
     <Compile Include="ToleranceMessageBox.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ToleranceMessageBox.Designer.cs">
       <DependentUpon>ToleranceMessageBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FileExporting.cs" />
+    <Compile Include="FeatureCriticalMessageBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FeatureCriticalMessageBox.Designer.cs">
+      <DependentUpon>FeatureCriticalMessageBox.cs</DependentUpon>
     </Compile>
     <Compile Include="SolidDnaIntegration.cs" />
     <Compile Include="CustomPropertiesUI.xaml.cs">
@@ -132,6 +138,9 @@
   <ItemGroup>
     <EmbeddedResource Include="ToleranceMessageBox.resx">
       <DependentUpon>ToleranceMessageBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FeatureCriticalMessageBox.resx">
+      <DependentUpon>FeatureCriticalMessageBox.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
