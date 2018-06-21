@@ -38,10 +38,9 @@ namespace SongTelenkoDFM2
             // btnAccept
             // 
             this.btnAccept.Enabled = false;
-            this.btnAccept.Location = new System.Drawing.Point(177, 122);
-            this.btnAccept.Margin = new System.Windows.Forms.Padding(4);
+            this.btnAccept.Location = new System.Drawing.Point(130, 132);
             this.btnAccept.Name = "btnAccept";
-            this.btnAccept.Size = new System.Drawing.Size(93, 31);
+            this.btnAccept.Size = new System.Drawing.Size(70, 25);
             this.btnAccept.TabIndex = 0;
             this.btnAccept.Text = "Accept";
             this.btnAccept.UseVisualStyleBackColor = true;
@@ -52,23 +51,24 @@ namespace SongTelenkoDFM2
             this.lblMessage.BackColor = System.Drawing.SystemColors.Control;
             this.lblMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblMessage.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblMessage.Location = new System.Drawing.Point(13, 9);
-            this.lblMessage.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblMessage.Location = new System.Drawing.Point(10, 7);
             this.lblMessage.Name = "lblMessage";
-            this.lblMessage.Size = new System.Drawing.Size(419, 60);
+            this.lblMessage.Size = new System.Drawing.Size(314, 65);
             this.lblMessage.TabIndex = 2;
             this.lblMessage.Text = "message";
             this.lblMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // domainUpDown1
             // 
+            this.domainUpDown1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.163636F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.domainUpDown1.Items.Add("+/- 0.1 mm");
             this.domainUpDown1.Items.Add("+/- 0.01 mm");
             this.domainUpDown1.Items.Add("+/- 0.001 mm");
-            this.domainUpDown1.Location = new System.Drawing.Point(148, 82);
+            this.domainUpDown1.Location = new System.Drawing.Point(93, 91);
+            this.domainUpDown1.Margin = new System.Windows.Forms.Padding(2);
             this.domainUpDown1.Name = "domainUpDown1";
             this.domainUpDown1.ReadOnly = true;
-            this.domainUpDown1.Size = new System.Drawing.Size(152, 22);
+            this.domainUpDown1.Size = new System.Drawing.Size(146, 23);
             this.domainUpDown1.TabIndex = 3;
             this.domainUpDown1.Text = "Select Tolerance";
             this.domainUpDown1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -77,16 +77,15 @@ namespace SongTelenkoDFM2
             // 
             // ToleranceMessageBox
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(445, 166);
+            this.ClientSize = new System.Drawing.Size(334, 169);
             this.Controls.Add(this.domainUpDown1);
             this.Controls.Add(this.lblMessage);
             this.Controls.Add(this.btnAccept);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Location = new System.Drawing.Point(1100, 600);
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "ToleranceMessageBox";
             this.ShowInTaskbar = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;

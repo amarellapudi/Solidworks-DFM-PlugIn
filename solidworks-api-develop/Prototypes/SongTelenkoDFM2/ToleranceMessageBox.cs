@@ -37,6 +37,18 @@ namespace SongTelenkoDFM2
             set => domainUpDown1.Text = value;
         }
 
+        // Disable close button
+        private const int CP_NOCLOSE_BUTTON = 0x200;
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams myCp = base.CreateParams;
+                myCp.ClassStyle = myCp.ClassStyle | CP_NOCLOSE_BUTTON;
+                return myCp;
+            }
+        }
+
         public static void ShowMessage(string message, string title)
         {
             ToleranceMessageBox messageBox = new ToleranceMessageBox(message, title);

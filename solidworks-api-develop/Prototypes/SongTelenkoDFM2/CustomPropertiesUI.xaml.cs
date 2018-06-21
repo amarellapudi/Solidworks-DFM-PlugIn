@@ -6,18 +6,15 @@ using System.Windows.Controls;
 using static AngelSix.SolidDna.SolidWorksEnvironment;
 using static System.Windows.Visibility;
 using SolidWorks.Interop.sldworks;
-using System.Diagnostics;
-using SolidWorks.Interop.swconst;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Forms;
+using System.Runtime.CompilerServices;
+using System.ComponentModel;
 
 namespace SongTelenkoDFM2
 {    /// <summary>
     /// Interaction logic for CustomPropertiesUI.xaml
     /// </summary>
-    public partial class CustomPropertiesUI : System.Windows.Controls.UserControl
+    public partial class CustomPropertiesUI : System.Windows.Controls.UserControl, INotifyPropertyChanged
     {
         #region Public Members
 
@@ -27,7 +24,25 @@ namespace SongTelenkoDFM2
             public string FeatureTolerance { get; set; }
         }
 
-        public List<FeatureNameAndTolerance> mFeatureTolerances = new List<FeatureNameAndTolerance>();
+        private List<FeatureNameAndTolerance> mFeatureTolerances = new List<FeatureNameAndTolerance>();
+        public List<FeatureNameAndTolerance> MFeatureTolerances
+        {
+            get => mFeatureTolerances;
+            set
+            {
+                if (mFeatureTolerances != value)
+                {
+                    mFeatureTolerances = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
         #endregion
 
@@ -53,6 +68,7 @@ namespace SongTelenkoDFM2
         /// </summary>
         public CustomPropertiesUI()
         {
+            DataContext = this;
             InitializeComponent();
 
             FeatureTolerance_Display.ItemsSource = mFeatureTolerances;
@@ -128,9 +144,9 @@ namespace SongTelenkoDFM2
                     // TO DO: What's the best place to put the feature tolerances?
 
                     // Note2
-                    NoteText1.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyNote1, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
-                    NoteText2.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyNote2, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
-                    NoteText3.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyNote3, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
+                    //NoteText1.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyNote1, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
+                    //NoteText2.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyNote2, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
+                    //NoteText3.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyNote3, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
                 });
 
                 // Mass
@@ -196,9 +212,9 @@ namespace SongTelenkoDFM2
             //mFeatureTolerances.Clear();
 
             RawMaterialList.SelectedIndex = -1;
-            NoteText1.Text = string.Empty;
-            NoteText2.Text = string.Empty;
-            NoteText3.Text = string.Empty;
+            //NoteText1.Text = string.Empty;
+            //NoteText2.Text = string.Empty;
+            //NoteText3.Text = string.Empty;
         }
 
         /// <summary>
@@ -215,9 +231,9 @@ namespace SongTelenkoDFM2
                 return;
 
             // Note textboxes
-            model.SetCustomProperty(CustomPropertyNote1, NoteText1.Text);
-            model.SetCustomProperty(CustomPropertyNote2, NoteText2.Text);
-            model.SetCustomProperty(CustomPropertyNote3, NoteText3.Text);
+            //model.SetCustomProperty(CustomPropertyNote1, NoteText1.Text);
+            //model.SetCustomProperty(CustomPropertyNote2, NoteText2.Text);
+            //model.SetCustomProperty(CustomPropertyNote3, NoteText3.Text);
 
             // If user does not have a material selected, clear it
             if (RawMaterialList.SelectedIndex < 0)
@@ -287,9 +303,9 @@ namespace SongTelenkoDFM2
 
                 // Add this tolerance to the list of all tolerances
                 mFeatureTolerances.Add(thisFeatureTolerance);
-            }
 
-            FeatureTolerance_Display.Items.Refresh();
+                FeatureTolerance_Display.Items.Refresh();
+            }
         }
 
         /// <summary>
@@ -303,7 +319,7 @@ namespace SongTelenkoDFM2
             string default_tolerance = "+/- 0.1mm";
 
             // Configure the message box to ask user if this feature is critical
-            string messageBoxText = "Is the highlighted feature, " + feature.Name + ", necessary for this part?";
+            string messageBoxText = "Does the highlighted feature,\r\n" + feature.Name + ",\r\n need a very tight tolerance?";
             string formTitle = "Critical Features";
 
             // Use the custom FeatureCriticalMessageBox class to ask the user
