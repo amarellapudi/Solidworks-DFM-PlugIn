@@ -77,7 +77,7 @@
                         <!--  Raw Material -->
                         <TextBlock Text="Raw Material" Grid.Column="1"  Grid.Row="1"
                                    TextAlignment="center"/>
-                        <ComboBox x:Name="RawMaterialList" Grid.Column="1" Grid.Row="2" Margin="0 0 0 3"
+                        <ComboBox x:Name="RawMaterialList" Grid.Column="1" Grid.Row="2" Margin="0 0 0 0"
                                   HorizontalContentAlignment="Center"/>
 
                         <!-- Mass-->
@@ -107,13 +107,13 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-               
+
                         <!-- Design Recommendations Title -->
                         <TextBlock Text="Design Recommendations" Grid.Column="1" Grid.Row="0" Margin="0 0 0 7" 
                                    FontWeight="Bold" FontSize="13" TextAlignment="Center"/>
 
                         <!-- Recommendation Textboxes -->
-                        <TextBox x:Name="RecommendationText1" Grid.Column="1" Grid.Row="1" Margin="0 0 0 10" Padding="2" 
+                        <TextBox x:Name="NoteText3" Grid.Column="1" Grid.Row="1" Margin="0 0 0 10" Padding="2" 
                                  TextAlignment="center"/>
                     </Grid>
                 </StackPanel>
@@ -156,7 +156,7 @@
                     <TextBlock Text="Design Tolerances" Grid.Column="1" Grid.Row="0" Margin="0 5 0 5" 
                                    FontWeight="Bold" FontSize="13" TextAlignment="Center"/>
 
-                    <Button x:Name="DesignCheckButton" Padding="4 2" FontSize="13" HorizontalAlignment="Center" 
+                    <Button x:Name="DesignCheckButton" Padding="4 2" FontSize="11" HorizontalAlignment="Center" 
                             Width="Auto" Click="DesignCheckButton_Click"  IsEnabled="False" Margin="0 0 0 5"
                             Content="Check Design Tolerances"/>
 
@@ -198,8 +198,8 @@
                     <TextBlock Text="Export and Analyze in SculptPrint" Grid.Column="1" Grid.Row="0" Margin="0 5 0 5" 
                                    FontWeight="Bold" FontSize="13" TextAlignment="Center"/>
 
-                    <Button x:Name="ManufacturingCheck" Padding="4 2" FontSize="13" HorizontalAlignment="Center" 
-                            Width="Auto" IsEnabled="True" Margin="0 0 0 10"
+                    <Button x:Name="ManufacturingCheck" Padding="4 2" FontSize="11" HorizontalAlignment="Center" 
+                            Width="Auto" IsEnabled="True" Margin="0 0 0 10" Click="ManufacturingCheck_Click"
                             Content="Check for Manufacturing"/>
                 </StackPanel>
             </StackPanel>

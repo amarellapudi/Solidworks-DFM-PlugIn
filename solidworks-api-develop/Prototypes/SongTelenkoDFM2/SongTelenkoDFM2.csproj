@@ -31,6 +31,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -129,10 +132,16 @@
     <PackageReference Include="AngelSix.SolidDna">
       <Version>1.0.0.9</Version>
     </PackageReference>
+    <PackageReference Include="IronPython">
+      <Version>2.7.8.1</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="logo-small.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Test.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
