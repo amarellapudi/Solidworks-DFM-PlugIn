@@ -8,46 +8,26 @@ using static System.Windows.Visibility;
 using SolidWorks.Interop.sldworks;
 using System.Windows.Forms;
 using System.Runtime.CompilerServices;
-using IronPython;
 using System.ComponentModel;
-using Microsoft.Scripting.Hosting;
-using IronPython.Hosting;
 using System.Diagnostics;
 using System.IO;
+using static SongTelenkoDFM2.PythonIntegration;
 
 namespace SongTelenkoDFM2
 {    /// <summary>
     /// Interaction logic for CustomPropertiesUI.xaml
     /// </summary>
-    public partial class CustomPropertiesUI : System.Windows.Controls.UserControl, INotifyPropertyChanged
+    public partial class CustomPropertiesUI : System.Windows.Controls.UserControl
     {
         #region Public Members
 
-        public class FeatureNameAndTolerance
+        public class FeatureToleranceObject
         {
             public string FeatureName { get; set; }
             public string FeatureTolerance { get; set; }
         }
 
-        private List<FeatureNameAndTolerance> mFeatureTolerances = new List<FeatureNameAndTolerance>();
-        public List<FeatureNameAndTolerance> MFeatureTolerances
-        {
-            get => mFeatureTolerances;
-            set
-            {
-                if (mFeatureTolerances != value)
-                {
-                    mFeatureTolerances = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        public List<FeatureToleranceObject> mFeatureTolerances = new List<FeatureToleranceObject>();
 
         #endregion
 
@@ -57,12 +37,15 @@ namespace SongTelenkoDFM2
         /// Define private strings for custom properties buttons in CustomPropertiesUI.xaml
         /// </summary>
 
+        // Notes
         private const string CustomPropertyNote1 = "Note1";
         private const string CustomPropertyNote2 = "Note2";
-        private const string CustomPropertyNote3 = "Note3";
 
-        private const string CustomPropertyTolerance_Feature1 = "Tolerance_Feature1";
-        private const string CustomPropertyTolerance_Value1 = "Tolerance_Value1";
+        // Design Recommendations
+        private const string CustomPropertyRecommendation = "Recommendation";
+
+        // Feature Tolerances
+        private const string CustomPropertyFeatureTolerance = "Tolerance for ";
 
         #endregion
 
@@ -103,11 +86,15 @@ namespace SongTelenkoDFM2
         #region Model Events
 
         /// <summary>
-        /// Fired when the actice SolidWorks model is changed
+        /// Fired when the active SolidWorks model is changed
         /// </summary>
         /// <param name="obj"></param>
         private void Application_ActiveModelInformationChanged(Model obj)
         {
+            ThreadHelpers.RunOnUIThread(() =>
+            {
+
+            });
             ReadDetails();
         }
 
@@ -145,25 +132,22 @@ namespace SongTelenkoDFM2
                 // Query all custom properties
                 model.CustomProperties((properties) =>
                 {
-                    // TO DO: What's the best place to put the feature tolerances?
-
-                    // Note2
+                    // Notes
                     NoteText1.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyNote1, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
                     NoteText2.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyNote2, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
-                    NoteText3.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyNote3, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
+
+                    // Design Recommendations
+                    Recommendation1.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyRecommendation, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
+
                 });
 
                 // Mass
                 MassText.Text = model.MassProperties?.MassInMetric();
 
-                // Get all materials
-                var materials = SolidWorksEnvironment.Application.GetMaterials();
-                materials.Insert(0, new Material { Name = "Remove Material", Classification = "Not specified", DatabaseFileFound = false });
-
-                RawMaterialList.ItemsSource = materials;
+                // Clear material selection
+                List<Material> FilteredMaterials = GetMaterialList();
+                RawMaterialList.ItemsSource = FilteredMaterials;
                 RawMaterialList.DisplayMemberPath = "DisplayName";
-
-                // Clear selection
                 RawMaterialList.SelectedIndex = -1;
 
                 // Select existing material
@@ -171,7 +155,7 @@ namespace SongTelenkoDFM2
 
                 // If we have a material
                 if (existingMaterial != null)
-                    RawMaterialList.SelectedItem = materials?.FirstOrDefault(f => f.Database == existingMaterial.Database && f.Name == existingMaterial.Name);
+                    RawMaterialList.SelectedItem = FilteredMaterials?.FirstOrDefault(f => f.Database == existingMaterial.Database && f.Name == existingMaterial.Name);
             });
         }
 
@@ -212,13 +196,29 @@ namespace SongTelenkoDFM2
         /// <param name="e"></param>
         private void ResetButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            // Clear all values
+            var model = SolidWorksEnvironment.Application.ActiveModel;
+            var model2 = (ModelDoc2)SolidWorksEnvironment.Application.UnsafeObject.ActiveDoc;
+            ModelDocExtension extension = model2.Extension;
+            CustomPropertyManager propertyManager = default(CustomPropertyManager);
+            propertyManager = extension.get_CustomPropertyManager("");
+
+            model.CustomProperties((properties) =>
+            {
+                // Find all feature-tolerance custom properties
+                List<CustomProperty> found = properties.FindAll( property => property.Name.Contains(CustomPropertyFeatureTolerance));
+
+                // Delete each one
+                foreach (CustomProperty item in found) propertyManager.Delete(item.Name);
+            });
+
             mFeatureTolerances.Clear();
             FeatureTolerance_Display.Items.Refresh();
+
             RawMaterialList.SelectedIndex = -1;
+
             NoteText1.Text = string.Empty;
             NoteText2.Text = string.Empty;
-            NoteText3.Text = string.Empty;
+            Recommendation1.Text = string.Empty;
         }
 
         /// <summary>
@@ -234,11 +234,21 @@ namespace SongTelenkoDFM2
             if (model == null || !model.IsPart)
                 return;
 
-            // Note textboxes
+            // Notes
             model.SetCustomProperty(CustomPropertyNote1, NoteText1.Text);
             model.SetCustomProperty(CustomPropertyNote2, NoteText2.Text);
-            model.SetCustomProperty(CustomPropertyNote3, NoteText3.Text);
 
+            // Design Recommendations
+            model.SetCustomProperty(CustomPropertyRecommendation, Recommendation1.Text);
+
+            // Feature Tolerances
+            for (int i = 0; i < mFeatureTolerances.Count; i++)
+            {
+                FeatureToleranceObject item = mFeatureTolerances.ElementAt(i);
+                string CustomPropertyName = CustomPropertyFeatureTolerance + item.FeatureName;
+                model.SetCustomProperty(CustomPropertyName, item.FeatureTolerance);
+            }
+            
             // If user does not have a material selected, clear it
             if (RawMaterialList.SelectedIndex < 0)
                 model.SetMaterial(null);
@@ -251,8 +261,7 @@ namespace SongTelenkoDFM2
         }
 
         /// <summary>
-        /// Get selected feature and analyze it with a DMF routine
-        /// TO DO: actually get feature data (dimensions, coordinates, etc)
+        /// Get selected feature and ask user to provide specific tolerances
         /// </summary>
         private void DesignCheckButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
@@ -267,27 +276,12 @@ namespace SongTelenkoDFM2
                 });
             });
         }
-
-        public string Run_cmd(string cmd, string args)
-        {
-            ProcessStartInfo start = new ProcessStartInfo();
-            start.FileName = @"C:\Users\amarellapudi6\Desktop\Python\python.exe";
-            start.Arguments = string.Format("\"{0}\" \"{1}\"", cmd, args);
-            start.UseShellExecute = false;// Do not use OS shell
-            start.CreateNoWindow = true; // We don't need new window
-            start.RedirectStandardOutput = true;// Any output, generated by application will be redirected back
-            start.RedirectStandardError = true; // Any error in standard output will be redirected back (for example exceptions)
-            using (Process process = Process.Start(start))
-            {
-                using (StreamReader reader = process.StandardOutput)
-                {
-                    string stderr = process.StandardError.ReadToEnd(); // Here are the exceptions from our Python script
-                    string result = reader.ReadToEnd(); // Here is the result of StdOut(for example: print "test")
-                    return result;
-                }
-            }
-        }
-
+        
+        /// <summary>
+        /// Run automated SculptPrint python script
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ManufacturingCheck_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             string script_location = Path.Combine(this.AssemblyPath(), "Test.py");
@@ -328,7 +322,7 @@ namespace SongTelenkoDFM2
 
                 // Get the user specified or default tolerance for this feature
                 //string[] thisFeatureTolerance = GetFeatureTolerance(headFeature);
-                FeatureNameAndTolerance thisFeatureTolerance = GetFeatureTolerance(headFeature);
+                FeatureToleranceObject thisFeatureTolerance = GetFeatureTolerance(headFeature);
 
                 // Add this tolerance to the list of all tolerances
                 mFeatureTolerances.Add(thisFeatureTolerance);
@@ -342,7 +336,7 @@ namespace SongTelenkoDFM2
         /// </summary>
         /// <param name="feature"></param>
         /// <returns></returns>
-        private FeatureNameAndTolerance GetFeatureTolerance(Feature feature)
+        private FeatureToleranceObject GetFeatureTolerance(Feature feature)
         {
             // Default tolerance string
             string default_tolerance = "+/- 0.1mm";
@@ -368,7 +362,7 @@ namespace SongTelenkoDFM2
 
                 string[] res = { feature.Name, CriticalFeatureTolerance.Tolerance_Value };
 
-                FeatureNameAndTolerance result = new FeatureNameAndTolerance()
+                FeatureToleranceObject result = new FeatureToleranceObject()
                 {
                     FeatureName = feature.Name,
                     FeatureTolerance = CriticalFeatureTolerance.Tolerance_Value
@@ -381,7 +375,7 @@ namespace SongTelenkoDFM2
             {
                 string[] res2 = { feature.Name, default_tolerance };
 
-                FeatureNameAndTolerance result2 = new FeatureNameAndTolerance()
+                FeatureToleranceObject result2 = new FeatureToleranceObject()
                 {
                     FeatureName = feature.Name,
                     FeatureTolerance = default_tolerance
@@ -548,6 +542,32 @@ namespace SongTelenkoDFM2
             {
                 return dims;
             }
+        }
+
+        /// <summary>
+        /// Get novice-friendly materials list
+        /// </summary>
+        /// <returns></returns>
+        private List<Material> GetMaterialList()
+        {
+            // Get all materials
+            var materials = SolidWorksEnvironment.Application.GetMaterials();
+
+            var filteredMaterials = new List<Material>();
+
+            foreach (Material material in materials)
+            {
+                if (material.Name.Equals("ABS") | material.Name.Equals("AISI 304") | material.Name.Contains("Delrin") |
+                    material.Name.Equals("6061-T6 (SS)") | material.Name.Contains("Acrylic (Medium-high impact)") |
+                    material.Name.Contains("7075-T6 (SN)") | material.Name.Contains("Plain Carbon Steel"))
+                {
+                    filteredMaterials.Add(material);
+                }
+            }
+            filteredMaterials = filteredMaterials.OrderBy(f => f.Classification).ToList();
+            filteredMaterials.Insert(0, new Material { Name = "Remove Material", Classification = "Not specified", DatabaseFileFound = false });
+
+            return filteredMaterials;
         }
 
         #endregion
