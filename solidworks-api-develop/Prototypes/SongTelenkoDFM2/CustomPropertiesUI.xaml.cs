@@ -649,10 +649,5 @@ namespace SongTelenkoDFM2
         }
 
         #endregion
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 }

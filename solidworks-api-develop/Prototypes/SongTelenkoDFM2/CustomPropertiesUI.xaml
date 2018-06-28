@@ -58,17 +58,18 @@
                 <!-- #################### -->
                 <Border Style="{StaticResource stackBorderStyle}">
                     <StackPanel Style="{StaticResource graySectionStackPanel}">
-                        <Button MinWidth="16" MinHeight="15" FontSize="8" Margin="0,5,5,-20" HorizontalAlignment="Right" 
-                                HorizontalContentAlignment="Center" VerticalContentAlignment="Top" Background="LightSkyBlue" 
-                                Content="?" BorderBrush="Black" FontWeight="ExtraBold">
+                        <Button MinWidth="18" MinHeight="17" FontSize="9" Margin="4,4,0,-21" HorizontalAlignment="Left" 
+                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="LightSkyBlue" 
+                                Content="?" BorderBrush="Black" FontWeight="Bold" ToolTipService.InitialShowDelay="50"
+                                ToolTipService.ShowDuration="10000" ToolTipService.BetweenShowDelay="500">
                             <Button.ToolTip>
                                 <StackPanel>
                                     <TextBlock FontWeight="Bold" FontSize="14" Margin="0,0,0,5">1. Part Properties</TextBlock>
-                                    <Border BorderBrush="Silver" BorderThickness="0,1,0,0" Margin="0,8" />
+                                    <Border BorderBrush="Silver" BorderThickness="0,0.5,0,0" Margin="0 2 0 2" />
                                     <TextBlock>
-                                    Material and mass properties
+                                    Select a material from the dropdown menu and
                                     <LineBreak />
-                                    read in from SolidWorks
+                                    click "Apply" to calculate the part's mass.
                                     </TextBlock>
                                 </StackPanel>
                             </Button.ToolTip>
@@ -77,7 +78,7 @@
                         <Grid Margin="0 5 0 10">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="8*" />
+                                <ColumnDefinition Width="7*" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
@@ -113,15 +114,31 @@
                 <!-- ################# -->
                 <Border Style="{StaticResource stackBorderStyle}">
                     <StackPanel Style="{StaticResource graySectionStackPanel}">
+                        <Button MinWidth="18" MinHeight="17" FontSize="9" Margin="4,4,0,-21" HorizontalAlignment="Left" 
+                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="LightSkyBlue" 
+                                Content="?" BorderBrush="Black" FontWeight="Bold" ToolTipService.InitialShowDelay="50"
+                                ToolTipService.ShowDuration="10000" ToolTipService.BetweenShowDelay="500">
+                            <Button.ToolTip>
+                                <StackPanel>
+                                    <TextBlock FontWeight="Bold" FontSize="14" Margin="0,0,0,5">2. Notes</TextBlock>
+                                    <Border BorderBrush="Silver" BorderThickness="0,0.5,0,0" Margin="0 2 0 2" />
+                                    <TextBlock>
+                                    Add notes below. Click "Apply"
+                                    <LineBreak />
+                                    to save the notes as Custom Properties.
+                                    </TextBlock>
+                                </StackPanel>
+                            </Button.ToolTip>
+                        </Button>
+                        
                         <!-- Additional Notes Title -->
-                        <TextBlock Text="2. Notes" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" Margin="0 5 0 7" 
-                                           FontWeight="Bold" FontSize="12" TextAlignment="Center"/>
+                        <TextBlock Text="2. Notes" Margin="30,5,30,7" FontWeight="Bold" FontSize="12" TextAlignment="Center"/>
 
                         <Grid Margin="0 0 0 0" x:Name="NoteGrid">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="4*" />
-                                <ColumnDefinition Width="4*" />
+                                <ColumnDefinition Width="3.5*" />
+                                <ColumnDefinition Width="3.5*" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
@@ -139,8 +156,8 @@
                         <Grid Margin="0 0 0 10">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="4*" />
-                                <ColumnDefinition Width="4*" />
+                                <ColumnDefinition Width="3.5*" />
+                                <ColumnDefinition Width="3.5*" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
@@ -161,7 +178,27 @@
                 <!-- ############################# -->
                 <Border Style="{StaticResource stackBorderStyle}">
                     <StackPanel Style="{StaticResource graySectionStackPanel}">
-                        <TextBlock Text="3. Design Tolerances" Grid.Column="1" Grid.Row="0" Margin="0 5 0 7" 
+                        <Button MinWidth="18" MinHeight="17" FontSize="9" Margin="4,4,0,-21" HorizontalAlignment="Left" 
+                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="LightSkyBlue" 
+                                Content="?" BorderBrush="Black" FontWeight="Bold" ToolTipService.InitialShowDelay="50"
+                                ToolTipService.ShowDuration="10000" ToolTipService.BetweenShowDelay="500">
+                            <Button.ToolTip>
+                                <StackPanel>
+                                    <TextBlock FontWeight="Bold" FontSize="14" Margin="0,0,0,5">3. Design Tolerances</TextBlock>
+                                    <Border BorderBrush="Silver" BorderThickness="0,0.5,0,0" Margin="0 2 0 2" />
+                                    <TextBlock>
+                                    Click "Check Design Tolerances" to provide
+                                    <LineBreak />
+                                    specific tolerances for each feature.
+                                    <LineBreak />
+                                    Click "Apply" to save the tolerances
+                                    <LineBreak />
+                                    as Custom Properties.
+                                    </TextBlock>
+                                </StackPanel>
+                            </Button.ToolTip>
+                        </Button>
+                        <TextBlock Text="3. Design Tolerances" Grid.Column="1" Grid.Row="0" Margin="30 5 30 7" 
                                    FontWeight="Bold" FontSize="12" TextAlignment="Center"/>
 
                         <Button x:Name="DesignCheckButton" Padding="4 2" FontSize="11" HorizontalAlignment="Center" 
@@ -203,7 +240,26 @@
                 <!-- ############################## -->
                 <Border Style="{StaticResource stackBorderStyle}">
                     <StackPanel Style="{StaticResource graySectionStackPanel}">
-                        <TextBlock Text="4. Analyze in SculptPrint" Grid.Column="1" Grid.Row="0" Margin="0 5 0 7" 
+                        <Button MinWidth="18" MinHeight="17" FontSize="9" Margin="4,4,0,-21" HorizontalAlignment="Left" 
+                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="LightSkyBlue" 
+                                Content="?" BorderBrush="Black" FontWeight="Bold" ToolTipService.InitialShowDelay="50"
+                                ToolTipService.ShowDuration="10000" ToolTipService.BetweenShowDelay="500">
+                            <Button.ToolTip>
+                                <StackPanel>
+                                    <TextBlock FontWeight="Bold" FontSize="14" Margin="0,0,0,5">4. Analyze in SculptPrint</TextBlock>
+                                    <Border BorderBrush="Silver" BorderThickness="0,0.5,0,0" Margin="0 2 0 2" />
+                                    <TextBlock>
+                                    Click "Export to SculptPrint" to analyze
+                                    <LineBreak />
+                                    the part and highlight any warnings
+                                    <LineBreak />
+                                    or errors in the design.
+                                    </TextBlock>
+                                </StackPanel>
+                            </Button.ToolTip>
+                        </Button>
+                        
+                        <TextBlock Text="4. Analyze in SculptPrint" Grid.Column="1" Grid.Row="0" Margin="30 5 30 7" 
                                    FontWeight="Bold" FontSize="12" TextAlignment="Center"/>
 
                         <Button x:Name="ManufacturingCheck" Padding="4 2" FontSize="11" HorizontalAlignment="Center" 
@@ -217,10 +273,28 @@
                 <!-- ########################## -->
                 <Border Style="{StaticResource stackBorderStyle}">
                     <StackPanel Style="{StaticResource graySectionStackPanel}">
+                        <Button MinWidth="18" MinHeight="17" FontSize="9" Margin="4,4,0,-21" HorizontalAlignment="Left" 
+                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="LightSkyBlue" 
+                                Content="?" BorderBrush="Black" FontWeight="Bold" ToolTipService.InitialShowDelay="50"
+                                ToolTipService.ShowDuration="10000" ToolTipService.BetweenShowDelay="500">
+                            <Button.ToolTip>
+                                <StackPanel>
+                                    <TextBlock FontWeight="Bold" FontSize="14" Margin="0,0,0,5">5. Design Recommendations</TextBlock>
+                                    <Border BorderBrush="Silver" BorderThickness="0,0.5,0,0" Margin="0 2 0 2" />
+                                    <TextBlock>
+                                    After analyzing the part in Step 4,
+                                    <LineBreak />
+                                    design recommendations will appear
+                                    <LineBreak />
+                                    in the text-boxes below.
+                                    </TextBlock>
+                                </StackPanel>
+                            </Button.ToolTip>
+                        </Button>
                         <Grid Margin="0 5 0 0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="8*" />
+                                <ColumnDefinition Width="7*" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
