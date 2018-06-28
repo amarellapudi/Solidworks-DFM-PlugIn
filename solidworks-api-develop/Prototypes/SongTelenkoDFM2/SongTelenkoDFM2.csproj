@@ -127,14 +127,6 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AngelSix.SolidDna">
-      <Version>1.0.0.9</Version>
-    </PackageReference>
-    <PackageReference Include="IronPython">
-      <Version>2.7.8.1</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="logo-small.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -149,6 +141,11 @@
     <EmbeddedResource Include="FeatureCriticalMessageBox.resx">
       <DependentUpon>FeatureCriticalMessageBox.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AngelSix.SolidDna">
+      <Version>1.0.0.9</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

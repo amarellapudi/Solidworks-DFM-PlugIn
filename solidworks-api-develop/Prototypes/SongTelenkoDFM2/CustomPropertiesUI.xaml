@@ -58,6 +58,22 @@
                 <!-- #################### -->
                 <Border Style="{StaticResource stackBorderStyle}">
                     <StackPanel Style="{StaticResource graySectionStackPanel}">
+                        <Button MinWidth="16" MinHeight="15" FontSize="8" Margin="0,5,5,-20" HorizontalAlignment="Right" 
+                                HorizontalContentAlignment="Center" VerticalContentAlignment="Top" Background="LightSkyBlue" 
+                                Content="?" BorderBrush="Black" FontWeight="ExtraBold">
+                            <Button.ToolTip>
+                                <StackPanel>
+                                    <TextBlock FontWeight="Bold" FontSize="14" Margin="0,0,0,5">1. Part Properties</TextBlock>
+                                    <Border BorderBrush="Silver" BorderThickness="0,1,0,0" Margin="0,8" />
+                                    <TextBlock>
+                                    Material and mass properties
+                                    <LineBreak />
+                                    read in from SolidWorks
+                                    </TextBlock>
+                                </StackPanel>
+                            </Button.ToolTip>
+                        </Button>
+
                         <Grid Margin="0 5 0 10">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -74,34 +90,34 @@
                             </Grid.RowDefinitions>
 
                             <!-- Part Properties Titles -->
-                            <TextBlock Text="Part Properties" Grid.Column="1" Grid.Row="0"  Margin="0 0 0 5" 
-                                       FontWeight="Bold" FontSize="12" TextAlignment="Center"
-                                       ToolTipService.InitialShowDelay="100" 
-                                       ToolTipService.ShowDuration="2000" 
-                                       ToolTipService.BetweenShowDelay="1000" 
-                                       ToolTip="This is a tool tip." />
+                            <TextBlock Text="1. Part Properties" Grid.Column="1" Grid.Row="0"  Margin="0 0 0 5" 
+                                           FontWeight="Bold" FontSize="12" TextAlignment="Center"/>
 
                             <!--  Raw Material -->
                             <TextBlock Text="Raw Material" Grid.Column="1"  Grid.Row="1"
-                                       TextAlignment="center"/>
+                                           TextAlignment="center"/>
                             <ComboBox x:Name="RawMaterialList" Grid.Column="1" Grid.Row="2" Margin="0 0 0 0"
-                                      HorizontalContentAlignment="Center"/>
+                                          HorizontalContentAlignment="Center"/>
 
                             <!-- Mass-->
                             <TextBlock Text="Mass" Grid.Column="1"  Grid.Row="3" Padding="2"
-                                       TextAlignment="Center"/>
+                                           TextAlignment="Center"/>
                             <TextBox x:Name="MassText" Grid.Column="1"  Grid.Row="4" Padding="2"
-                                     IsReadOnly="True" Background="#eee" TextAlignment="center"/>
+                                         IsReadOnly="True" Background="#eee" TextAlignment="center"/>
                         </Grid>
                     </StackPanel>
                 </Border>
 
-                <!-- ################## -->
-                <!--  Additional Notes  -->
-                <!-- ################## -->
+                <!-- ################# -->
+                <!--       Notes       -->
+                <!-- ################# -->
                 <Border Style="{StaticResource stackBorderStyle}">
                     <StackPanel Style="{StaticResource graySectionStackPanel}">
-                        <Grid Margin="0 5 0 10">
+                        <!-- Additional Notes Title -->
+                        <TextBlock Text="2. Notes" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" Margin="0 5 0 7" 
+                                           FontWeight="Bold" FontSize="12" TextAlignment="Center"/>
+
+                        <Grid Margin="0 0 0 0" x:Name="NoteGrid">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="4*" />
@@ -113,22 +129,29 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Note Textboxes -->
+                            <TextBox Grid.Column="1" Grid.ColumnSpan="2"  Grid.Row="1" Margin="0 0 0 5" Padding="2" 
+                                         TextAlignment="center"/>
+                        </Grid>
+
+                        <Grid Margin="0 0 0 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="4*" />
+                                <ColumnDefinition Width="4*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <!-- Additional Notes Title -->
-                            <TextBlock Text="Additional Notes" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" Margin="0 0 0 7" 
-                                           FontWeight="Bold" FontSize="12" TextAlignment="Center"/>
-
-                            <!-- Note Textboxes -->
-                            <TextBox x:Name="NoteText1" Grid.Column="1" Grid.ColumnSpan="2"  Grid.Row="1" Margin="0 0 0 5" Padding="2" 
-                                         TextAlignment="center"/>
-                            <TextBox x:Name="NoteText2" Grid.Column="1" Grid.ColumnSpan="2"  Grid.Row="2" Margin="0 0 0 0" Padding="2" 
-                                        TextAlignment="center"/>
-                            <Button x:Name="AddNote" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Stretch"
-                                    IsEnabled="True" Margin="0 5 3 0" Click="ManufacturingCheck_Click" Content="Add Note"/>
-                            <Button x:Name="DeleteNote" Grid.Column="2" Grid.Row="3" HorizontalAlignment="Stretch"
-                                    IsEnabled="True" Margin="3 5 0 0" Click="ManufacturingCheck_Click" Content="Delete Note"/>
+                            <Button x:Name="AddNote" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch"
+                                    IsEnabled="True" Margin="0 0 3 0" Click="AddNote_Click" Content="Add Note"/>
+                            <Button x:Name="DeleteNote" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Stretch"
+                                    IsEnabled="True" Margin="3 0 0 0" Click="DeleteNote_Click"  Content="Delete Note"/>
                         </Grid>
                     </StackPanel>
                 </Border>
@@ -138,7 +161,7 @@
                 <!-- ############################# -->
                 <Border Style="{StaticResource stackBorderStyle}">
                     <StackPanel Style="{StaticResource graySectionStackPanel}">
-                        <TextBlock Text="Design Tolerances" Grid.Column="1" Grid.Row="0" Margin="0 5 0 5" 
+                        <TextBlock Text="3. Design Tolerances" Grid.Column="1" Grid.Row="0" Margin="0 5 0 7" 
                                    FontWeight="Bold" FontSize="12" TextAlignment="Center"/>
 
                         <Button x:Name="DesignCheckButton" Padding="4 2" FontSize="11" HorizontalAlignment="Center" 
@@ -149,24 +172,24 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Grid Margin="0 0 0 5">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="5*" />
-                                                <ColumnDefinition Width="3*" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                            </Grid.RowDefinitions>
-                                            <Border Style="{StaticResource borderStyle}" Grid.Column="1">
-                                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=FeatureName, Mode=TwoWay}" 
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="5*" />
+                                            <ColumnDefinition Width="3*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Border Style="{StaticResource borderStyle}" Grid.Column="1">
+                                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=FeatureName, Mode=TwoWay}" 
                                                        Style="{StaticResource textBlockStyle}"/>
-                                            </Border>
-                                            <Border Style="{StaticResource borderStyle}" Grid.Column="2">
-                                                <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Path=FeatureTolerance, Mode=TwoWay}" 
+                                        </Border>
+                                        <Border Style="{StaticResource borderStyle}" Grid.Column="2">
+                                            <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Path=FeatureTolerance, Mode=TwoWay}" 
                                                        Style="{StaticResource textBlockStyle}"/>
-                                            </Border>
-                                        </Grid>
+                                        </Border>
+                                    </Grid>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -180,12 +203,12 @@
                 <!-- ############################## -->
                 <Border Style="{StaticResource stackBorderStyle}">
                     <StackPanel Style="{StaticResource graySectionStackPanel}">
-                        <TextBlock Text="Export and Analyze in SculptPrint" Grid.Column="1" Grid.Row="0" Margin="0 5 0 5" 
+                        <TextBlock Text="4. Analyze in SculptPrint" Grid.Column="1" Grid.Row="0" Margin="0 5 0 7" 
                                    FontWeight="Bold" FontSize="12" TextAlignment="Center"/>
 
                         <Button x:Name="ManufacturingCheck" Padding="4 2" FontSize="11" HorizontalAlignment="Center" 
                             Width="Auto" IsEnabled="True" Margin="0 0 0 10" Click="ManufacturingCheck_Click"
-                            Content="Check for Manufacturing"/>
+                            Content="Export to SculptPrint"/>
                     </StackPanel>
                 </Border>
 
@@ -210,7 +233,7 @@
 
 
                             <!-- Design Recommendations Title -->
-                            <TextBlock Text="Design Recommendations" Grid.Column="1" Grid.Row="0" Margin="0 0 0 7" 
+                            <TextBlock Text="5. Design Recommendations" Grid.Column="1" Grid.Row="0" Margin="0 0 0 7" 
                                    FontWeight="Bold" FontSize="12" TextAlignment="Center"/>
 
                             <!-- Recommendation Textboxes -->

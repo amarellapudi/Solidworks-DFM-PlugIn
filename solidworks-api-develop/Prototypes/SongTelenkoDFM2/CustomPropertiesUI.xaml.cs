@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System;
 using System.Linq;
-using System.Windows.Controls;
-using static AngelSix.SolidDna.SolidWorksEnvironment;
 using static System.Windows.Visibility;
 using SolidWorks.Interop.sldworks;
 using System.Windows.Forms;
@@ -12,6 +10,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using static SongTelenkoDFM2.PythonIntegration;
+using System.Windows.Controls;
+using System.Windows;
 
 namespace SongTelenkoDFM2
 {    /// <summary>
@@ -38,8 +38,7 @@ namespace SongTelenkoDFM2
         /// </summary>
 
         // Notes
-        private const string CustomPropertyNote1 = "Note1";
-        private const string CustomPropertyNote2 = "Note2";
+        private const string CustomPropertyNote = "Note";
 
         // Design Recommendations
         private const string CustomPropertyRecommendation = "Recommendation";
@@ -132,9 +131,16 @@ namespace SongTelenkoDFM2
                 // Query all custom properties
                 model.CustomProperties((properties) =>
                 {
-                    // Notes
-                    NoteText1.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyNote1, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
-                    NoteText2.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyNote2, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
+                    // Clear the one empty textbox
+                    NoteGrid.Children.Clear();
+
+                    // Find all the properties saved onto the part
+                    List<CustomProperty> noteFound = properties.FindAll(property => property.Name.Contains(CustomPropertyNote));
+
+                    // Add each of the properties found saved onto the part
+                    foreach (CustomProperty note in noteFound) AddNewNote(note.Value);
+
+                    if (NoteGrid.Children.Count == 0) AddNewNote();
 
                     // Design Recommendations
                     Recommendation1.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyRecommendation, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
@@ -202,6 +208,8 @@ namespace SongTelenkoDFM2
             CustomPropertyManager propertyManager = default(CustomPropertyManager);
             propertyManager = extension.get_CustomPropertyManager("");
 
+            // Remove feature tolerances manually
+            // since there is a variable number of them
             model.CustomProperties((properties) =>
             {
                 // Find all feature-tolerance custom properties
@@ -216,8 +224,8 @@ namespace SongTelenkoDFM2
 
             RawMaterialList.SelectedIndex = -1;
 
-            NoteText1.Text = string.Empty;
-            NoteText2.Text = string.Empty;
+            NoteGrid.Children.Clear();
+            AddNewNote();
             Recommendation1.Text = string.Empty;
         }
 
@@ -229,15 +237,30 @@ namespace SongTelenkoDFM2
         private void ApplyButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             var model = SolidWorksEnvironment.Application.ActiveModel;
+            var model2 = (ModelDoc2)SolidWorksEnvironment.Application.UnsafeObject.ActiveDoc;
+            ModelDocExtension extension = model2.Extension;
+            CustomPropertyManager propertyManager = default(CustomPropertyManager);
+            propertyManager = extension.get_CustomPropertyManager("");
 
             // Check if we have a part
             if (model == null || !model.IsPart)
                 return;
 
             // Notes
-            model.SetCustomProperty(CustomPropertyNote1, NoteText1.Text);
-            model.SetCustomProperty(CustomPropertyNote2, NoteText2.Text);
+            // First clear the existing note custom properties
+            model.CustomProperties((properties) =>
+            {
+                List<CustomProperty> found = properties.FindAll(property => property.Name.Contains(CustomPropertyNote));
+                foreach (CustomProperty item in found) propertyManager.Delete(item.Name);
+            });
 
+            int j = 1;
+            foreach (var child in NoteGrid.Children)
+            {
+                model.SetCustomProperty(CustomPropertyNote + " " + j.ToString(), ((System.Windows.Controls.TextBox)child).Text);
+                j++;
+            }
+            
             // Design Recommendations
             model.SetCustomProperty(CustomPropertyRecommendation, Recommendation1.Text);
 
@@ -258,6 +281,29 @@ namespace SongTelenkoDFM2
 
             // Re-read details to confirm they are correct
             ReadDetails();
+        }
+
+        /// <summary>
+        /// Add new note to the section of user-provided notes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AddNote_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            AddNewNote();
+        }
+
+        /// <summary>
+        /// Delete last note to the section of user-provided notes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DeleteNote_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (NoteGrid.Children.Count > 1)
+            {
+                NoteGrid.Children.RemoveAt(NoteGrid.Children.Count - 1);
+            }
         }
 
         /// <summary>
@@ -570,6 +616,43 @@ namespace SongTelenkoDFM2
             return filteredMaterials;
         }
 
+        /// <summary>
+        /// Add a new note to NoteGrid, the grid of notes defined in XAML
+        /// </summary>
+        /// <param name="optionalText"></param>
+        private void AddNewNote(string optionalText = "")
+        {
+            // Add new row defintion
+            NoteGrid.RowDefinitions.Add(new RowDefinition());
+
+            // Create new textbox
+            var newNote = new System.Windows.Controls.TextBox
+            {
+                // Set textbox properties
+                Margin = new Thickness(0, 0, 0, 5),
+                Padding = new Thickness(2),
+            };
+
+            // Set text alignment to center
+            newNote.TextAlignment = TextAlignment.Center;
+
+            // Set optional text value paramter
+            if (optionalText != "") newNote.Text = optionalText;
+
+            // Set grid position
+            Grid.SetRow(newNote, NoteGrid.RowDefinitions.Count - 1);
+            Grid.SetColumn(newNote, 1);
+            Grid.SetColumnSpan(newNote, 2);
+
+            // Add the new textbox as a child of the note grid
+            NoteGrid.Children.Add(newNote);
+        }
+
         #endregion
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
