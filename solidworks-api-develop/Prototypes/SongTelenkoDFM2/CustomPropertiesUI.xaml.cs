@@ -339,7 +339,9 @@ namespace SongTelenkoDFM2
             app.SetUserPreferenceToggle(((int)swUserPreferenceToggle_e.swSTLDontTranslateToPositive), true);
 
             // Set export location
-            var location = Path.Combine(@"C:\Users\amarellapudi6\OneDrive - Georgia Institute of Technology\CASS\Solidworks-DFM-PlugIn\SculptPrint\Parts\", "test.stl");
+            //var location = Path.Combine(@"C:\Users\amarellapudi6\OneDrive - Georgia Institute of Technology\CASS\Solidworks-DFM-PlugIn\SculptPrint\Parts\", "test.stl");
+            var homeFolder = System.Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
+            var location = string.Concat(homeFolder, "\\OneDrive - Georgia Institute of Technology\\CASS\\Solidworks-DFM-PlugIn\\SculptPrint\\Parts\test.stl");
 
             // Export to fixed location
             ExportModelAsStl(location);
