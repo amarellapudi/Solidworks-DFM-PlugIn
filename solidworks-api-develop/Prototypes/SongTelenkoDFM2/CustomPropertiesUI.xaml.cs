@@ -1,17 +1,17 @@
 ﻿using AngelSix.SolidDna;
-using System.Collections.Generic;
 using System;
-using System.Linq;
-using static System.Windows.Visibility;
-using SolidWorks.Interop.sldworks;
-using System.Windows.Forms;
-using System.Runtime.CompilerServices;
-using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
+using System.Collections.Generic;
 using System.IO;
-using static SongTelenkoDFM2.PythonIntegration;
-using System.Windows.Controls;
+using static System.Windows.Visibility;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Forms;
+using static SongTelenkoDFM2.PythonIntegration;
+using SolidWorks.Interop.sldworks;
+using SolidWorks.Interop.swconst;
+using static SongTelenkoDFM2.FileExporting;
 
 namespace SongTelenkoDFM2
 {    /// <summary>
@@ -330,9 +330,19 @@ namespace SongTelenkoDFM2
         /// <param name="e"></param>
         private void ManufacturingCheck_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            string script_location = Path.Combine(this.AssemblyPath(), "Test.py");
-            string res = Run_cmd(script_location, string.Empty);
-            Debug.Print(res);
+            //string script_location = Path.Combine(this.AssemblyPath(), "Test.py");
+            //string res = Run_cmd(script_location, string.Empty);
+            //Debug.Print(res);
+
+            // Disable translation of part into positive space when exporting
+            SldWorks app = SolidWorksEnvironment.Application.UnsafeObject;
+            app.SetUserPreferenceToggle(((int)swUserPreferenceToggle_e.swSTLDontTranslateToPositive), true);
+
+            // Set export location
+            var location = Path.Combine(@"C:\Users\amarellapudi6\OneDrive - Georgia Institute of Technology\CASS\Solidworks-DFM-PlugIn\SculptPrint\Parts\", "test.stl");
+
+            // Export to fixed location
+            ExportModelAsStl(location);
         }
 
         #endregion

@@ -1,6 +1,5 @@
 ﻿using AngelSix.SolidDna;
 using Dna;
-using System.Collections.Generic;
 using System.IO;
 using static AngelSix.SolidDna.SolidWorksEnvironment;
 
@@ -16,7 +15,7 @@ namespace SongTelenkoDFM2
         /// </summary>
         public override void ApplicationStartup()
         {
-
+            
         }
 
         /// <summary>
