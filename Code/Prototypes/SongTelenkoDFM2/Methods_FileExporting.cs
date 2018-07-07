@@ -72,15 +72,16 @@ namespace SongTelenkoDFM2
             var version = (int)swSaveAsVersion_e.swSaveAsCurrentVersion;
             var options = (int)(swSaveAsOptions_e.swSaveAsOptions_Copy | swSaveAsOptions_e.swSaveAsOptions_Silent | swSaveAsOptions_e.swSaveAsOptions_UpdateInactiveViews);
 
-            // Save model as...
+            // Save model as... (this is the new method)
             //Application.ActiveModel.Extension.UnsafeObject.SaveAs(location, version, options, exportData, ref error, ref warning);
+            //if (error != 0) Application.ActiveModel.UnsafeObject.SaveAs4(location, version, options, ref error, ref warning);
+            //return error == 0;
 
-            // If this fails, try one other wa
-            // if (error != 0)
-                Application.ActiveModel.UnsafeObject.SaveAs4(location, version, options, ref error, ref warning);
+            // If this fails, try one other way (legacy method)
+            bool success = Application.ActiveModel.UnsafeObject.SaveAs4(location, version, options, ref error, ref warning);
 
             // Return success result
-            return error == 0;
+            return success;
         }
 
         /// <summary>

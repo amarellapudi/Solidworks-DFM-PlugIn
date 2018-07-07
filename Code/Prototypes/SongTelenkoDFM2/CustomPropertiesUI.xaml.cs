@@ -341,22 +341,27 @@ namespace SongTelenkoDFM2
 
             // Set export location
             var homeFolder = System.Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
-            var location = string.Concat(homeFolder, "\\OneDrive - Georgia Institute of Technology\\CASS\\Solidworks-DFM-PlugIn\\SculptPrint\\Parts\\test.stl");
+            var SculptPrint_Folder = string.Concat(homeFolder, "\\OneDrive - Georgia Institute of Technology\\CASS\\Solidworks-DFM-PlugIn\\SculptPrint\\");
+            var STL_Save_Location = string.Concat(SculptPrint_Folder, "Parts\\test.stl");
 
             // Export to fixed location
-            bool saved = ExportModelAsStl(location);
+            bool saved = ExportModelAsStl(STL_Save_Location);
 
             if (saved)
             {
                 // Show DFM Reults loading message box
                 // this message will remain open the following file exists ~\SculptPrint\test.txt
-                MessageBox_DFMLoading DFMLoading = new MessageBox_DFMLoading();
+                var results_location = string.Concat(SculptPrint_Folder, "test.png");
+
+                MessageBox_DFMLoading DFMLoading = new MessageBox_DFMLoading(results_location);
                 DialogResult DFM_Result = DFMLoading.ShowDialog();
 
                 // If the form outputs a DialogResult of Yes, then we have the file!
                 if (DFM_Result == DialogResult.Yes)
                 {
                     DFMLoading.Close();
+                    MessageBox_DFMResults DFMResults = new MessageBox_DFMResults(results_location);
+                    DFMResults.ShowDialog();
                 }
             }
         }

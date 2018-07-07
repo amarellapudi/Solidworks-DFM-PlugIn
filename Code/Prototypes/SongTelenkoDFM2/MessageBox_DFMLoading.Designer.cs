@@ -48,9 +48,9 @@
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
             this.label1.Location = new System.Drawing.Point(92, 27);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(243, 36);
+            this.label1.Size = new System.Drawing.Size(225, 36);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Please wait while the\r\nSculptPrint DFM Results are loaded\r\n";
+            this.label1.Text = "Please wait while the\r\nSculptPrint DFM Result is loaded\r\n";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // MessageBox_DFMLoading
@@ -67,7 +67,7 @@
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "SculptPrint Result Loading";
+            this.Text = "SculptPrint DFM Result";
             this.Load += new System.EventHandler(this.Window_ContentRendered);
             this.ResumeLayout(false);
             this.PerformLayout();

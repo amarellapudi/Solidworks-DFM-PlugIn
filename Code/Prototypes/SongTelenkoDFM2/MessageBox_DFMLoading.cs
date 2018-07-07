@@ -8,10 +8,14 @@ namespace SongTelenkoDFM2
 {
     public partial class MessageBox_DFMLoading : Form
     {
-        public MessageBox_DFMLoading()
+        
+        public MessageBox_DFMLoading(string location)
         {
             InitializeComponent();
+            FileLocation = location;
         }
+
+        public string FileLocation { get; set; }
 
         // Disable close button
         //private const int CP_NOCLOSE_BUTTON = 0x200;
@@ -37,9 +41,7 @@ namespace SongTelenkoDFM2
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            var homeFolder = System.Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
-            var location = string.Concat(homeFolder, "\\OneDrive - Georgia Institute of Technology\\CASS\\Solidworks-DFM-PlugIn\\SculptPrint\\test.txt");
-            FileInfo results = new FileInfo(location);
+            FileInfo results = new FileInfo(FileLocation);
 
             int i = 0;
             while (!results.Exists)
@@ -48,7 +50,7 @@ namespace SongTelenkoDFM2
                 Thread.Sleep(20);
                 i++;
 
-                results = new FileInfo(location);
+                results = new FileInfo(FileLocation);
             }
 
             DialogResult = DialogResult.Yes;
