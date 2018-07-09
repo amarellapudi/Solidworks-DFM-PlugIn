@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Threading;
 using System.Windows.Forms;
 
 namespace SongTelenkoDFM2
@@ -9,6 +8,7 @@ namespace SongTelenkoDFM2
         public MessageBox_DFMResults(string location)
         { 
             InitializeComponent();
+            Thread.Sleep(250);
             pictureBox.ImageLocation = location;
         }
     }
