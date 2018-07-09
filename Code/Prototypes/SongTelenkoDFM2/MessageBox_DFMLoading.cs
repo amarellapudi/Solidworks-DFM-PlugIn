@@ -49,11 +49,13 @@ namespace SongTelenkoDFM2
                 (sender as BackgroundWorker).ReportProgress(i);
                 Thread.Sleep(20);
                 i++;
+                i = i % ProgresBar_DFM.Maximum;
 
                 results = new FileInfo(FileLocation);
             }
 
             DialogResult = DialogResult.Yes;
+            Thread.Sleep(20);
         }
 
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)

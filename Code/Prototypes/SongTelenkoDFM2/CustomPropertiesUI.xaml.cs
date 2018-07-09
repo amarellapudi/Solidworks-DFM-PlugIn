@@ -1,14 +1,11 @@
 ﻿using AngelSix.SolidDna;
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Collections.Generic;
-using System.IO;
 using static System.Windows.Visibility;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
-using static SongTelenkoDFM2.Methods_PythonIntegration;
 using SolidWorks.Interop.sldworks;
 using SolidWorks.Interop.swconst;
 using static SongTelenkoDFM2.Methods_FileExporting;
@@ -48,7 +45,7 @@ namespace SongTelenkoDFM2
 
         #endregion
 
-        #region Constructor
+        #region Constructor and Startup
 
         /// <summary>
         /// Default constructor
@@ -59,10 +56,6 @@ namespace SongTelenkoDFM2
             InitializeComponent();
             FeatureTolerance_Display.ItemsSource = mFeatureTolerances;
         }
-
-        #endregion
-
-        #region Startup
 
         /// <summary>
         /// Fired when the control is fully loaded
@@ -95,6 +88,22 @@ namespace SongTelenkoDFM2
 
             });
             ReadDetails();
+        }
+
+        /// <summary>
+        /// Checks for change in model selection
+        /// This is what the user is clicking on (feature, face, drawing, dimension, etc)
+        /// </summary>
+        private void Model_SelectionChanged()
+        {
+            SolidWorksEnvironment.Application.ActiveModel?.SelectedObjects((objects) =>
+            {
+                
+                ThreadHelpers.RunOnUIThread(() =>
+                {
+                                        
+                });
+            });
         }
 
         /// <summary>
@@ -140,8 +149,6 @@ namespace SongTelenkoDFM2
                     // Add each of the properties found saved onto the part
                     foreach (CustomProperty note in noteFound) AddNewNote(note.Value);
 
-                    if (NoteGrid.Children.Count == 0) AddNewNote();
-
                     // Design Recommendations
                     Recommendation1.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyRecommendation, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
 
@@ -164,23 +171,7 @@ namespace SongTelenkoDFM2
                     RawMaterialList.SelectedItem = FilteredMaterials?.FirstOrDefault(f => f.Database == existingMaterial.Database && f.Name == existingMaterial.Name);
             });
         }
-
-        /// <summary>
-        /// Checks for change in model selection
-        /// This is what the user is clicking on (feature, face, drawing, dimension, etc)
-        /// </summary>
-        private void Model_SelectionChanged()
-        {
-            SolidWorksEnvironment.Application.ActiveModel?.SelectedObjects((objects) =>
-            {
-                
-                ThreadHelpers.RunOnUIThread(() =>
-                {
-                                        
-                });
-            });
-        }
-
+        
         #endregion
 
         #region Button Events
@@ -257,8 +248,11 @@ namespace SongTelenkoDFM2
             int j = 1;
             foreach (var child in NoteGrid.Children)
             {
-                model.SetCustomProperty(CustomPropertyNote + " " + j.ToString(), ((System.Windows.Controls.TextBox)child).Text);
-                j++;
+                if (child.GetType() == typeof(System.Windows.Controls.TextBox))
+                {
+                    model.SetCustomProperty(CustomPropertyNote + " " + j.ToString(), ((System.Windows.Controls.TextBox)child).Text);
+                    j++;
+                }
             }
             
             // Design Recommendations
@@ -294,16 +288,32 @@ namespace SongTelenkoDFM2
         }
 
         /// <summary>
-        /// Delete last note to the section of user-provided notes
+        /// Delete note corresponding to the close-button clicked by the user
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void DeleteNote_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            if (NoteGrid.Children.Count > 1)
+            // Use enumerator to iterate through the grid
+            // the item before our sender (the close button) is the item to remove
+            var enumerator = NoteGrid.Children.GetEnumerator();
+            enumerator.MoveNext();
+            var prev = enumerator.Current;
+
+            // Loop through NoteGrid
+            while (prev != null)
             {
-                NoteGrid.Children.RemoveAt(NoteGrid.Children.Count - 1);
+                enumerator.MoveNext();
+                if (enumerator.Current.Equals(sender))
+                {
+                    NoteGrid.Children.Remove((UIElement)prev);
+                    break;
+                }
+                prev = enumerator.Current;
             }
+
+            // Remove the sender, the close button, itself
+            NoteGrid.Children.Remove((UIElement)sender);
         }
 
         /// <summary>
@@ -311,33 +321,23 @@ namespace SongTelenkoDFM2
         /// </summary>
         private void DesignCheckButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            SolidWorksEnvironment.Application.ActiveModel?.SelectedObjects((objects) =>
-            {
-                Tolerance_Check();
-
-                // Set the feature button text
-                ThreadHelpers.RunOnUIThread(() =>
-                {
-
-                });
-            });
+            Tolerance_Check();
         }
         
         /// <summary>
-        /// Run automated SculptPrint python script
+        /// Export STL and wait for virtual machine to provide test.png in a given location
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void ManufacturingCheck_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            // If we want to use a Python script!
-            //string script_location = Path.Combine(this.AssemblyPath(), "Test.py");
-            //string res = Run_cmd(script_location, string.Empty);
-            //Debug.Print(res);
-
             // Disable translation of part into positive space when exporting
             SldWorks app = SolidWorksEnvironment.Application.UnsafeObject;
             app.SetUserPreferenceToggle(((int)swUserPreferenceToggle_e.swSTLDontTranslateToPositive), true);
+
+            // Clear current selection so STL export contains all bodies
+            var model = (ModelDoc2)app.ActiveDoc;
+            model.ClearSelection();
 
             // Set export location
             var homeFolder = System.Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
@@ -406,6 +406,8 @@ namespace SongTelenkoDFM2
 
                 FeatureTolerance_Display.Items.Refresh();
             }
+
+            model.ClearSelection();
         }
 
         /// <summary>
@@ -656,11 +658,24 @@ namespace SongTelenkoDFM2
             // Add new row defintion
             NoteGrid.RowDefinitions.Add(new RowDefinition());
 
+            // Create close button
+            var closeButton = new System.Windows.Controls.Button
+            {
+                // Set button properties
+                Margin = new Thickness(2, 0, 0, 5),
+                Padding = new Thickness(4, 2, 4, 2)
+            };
+
+            // Set content and content alignment
+            closeButton.Content = "x";
+            closeButton.VerticalContentAlignment = VerticalAlignment.Top;
+            closeButton.Click += new RoutedEventHandler(DeleteNote_Click);
+
             // Create new textbox
             var newNote = new System.Windows.Controls.TextBox
             {
                 // Set textbox properties
-                Margin = new Thickness(0, 0, 0, 5),
+                Margin = new Thickness(0, 0, 2, 5),
                 Padding = new Thickness(2),
             };
 
@@ -672,11 +687,13 @@ namespace SongTelenkoDFM2
 
             // Set grid position
             Grid.SetRow(newNote, NoteGrid.RowDefinitions.Count - 1);
+            Grid.SetRow(closeButton, NoteGrid.RowDefinitions.Count - 1);
             Grid.SetColumn(newNote, 1);
-            Grid.SetColumnSpan(newNote, 2);
+            Grid.SetColumn(closeButton, 2);
 
             // Add the new textbox as a child of the note grid
             NoteGrid.Children.Add(newNote);
+            NoteGrid.Children.Add(closeButton);
         }
 
         #endregion

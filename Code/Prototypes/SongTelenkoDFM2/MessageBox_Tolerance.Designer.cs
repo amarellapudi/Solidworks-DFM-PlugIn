@@ -68,6 +68,7 @@ namespace SongTelenkoDFM2
             this.domainUpDown1.Margin = new System.Windows.Forms.Padding(2);
             this.domainUpDown1.Name = "domainUpDown1";
             this.domainUpDown1.ReadOnly = true;
+            this.domainUpDown1.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.domainUpDown1.Size = new System.Drawing.Size(146, 23);
             this.domainUpDown1.TabIndex = 3;
             this.domainUpDown1.Text = "Select Tolerance";
@@ -75,7 +76,7 @@ namespace SongTelenkoDFM2
             this.domainUpDown1.UpDownAlign = System.Windows.Forms.LeftRightAlignment.Left;
             this.domainUpDown1.SelectedItemChanged += new System.EventHandler(this.DropDown_SelectedItemChanged);
             // 
-            // ToleranceMessageBox
+            // MessageBox_Tolerance
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -86,7 +87,7 @@ namespace SongTelenkoDFM2
             this.Controls.Add(this.btnAccept);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Location = new System.Drawing.Point(1100, 600);
-            this.Name = "ToleranceMessageBox";
+            this.Name = "MessageBox_Tolerance";
             this.ShowInTaskbar = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;

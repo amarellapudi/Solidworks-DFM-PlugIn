@@ -35,7 +35,7 @@
             // ProgresBar_DFM
             // 
             this.ProgresBar_DFM.Location = new System.Drawing.Point(50, 88);
-            this.ProgresBar_DFM.Maximum = 100000000;
+            this.ProgresBar_DFM.Maximum = 10;
             this.ProgresBar_DFM.Name = "ProgresBar_DFM";
             this.ProgresBar_DFM.Size = new System.Drawing.Size(326, 26);
             this.ProgresBar_DFM.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
