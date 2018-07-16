@@ -1,0 +1,126 @@
+﻿<Window x:Class="SculptPrint_Feedback.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SculptPrint_Feedback"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="460" Width="800">
+    <Grid>
+        <StackPanel>
+
+            <!-- ###################################### -->
+            <Separator Height="5" Background="Transparent"/>
+            <!-- ###################################### -->
+            <!--    SolidWorks and SculptPrint Views    -->
+            <!-- ###################################### -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="8*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="8*"/>
+                <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Column="1" Grid.Row="0" BorderBrush="Black" BorderThickness="1">
+                    <StackPanel Background="LightGray">
+                        <TextBlock Text="SolidWorks View" HorizontalAlignment="Center"
+                               Margin="0 10 0 0" FontWeight="Bold" FontSize="14"/>
+                        <Image x:Name="View_SolidWorks" Margin="10" Source="image.png"/>
+                        <Button Margin="30 10 30 10" Padding="2" Content="Load SolidWorks View"
+                                Click="Load_SolidWorks_View_Click"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="3" Grid.Row="0" BorderBrush="Black" BorderThickness="1">
+                    <StackPanel Background="LightGray">
+                        <TextBlock Text="SculptPrint View" HorizontalAlignment="Center" 
+                                   Margin="0 10 0 0" FontWeight="Bold" FontSize="14"/>
+                        <Image x:Name="View_SculptPrint" Margin="10" Source="image.png"/>
+                        <Button Margin="30 10 30 10" Padding="2" Content="Load SculptPrint View"
+                                Click="Load_SculptPrint_View_Click"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- ###################################### -->
+            <Separator Height="15" Background="Transparent"/>
+            <!-- ################### -->
+            <!--    Text Feedback    -->
+            <!-- ################### -->
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="14*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="1" BorderBrush="Black" BorderThickness="1">
+                    <Grid Background="LightGray">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="6*"/>
+                            <ColumnDefinition Width="6*"/>
+                            <ColumnDefinition Width="6*"/>
+                            <ColumnDefinition Width="*"/>
+
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Column="1" Grid.ColumnSpan="3" Text="Common Design Problems" HorizontalAlignment="Center" 
+                            Margin="10" FontWeight="Bold" FontSize="14"/>
+
+                        <CheckBox Grid.Column="1" Grid.Row="1" Margin="2">
+                            <TextBlock Text="Manufacturing Problem 1"/>
+                        </CheckBox>
+
+                        <CheckBox Grid.Column="1" Grid.Row="2" Margin="2">
+                            <TextBlock Text="Manufacturing Problem 1"/>
+                        </CheckBox>
+
+                        <CheckBox Grid.Column="1" Grid.Row="3" Margin="2">
+                            <TextBlock Text="Manufacturing Problem 1"/>
+                        </CheckBox>
+
+                        <CheckBox Grid.Column="2" Grid.Row="1" Margin="2">
+                            <TextBlock Text="Manufacturing Problem 1"/>
+                        </CheckBox>
+
+                        <CheckBox Grid.Column="2" Grid.Row="2" Margin="2">
+                            <TextBlock Text="Manufacturing Problem 1"/>
+                        </CheckBox>
+
+                        <CheckBox Grid.Column="2" Grid.Row="3" Margin="2">
+                            <TextBlock Text="Manufacturing Problem 1"/>
+                        </CheckBox>
+
+                        <TextBox Grid.Column="3" Grid.Row="1" Margin="2"/>
+                        <TextBox Grid.Column="3" Grid.Row="2" Margin="2"/>
+                        <TextBox Grid.Column="3" Grid.Row="3" Margin="2"/>
+
+                        <Separator Grid.Column="2" Grid.Row="4" Height="10" Background="Transparent"/>
+                    </Grid>
+                </Border>
+                <StackPanel Grid.Column="3" VerticalAlignment="Center">
+                        <Button Padding="2 15" Content="Submit" Click="Submit_Click"/>
+                </StackPanel>
+            </Grid>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>
