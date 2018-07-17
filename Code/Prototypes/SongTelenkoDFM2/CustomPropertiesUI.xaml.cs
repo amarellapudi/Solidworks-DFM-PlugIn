@@ -10,6 +10,8 @@ using SolidWorks.Interop.sldworks;
 using SolidWorks.Interop.swconst;
 using static SongTelenkoDFM2.Methods_FileExporting;
 using System.Threading;
+using System.IO;
+using System.Reflection;
 
 namespace SongTelenkoDFM2
 {    /// <summary>
@@ -341,8 +343,8 @@ namespace SongTelenkoDFM2
             model.ClearSelection();
 
             // Set export location
-            var homeFolder = System.Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
-            var SculptPrint_Folder = string.Concat(homeFolder, "\\OneDrive - Georgia Institute of Technology\\CASS\\Solidworks-DFM-PlugIn\\SculptPrint\\");
+            var home = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var SculptPrint_Folder = home.Replace("\\Code\\Prototypes\\SongTelenkoDFM2\\bin\\Debug", "\\SculptPrint\\");
             var STL_Save_Location = string.Concat(SculptPrint_Folder, "test.stl");
 
             // Export to fixed location

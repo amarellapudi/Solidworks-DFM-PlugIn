@@ -195,12 +195,12 @@
                             </Button.ToolTip>
                         </Button>
                         
-                        <TextBlock Text="3. Analyze in SculptPrint" Grid.Column="1" Grid.Row="0" Margin="30 5 30 7" 
+                        <TextBlock Text="3. Manufacturability Check" Grid.Column="1" Grid.Row="0" Margin="30 5 30 7" 
                                    FontWeight="Bold" FontSize="12" TextAlignment="Center"/>
 
                         <Button x:Name="ManufacturingCheck" Padding="4 2" FontSize="11" HorizontalAlignment="Center" 
                             Width="Auto" IsEnabled="True" Margin="0 0 0 10" Click="ManufacturingCheck_Click"
-                            Content="Export to SculptPrint"/>
+                            Content="Check for Manufacturability"/>
                     </StackPanel>
                 </Border>
 
