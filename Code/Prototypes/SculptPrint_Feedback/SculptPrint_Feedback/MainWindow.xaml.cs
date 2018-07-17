@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
+﻿using System.Windows;
+using System.Reflection;
+using System.ComponentModel;
+using System.IO;
+using System;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Threading.Tasks;
 
 namespace SculptPrint_Feedback
 {
@@ -20,9 +13,16 @@ namespace SculptPrint_Feedback
     /// </summary>
     public partial class MainWindow : Window
     {
+        public string SculptPrint_View_Location { get; set; }
+        public string SolidWorks_View_Location { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
+            var home = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var SculptPrint_Folder = home.Replace("\\Code\\Prototypes\\SculptPrint_Feedback\\bin\\Debug", "\\SculptPrint\\");
+            SculptPrint_View_Location = string.Concat(SculptPrint_Folder, "View_SP.png");
+            SolidWorks_View_Location = string.Concat(SculptPrint_Folder, "View_SW.png");
         }
 
         private void Load_SolidWorks_View_Click(object sender, RoutedEventArgs e)
@@ -36,6 +36,11 @@ namespace SculptPrint_Feedback
         }
 
         private void Submit_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Reset_Click(object sender, RoutedEventArgs e)
         {
 
         }

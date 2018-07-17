@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SculptPrint_Feedback"
         mc:Ignorable="d"
-        Title="MainWindow" Height="460" Width="800">
+        Title="SculptPrint Feedback Tool" Height="550" Width="800">
     <Grid>
         <StackPanel>
 
@@ -28,22 +28,42 @@
                 </Grid.RowDefinitions>
 
                 <Border Grid.Column="1" Grid.Row="0" BorderBrush="Black" BorderThickness="1">
-                    <StackPanel Background="LightGray">
+                    <StackPanel Background="Silver">
                         <TextBlock Text="SolidWorks View" HorizontalAlignment="Center"
                                Margin="0 10 0 0" FontWeight="Bold" FontSize="14"/>
-                        <Image x:Name="View_SolidWorks" Margin="10" Source="image.png"/>
-                        <Button Margin="30 10 30 10" Padding="2" Content="Load SolidWorks View"
-                                Click="Load_SolidWorks_View_Click"/>
+                        <Border BorderBrush="Black" BorderThickness="1"  Margin="10 10 10 5">
+                            <Image x:Name="View_SolidWorks" Source="IMG_No_Image.png" MaxHeight="200"/>
+                        </Border>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="10*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="SolidWorks_View_Ready" Margin="10 10 0 10" IsReadOnly="True"
+                                     Background="Red"/>
+                            <Button Grid.Column="1" Margin="30 10 30 10" Padding="2 4" IsEnabled="False"
+                                Content="Load SolidWorks View" Click="Load_SolidWorks_View_Click"/>
+                        </Grid>
                     </StackPanel>
                 </Border>
 
                 <Border Grid.Column="3" Grid.Row="0" BorderBrush="Black" BorderThickness="1">
-                    <StackPanel Background="LightGray">
+                    <StackPanel Background="Silver">
                         <TextBlock Text="SculptPrint View" HorizontalAlignment="Center" 
                                    Margin="0 10 0 0" FontWeight="Bold" FontSize="14"/>
-                        <Image x:Name="View_SculptPrint" Margin="10" Source="image.png"/>
-                        <Button Margin="30 10 30 10" Padding="2" Content="Load SculptPrint View"
-                                Click="Load_SculptPrint_View_Click"/>
+                        <Border BorderBrush="Black" BorderThickness="1"  Margin="10 10 10 5">
+                            <Image x:Name="View_SculptPrint" Source="IMG_No_Image.png" MaxHeight="200"/>
+                        </Border>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="10*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="SculptPrint_View_Ready" Margin="10 10 0 10" IsReadOnly="True"
+                                     Background="Red"/>
+                            <Button Grid.Column="1" Margin="30 10 30 10" Padding="2 4" IsEnabled="False"
+                                Content="Load SculptPrint View" Click="Load_SculptPrint_View_Click"/>
+                        </Grid>
                     </StackPanel>
                 </Border>
             </Grid>
@@ -53,18 +73,15 @@
             <!-- ################### -->
             <!--    Text Feedback    -->
             <!-- ################### -->
-            <StackPanel>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="14*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="*"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="17*"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
                 <Border Grid.Column="1" BorderBrush="Black" BorderThickness="1">
-                    <Grid Background="LightGray">
+                    <Grid Background="Silver">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="6*"/>
@@ -82,30 +99,30 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
-                        <TextBlock Grid.Column="1" Grid.ColumnSpan="3" Text="Common Design Problems" HorizontalAlignment="Center" 
-                            Margin="10" FontWeight="Bold" FontSize="14"/>
+                        <TextBlock Grid.Column="1" Grid.ColumnSpan="3" Text="Design Recommendations" HorizontalAlignment="Center" 
+                        Margin="10" FontWeight="Bold" FontSize="14"/>
 
-                        <CheckBox Grid.Column="1" Grid.Row="1" Margin="2">
+                        <CheckBox Grid.Column="1" Grid.Row="1" Margin="2" Background="LightBlue">
+                            <TextBlock Text="Sharp internal corner"/>
+                        </CheckBox>
+
+                        <CheckBox Grid.Column="1" Grid.Row="2" Margin="2" Background="ForestGreen">
+                            <TextBlock Text="Non-standard drill size"/>
+                        </CheckBox>
+
+                        <CheckBox Grid.Column="1" Grid.Row="3" Margin="2" Background="IndianRed">
+                            <TextBlock Text="Overhang"/>
+                        </CheckBox>
+
+                        <CheckBox Grid.Column="2" Grid.Row="1" Margin="2" Background="Yellow">
+                            <TextBlock Text="Fillet on outer edge"/>
+                        </CheckBox>
+
+                        <CheckBox Grid.Column="2" Grid.Row="2" Margin="2" Background="Purple">
                             <TextBlock Text="Manufacturing Problem 1"/>
                         </CheckBox>
 
-                        <CheckBox Grid.Column="1" Grid.Row="2" Margin="2">
-                            <TextBlock Text="Manufacturing Problem 1"/>
-                        </CheckBox>
-
-                        <CheckBox Grid.Column="1" Grid.Row="3" Margin="2">
-                            <TextBlock Text="Manufacturing Problem 1"/>
-                        </CheckBox>
-
-                        <CheckBox Grid.Column="2" Grid.Row="1" Margin="2">
-                            <TextBlock Text="Manufacturing Problem 1"/>
-                        </CheckBox>
-
-                        <CheckBox Grid.Column="2" Grid.Row="2" Margin="2">
-                            <TextBlock Text="Manufacturing Problem 1"/>
-                        </CheckBox>
-
-                        <CheckBox Grid.Column="2" Grid.Row="3" Margin="2">
+                        <CheckBox Grid.Column="2" Grid.Row="3" Margin="2" Background="Pink">
                             <TextBlock Text="Manufacturing Problem 1"/>
                         </CheckBox>
 
@@ -116,11 +133,28 @@
                         <Separator Grid.Column="2" Grid.Row="4" Height="10" Background="Transparent"/>
                     </Grid>
                 </Border>
-                <StackPanel Grid.Column="3" VerticalAlignment="Center">
-                        <Button Padding="2 15" Content="Submit" Click="Submit_Click"/>
-                </StackPanel>
             </Grid>
-            </StackPanel>
+
+            <!-- ###################################### -->
+            <Separator Height="15" Background="Transparent"/>
+            <!-- ########################## -->
+            <!--    Submit/Reset Buttons    -->
+            <!-- ########################## -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="5*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="5*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="5*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="1" Padding="2 8" Content="Submit" Click="Submit_Click"/>
+                <Button Grid.Column="3" Padding="2 8" Content="Reset Highlights Only" Click="Reset_Click"/>
+                <Button Grid.Column="5" Padding="2 8" Content="Reset All" Click="Submit_Click"/>
+            </Grid>
         </StackPanel>
     </Grid>
 </Window>

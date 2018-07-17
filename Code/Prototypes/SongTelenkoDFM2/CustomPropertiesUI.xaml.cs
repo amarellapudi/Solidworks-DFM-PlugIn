@@ -341,11 +341,16 @@ namespace SongTelenkoDFM2
             // Clear current selection so STL export contains all bodies
             var model = (ModelDoc2)app.ActiveDoc;
             model.ClearSelection();
-
+           
             // Set export location
             var home = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var SculptPrint_Folder = home.Replace("\\Code\\Prototypes\\SongTelenkoDFM2\\bin\\Debug", "\\SculptPrint\\");
             var STL_Save_Location = string.Concat(SculptPrint_Folder, "test.stl");
+
+            // Export SolidWorks View
+            model.ShowNamedView2("", (int)swStandardViews_e.swBottomView);
+            model.ViewZoomtofit2();
+            var PNG_Save_Location = string.Concat(SculptPrint_Folder, "SolidWorks_View.png");
 
             // Export to fixed location
             bool saved = ExportModelAsStl(STL_Save_Location);
