@@ -53,7 +53,45 @@ namespace SongTelenkoDFM2
                 return true;
             }
         }
-        
+
+        /// <summary>
+        /// Exports the currently active part as a STL
+        /// </summary>
+        public static bool ExportModelAsPNG(string filter = "PNG File|*.png", string title = "Save Model as PNG")
+        {
+            // Make Sure it's a part or assembly
+            if (Application.ActiveModel?.IsPart != true && Application.ActiveModel?.IsAssembly != true)
+            {
+                // Tell user
+                Application.ShowMessageBox("Active model is not a part or assembly", SolidWorksMessageBoxIcon.Stop);
+
+                return false;
+            }
+            string location;
+            // Ask user for location
+            if (filter != "PNG File|*.png")
+                location = filter;
+            else
+                location = GetSaveLocation(filter, title);
+
+            // Check if user clicked cancel
+            if (string.IsNullOrEmpty(location))
+                return false;
+
+            if (!SaveModelAs(location))
+            {
+                // Tell user failed
+                Application.ShowMessageBox("Failed to save model as PNG", SolidWorksMessageBoxIcon.Stop);
+                return false;
+            }
+            else
+            {
+                // Tell user success
+                //Application.ShowMessageBox("Successfully exported model as PNG");
+                return true;
+            }
+        }
+
         #endregion
 
         #region Private Helpers

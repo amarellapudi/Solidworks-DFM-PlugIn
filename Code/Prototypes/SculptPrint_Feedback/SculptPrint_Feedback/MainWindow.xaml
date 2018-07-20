@@ -31,38 +31,32 @@
                     <StackPanel Background="Silver">
                         <TextBlock Text="SolidWorks View" HorizontalAlignment="Center"
                                Margin="0 10 0 0" FontWeight="Bold" FontSize="14"/>
-                        <Border BorderBrush="Black" BorderThickness="1"  Margin="10 10 10 5">
-                            <Image x:Name="View_SolidWorks" Source="IMG_No_Image.png" MaxHeight="200"/>
-                        </Border>
+                        <Image x:Name="View_SolidWorks" Source="IMG_No_Image.png" Stretch="Fill" Margin="10 10 10 5"
+                                   RenderOptions.BitmapScalingMode="Fant" MouseLeftButtonDown="View_SolidWorks_MouseLeftButtonDown" 
+                                   MinHeight="200"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="10*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBox x:Name="SolidWorks_View_Ready" Margin="10 10 0 10" IsReadOnly="True"
-                                     Background="Red"/>
                             <Button Grid.Column="1" Margin="30 10 30 10" Padding="2 4" IsEnabled="False"
-                                Content="Load SolidWorks View" Click="Load_SolidWorks_View_Click"/>
+                                Content="Reset SolidWorks View" Click="Load_SolidWorks_View_Click"/>
                         </Grid>
                     </StackPanel>
                 </Border>
+                <Canvas x:Name="Cnv" Grid.Column="1" Grid.Row="0" />
 
                 <Border Grid.Column="3" Grid.Row="0" BorderBrush="Black" BorderThickness="1">
                     <StackPanel Background="Silver">
                         <TextBlock Text="SculptPrint View" HorizontalAlignment="Center" 
                                    Margin="0 10 0 0" FontWeight="Bold" FontSize="14"/>
-                        <Border BorderBrush="Black" BorderThickness="1"  Margin="10 10 10 5">
-                            <Image x:Name="View_SculptPrint" Source="IMG_No_Image.png" MaxHeight="200"/>
-                        </Border>
+                        <Image x:Name="View_SculptPrint" Source="IMG_No_Image.png" Stretch="Fill" Margin="10 10 10 5"
+                                   RenderOptions.BitmapScalingMode="Fant" MinHeight="200"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="10*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBox x:Name="SculptPrint_View_Ready" Margin="10 10 0 10" IsReadOnly="True"
-                                     Background="Red"/>
                             <Button Grid.Column="1" Margin="30 10 30 10" Padding="2 4" IsEnabled="False"
-                                Content="Load SculptPrint View" Click="Load_SculptPrint_View_Click"/>
+                                Content="Reset SculptPrint View" Click="Load_SculptPrint_View_Click"/>
                         </Grid>
                     </StackPanel>
                 </Border>
@@ -142,18 +136,15 @@
             <!-- ########################## -->
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="3.5*"/>
                     <ColumnDefinition Width="5*"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="5*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="5*"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="3.5*"/>
                 </Grid.ColumnDefinitions>
 
                 <Button Grid.Column="1" Padding="2 8" Content="Submit" Click="Submit_Click"/>
-                <Button Grid.Column="3" Padding="2 8" Content="Reset Highlights Only" Click="Reset_Click"/>
-                <Button Grid.Column="5" Padding="2 8" Content="Reset All" Click="Submit_Click"/>
+                <Button Grid.Column="3" Padding="2 8" Content="Reset All" Click="Submit_Click"/>
             </Grid>
         </StackPanel>
     </Grid>

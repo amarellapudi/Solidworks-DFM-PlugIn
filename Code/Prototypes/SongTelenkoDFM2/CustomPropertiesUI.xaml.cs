@@ -350,12 +350,13 @@ namespace SongTelenkoDFM2
             // Export SolidWorks View
             model.ShowNamedView2("", (int)swStandardViews_e.swBottomView);
             model.ViewZoomtofit2();
-            var PNG_Save_Location = string.Concat(SculptPrint_Folder, "SolidWorks_View.png");
+            var PNG_Save_Location = string.Concat(SculptPrint_Folder, "View_SW.png");
 
             // Export to fixed location
+            bool savedPNG = ExportModelAsPNG(PNG_Save_Location);
             bool saved = ExportModelAsStl(STL_Save_Location);
 
-            if (saved)
+            if (saved & savedPNG)
             {
                 // Show DFM Reults loading message box
                 // this message will remain open the following file exists ~\SculptPrint\test.txt

@@ -29,7 +29,7 @@ sculptprint.finalize_turning_pass(myturnpass)
 sculptprint.hide_no_cut_plane()
 sculptprint.hide_stock_geometry()
 sculptprint.hide_cutting_tool()
-sculptprint.export_standard_view(r'\\Client\C$\Users\amarellapudi6\OneDrive - Georgia Institute of Technology\CASS\Solidworks-DFM-PlugIn\SculptPrint\test.png', r'bottom')
+sculptprint.export_standard_view(r'\\Client\C$\Users\amarellapudi6\OneDrive - Georgia Institute of Technology\CASS\Solidworks-DFM-PlugIn\SculptPrint\View_SP.png', r'bottom')
 
 # Save SculptPrint *.scpr file if necessary
 #sculptprint.save_as(r'\\Client\C$\Users\amarellapudi6\OneDrive - Georgia Institute of Technology\CASS\Solidworks-DFM-PlugIn\SculptPrint\test.scpr')
