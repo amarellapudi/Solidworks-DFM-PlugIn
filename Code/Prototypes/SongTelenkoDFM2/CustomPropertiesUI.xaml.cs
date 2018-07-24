@@ -360,16 +360,16 @@ namespace SongTelenkoDFM2
             {
                 // Show DFM Reults loading message box
                 // this message will remain open the following file exists ~\SculptPrint\test.txt
-                var ResultsPNG_Save_Location = string.Concat(SculptPrint_Folder, "test.png");
+                var FeedbackPNG_Save_Location = string.Concat(SculptPrint_Folder, "View_Researcher_Feedback.png");
 
-                MessageBox_DFMLoading DFMLoading = new MessageBox_DFMLoading(ResultsPNG_Save_Location);
+                MessageBox_DFMLoading DFMLoading = new MessageBox_DFMLoading(FeedbackPNG_Save_Location);
                 DialogResult DFM_Result = DFMLoading.ShowDialog();
 
                 // If the form outputs a DialogResult of Yes, then we have the file!
                 if (DFM_Result == DialogResult.Yes)
                 {
                     DFMLoading.Close();
-                    MessageBox_DFMResults DFMResults = new MessageBox_DFMResults(ResultsPNG_Save_Location);
+                    MessageBox_DFMResults DFMResults = new MessageBox_DFMResults(FeedbackPNG_Save_Location);
                     DFMResults.ShowDialog();
                 }
             }
