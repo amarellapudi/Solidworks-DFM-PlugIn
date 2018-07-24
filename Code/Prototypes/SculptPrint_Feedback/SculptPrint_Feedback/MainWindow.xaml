@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SculptPrint_Feedback"
         mc:Ignorable="d"
-        Title="SculptPrint Feedback Tool" Height="550" Width="800">
+        Title="SculptPrint Feedback Tool" Height="565" Width="900" ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
+        Closing="Window_Closing">
     <Grid>
         <StackPanel>
 
@@ -17,51 +18,42 @@
             <Grid>
                 <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="8*"/>
+                <ColumnDefinition Width="10*"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="8*"/>
+                <ColumnDefinition Width="10*"/>
                 <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="305"/>
                 </Grid.RowDefinitions>
-
                 <Border Grid.Column="1" Grid.Row="0" BorderBrush="Black" BorderThickness="1">
                     <StackPanel Background="Silver">
                         <TextBlock Text="SolidWorks View" HorizontalAlignment="Center"
                                Margin="0 10 0 0" FontWeight="Bold" FontSize="14"/>
-                        <Image x:Name="View_SolidWorks" Source="IMG_No_Image.png" Stretch="Fill" Margin="10 10 10 5"
+                        <Grid x:Name="SolidWorks_Grid">
+                            <Image x:Name="View_SolidWorks" Source="IMG_No_Image.png" Margin="10 10 10 5"
                                    RenderOptions.BitmapScalingMode="Fant" MouseLeftButtonDown="View_SolidWorks_MouseLeftButtonDown" 
-                                   MinHeight="200"/>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Button Grid.Column="1" Margin="30 10 30 10" Padding="2 4" IsEnabled="False"
-                                Content="Reset SolidWorks View" Click="Load_SolidWorks_View_Click"/>
+                                   MouseMove="View_SolidWorks_MouseMove" MouseUp="View_SolidWorks_MouseUp" MinHeight="250"/>
+                            <Canvas x:Name="Canvas_SolidWorks" Margin="10 10 10 5"/>
                         </Grid>
                     </StackPanel>
                 </Border>
-                <Canvas x:Name="Cnv" Grid.Column="1" Grid.Row="0" />
 
                 <Border Grid.Column="3" Grid.Row="0" BorderBrush="Black" BorderThickness="1">
                     <StackPanel Background="Silver">
                         <TextBlock Text="SculptPrint View" HorizontalAlignment="Center" 
                                    Margin="0 10 0 0" FontWeight="Bold" FontSize="14"/>
-                        <Image x:Name="View_SculptPrint" Source="IMG_No_Image.png" Stretch="Fill" Margin="10 10 10 5"
-                                   RenderOptions.BitmapScalingMode="Fant" MinHeight="200"/>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Button Grid.Column="1" Margin="30 10 30 10" Padding="2 4" IsEnabled="False"
-                                Content="Reset SculptPrint View" Click="Load_SculptPrint_View_Click"/>
+                        <Grid x:Name="SculptPrint_Grid">
+                            <Image x:Name="View_SculptPrint" Source="IMG_No_Image.png" Margin="10 10 10 5"
+                                   RenderOptions.BitmapScalingMode="Fant" MouseLeftButtonDown="View_SculptPrint_MouseLeftButtonDown"
+                                   MouseMove="View_SculptPrint_MouseMove" MouseUp="View_SculptPrint_MouseUp" MinHeight="250"/>
+                            <Canvas x:Name="Canvas_SculptPrint" Margin="10 10 10 5"/>
                         </Grid>
                     </StackPanel>
                 </Border>
             </Grid>
-
+            
             <!-- ###################################### -->
             <Separator Height="15" Background="Transparent"/>
             <!-- ################### -->
@@ -70,7 +62,7 @@
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="17*"/>
+                    <ColumnDefinition Width="21*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
@@ -96,28 +88,28 @@
                         <TextBlock Grid.Column="1" Grid.ColumnSpan="3" Text="Design Recommendations" HorizontalAlignment="Center" 
                         Margin="10" FontWeight="Bold" FontSize="14"/>
 
-                        <CheckBox Grid.Column="1" Grid.Row="1" Margin="2" Background="LightBlue">
+                        <CheckBox Grid.Column="1" Grid.Row="1" Margin="2" Background="Red" x:Name="Issue1" Checked="Issue1_Checked">
                             <TextBlock Text="Sharp internal corner"/>
                         </CheckBox>
 
-                        <CheckBox Grid.Column="1" Grid.Row="2" Margin="2" Background="ForestGreen">
+                        <CheckBox Grid.Column="1" Grid.Row="2" Margin="2" Background="Yellow" x:Name="Issue2" Checked="Issue2_Checked">
                             <TextBlock Text="Non-standard drill size"/>
                         </CheckBox>
 
-                        <CheckBox Grid.Column="1" Grid.Row="3" Margin="2" Background="IndianRed">
+                        <CheckBox Grid.Column="1" Grid.Row="3" Margin="2" Background="LimeGreen" x:Name="Issue3" Checked="Issue3_Checked">
                             <TextBlock Text="Overhang"/>
                         </CheckBox>
 
-                        <CheckBox Grid.Column="2" Grid.Row="1" Margin="2" Background="Yellow">
+                        <CheckBox Grid.Column="2" Grid.Row="1" Margin="2" Background="Blue" x:Name="Issue4" Checked="Issue4_Checked">
                             <TextBlock Text="Fillet on outer edge"/>
                         </CheckBox>
 
-                        <CheckBox Grid.Column="2" Grid.Row="2" Margin="2" Background="Purple">
-                            <TextBlock Text="Manufacturing Problem 1"/>
+                        <CheckBox Grid.Column="2" Grid.Row="2" Margin="2" Background="HotPink" x:Name="Issue5" Checked="Issue5_Checked">
+                            <TextBlock Text="Non-orthogonal Drill"/>
                         </CheckBox>
 
-                        <CheckBox Grid.Column="2" Grid.Row="3" Margin="2" Background="Pink">
-                            <TextBlock Text="Manufacturing Problem 1"/>
+                        <CheckBox Grid.Column="2" Grid.Row="3" Margin="2" Background="Purple" x:Name="Issue6" Checked="Issue6_Checked">
+                            <TextBlock Text="Manufacturing Problem 6"/>
                         </CheckBox>
 
                         <TextBox Grid.Column="3" Grid.Row="1" Margin="2"/>
@@ -129,23 +121,38 @@
                 </Border>
             </Grid>
 
-            <!-- ###################################### -->
+            <StackPanel x:Name="Controls">
+                <!-- ###################################### -->
             <Separator Height="15" Background="Transparent"/>
             <!-- ########################## -->
             <!--    Submit/Reset Buttons    -->
             <!-- ########################## -->
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="3.5*"/>
-                    <ColumnDefinition Width="5*"/>
                     <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="5*"/>
-                    <ColumnDefinition Width="3.5*"/>
-                </Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="1" Padding="2 8" Content="Submit" Click="Submit_Click"/>
-                <Button Grid.Column="3" Padding="2 8" Content="Reset All" Click="Submit_Click"/>
-            </Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="30"/>
+                    </Grid.RowDefinitions>
+
+                    <Button Grid.Row="0" Grid.Column="1" Padding="2 8" Content="Reset SolidWorks View" 
+                        Click="Reset_SolidWorks_View_Click"/>
+                    <Button Grid.Row="0" Grid.Column="3" Padding="2 8" Content="Reset SculptPrint View" 
+                        Click="Reset_SculptPrint_View_Click"/>
+                    <Button Grid.Row="0" Grid.Column="5" Padding="2 8" Content="Reset All" FontWeight="Bold" Click="Reset_Click"/>
+                    <Button Grid.Row="0" Grid.Column="7" Padding="2 8" Content="Submit" FontWeight="Bold" Click="Submit_Click"/>
+                </Grid>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>
