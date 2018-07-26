@@ -12,6 +12,7 @@ using static SongTelenkoDFM2.Methods_FileExporting;
 using System.Threading;
 using System.IO;
 using System.Reflection;
+using System.Net;
 
 namespace SongTelenkoDFM2
 {    /// <summary>
@@ -334,6 +335,34 @@ namespace SongTelenkoDFM2
         /// <param name="e"></param>
         private void ManufacturingCheck_Click(object sender, System.Windows.RoutedEventArgs e)
         {
+            //using (WebClient wc = new WebClient())
+            //{
+            //    wc.DownloadFile(new System.Uri("https://www.w3schools.com/w3css/img_lights.jpg"),
+            //    string.Concat(SculptPrint_Folder, "img_lights.jpg"));
+            //}
+
+            var url = "http://marellapudi.com/index.html";
+            HttpWebResponse response = null;
+            var request = (HttpWebRequest)WebRequest.Create(url);
+            request.Method = "HEAD";
+
+            try
+            {
+                response = (HttpWebResponse)request.GetResponse();
+            }
+            catch (WebException ex)
+            {
+                /* A WebException will be thrown if the status of the response is not `200 OK` */
+            }
+            finally
+            {
+                // Don't forget to close your response.
+                if (response != null)
+                {
+                    response.Close();
+                }
+            }
+
             // Disable translation of part into positive space when exporting
             SldWorks app = SolidWorksEnvironment.Application.UnsafeObject;
             app.SetUserPreferenceToggle(((int)swUserPreferenceToggle_e.swSTLDontTranslateToPositive), true);
