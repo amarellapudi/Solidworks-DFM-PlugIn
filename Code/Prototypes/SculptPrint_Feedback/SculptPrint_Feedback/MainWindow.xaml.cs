@@ -7,6 +7,9 @@ using System.Windows.Input;
 using System.Windows.Controls;
 using System.IO;
 using System.Windows.Media;
+using System.Net;
+using System.Threading;
+using System.Text;
 
 namespace SculptPrint_Feedback
 {
@@ -16,6 +19,9 @@ namespace SculptPrint_Feedback
     public partial class MainWindow : Window
     {
         public string mSculptPrint_Folder;
+        public string mSolidWorks_View_Location;
+        public string mSculptPrint_View_Location;
+        public string[] mFTP = { "ftp://www.marellapudi.com/public_ftp/", "apollome", "Aniruddh.123" };
 
         public MainWindow()
         {
@@ -23,12 +29,8 @@ namespace SculptPrint_Feedback
 
             var home = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             mSculptPrint_Folder = home.Replace("\\Code\\Prototypes\\SculptPrint_Feedback\\SculptPrint_Feedback\\bin\\Debug", "\\SculptPrint\\");
-
-            string SolidWorks_View_Location = string.Concat(mSculptPrint_Folder, "View_SW.png");
-            string SculptPrint_View_Location = string.Concat(mSculptPrint_Folder, "View_SP.png");
-
-            View_SolidWorks.Source = new BitmapImage(new Uri(SolidWorks_View_Location, UriKind.Absolute));
-            View_SculptPrint.Source = new BitmapImage(new Uri(SculptPrint_View_Location, UriKind.Absolute));            
+            mSolidWorks_View_Location = string.Concat(mSculptPrint_Folder, "View_SW.png");
+            mSculptPrint_View_Location = string.Concat(mSculptPrint_Folder, "View_SP.png");
         }
         
         #region Public Members for Drawing
@@ -82,15 +84,48 @@ namespace SculptPrint_Feedback
             Canvas_SculptPrint.Children.Clear();
         }
 
-        private void Reset_Click(object sender, RoutedEventArgs e)
+        private void Load_Click(object sender, RoutedEventArgs e)
         {
-            Canvas_SolidWorks.Children.Clear();
-            Canvas_SculptPrint.Children.Clear();
+            if (File.Exists(mSculptPrint_View_Location) && File.Exists(mSolidWorks_View_Location))
+            {
+                string message = "Already Loaded Views";
+                string caption = "Error";
+                MessageBoxButton buttons = MessageBoxButton.OK;
+                MessageBox.Show(message, caption, buttons);
+                return;
+            }
+            string fileName = "View_SP.png";
+
+            while (true)
+            {
+                if (FileExistsOnServer(fileName))
+                {
+                    DownloadFile(fileName);
+                    break;
+                }
+            }
+
+            fileName = "View_SW.png";
+
+            while (true)
+            {
+                if (FileExistsOnServer(fileName))
+                {
+                    DownloadFile(fileName);
+                    break;
+                }
+            }
+
+            string SolidWorks_View_Location = string.Concat(mSculptPrint_Folder, "View_SW.png");
+            string SculptPrint_View_Location = string.Concat(mSculptPrint_Folder, "View_SP.png");
+
+            View_SolidWorks.Source = new BitmapImage(new Uri(SolidWorks_View_Location, UriKind.Absolute));
+            View_SculptPrint.Source = new BitmapImage(new Uri(SculptPrint_View_Location, UriKind.Absolute));
         }
 
         private void Submit_Click(object sender, RoutedEventArgs e)
         {
-            Close();
+
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -274,6 +309,70 @@ namespace SculptPrint_Feedback
             Issue3.IsChecked = false;
             Issue4.IsChecked = false;
             Issue5.IsChecked = false;
+        }
+        #endregion
+
+        #region File Methods
+
+        private bool FileExistsOnServer(string fileName)
+        {
+                FtpWebResponse response = null;
+                var request = (FtpWebRequest)WebRequest.Create(string.Concat(mFTP[0], fileName));
+                request.Credentials = new NetworkCredential(mFTP[1], mFTP[2]);
+                request.Method = WebRequestMethods.Ftp.GetFileSize;
+
+                try
+                {
+                    response = (FtpWebResponse)request.GetResponse();
+                }
+                catch (WebException ex)
+                {
+                    response = (FtpWebResponse)ex.Response;
+                    if (response.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable)
+                    {
+                        return false;
+                    }
+                }
+            return true;
+        }
+
+        private void DownloadFile(string fileName)
+        {
+            using (WebClient request = new WebClient())
+            {
+                request.Credentials = new NetworkCredential(mFTP[1], mFTP[2]);
+                byte[] fileData = request.DownloadData(string.Concat(mFTP[0], fileName));
+
+                using (FileStream file = File.Create(string.Concat(mSculptPrint_Folder, fileName)))
+                {
+                    file.Write(fileData, 0, fileData.Length);
+                    file.Close();
+                }
+            }
+        }
+
+        private void UploadFile(string fileName)
+        {
+            var request = (FtpWebRequest)WebRequest.Create(string.Concat(mFTP[0], fileName));
+            request.Method = WebRequestMethods.Ftp.UploadFile;
+            request.Credentials = new NetworkCredential(mFTP[1], mFTP[2]);
+            
+            byte[] fileContents;
+            using (StreamReader sourceStream = new StreamReader(string.Concat(mSculptPrint_Folder, fileName)))
+            {
+                fileContents = Encoding.UTF8.GetBytes(sourceStream.ReadToEnd());
+            }
+            request.ContentLength = fileContents.Length;
+
+            using (Stream requestStream = request.GetRequestStream())
+            {
+                requestStream.Write(fileContents, 0, fileContents.Length);
+            }
+
+            using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
+            {
+                Console.WriteLine($"Upload File Complete, status {response.StatusDescription}");
+            }
         }
         #endregion
     }

@@ -9,10 +9,10 @@ using System.Windows.Forms;
 using SolidWorks.Interop.sldworks;
 using SolidWorks.Interop.swconst;
 using static SongTelenkoDFM2.Methods_FileExporting;
-using System.Threading;
 using System.IO;
 using System.Reflection;
 using System.Net;
+using System.Text;
 
 namespace SongTelenkoDFM2
 {    /// <summary>
@@ -21,6 +21,9 @@ namespace SongTelenkoDFM2
     public partial class CustomPropertiesUI : System.Windows.Controls.UserControl
     {
         #region Public Members
+
+        public string mSculptPrint_Folder;
+        public string[] mFTP = { "ftp://www.marellapudi.com/public_ftp/", "apollome", "Aniruddh.123" };
 
         public class FeatureToleranceObject
         {
@@ -59,6 +62,8 @@ namespace SongTelenkoDFM2
             DataContext = this;
             InitializeComponent();
             FeatureTolerance_Display.ItemsSource = mFeatureTolerances;
+            var home = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            mSculptPrint_Folder = home.Replace("\\Code\\Prototypes\\SongTelenkoDFM2\\bin\\Debug", "\\SculptPrint\\");
         }
 
         /// <summary>
@@ -335,33 +340,6 @@ namespace SongTelenkoDFM2
         /// <param name="e"></param>
         private void ManufacturingCheck_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            //using (WebClient wc = new WebClient())
-            //{
-            //    wc.DownloadFile(new System.Uri("https://www.w3schools.com/w3css/img_lights.jpg"),
-            //    string.Concat(SculptPrint_Folder, "img_lights.jpg"));
-            //}
-
-            var url = "http://marellapudi.com/index.html";
-            HttpWebResponse response = null;
-            var request = (HttpWebRequest)WebRequest.Create(url);
-            request.Method = "HEAD";
-
-            try
-            {
-                response = (HttpWebResponse)request.GetResponse();
-            }
-            catch (WebException ex)
-            {
-                /* A WebException will be thrown if the status of the response is not `200 OK` */
-            }
-            finally
-            {
-                // Don't forget to close your response.
-                if (response != null)
-                {
-                    response.Close();
-                }
-            }
 
             // Disable translation of part into positive space when exporting
             SldWorks app = SolidWorksEnvironment.Application.UnsafeObject;
@@ -372,14 +350,12 @@ namespace SongTelenkoDFM2
             model.ClearSelection();
            
             // Set export location
-            var home = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var SculptPrint_Folder = home.Replace("\\Code\\Prototypes\\SongTelenkoDFM2\\bin\\Debug", "\\SculptPrint\\");
-            var STL_Save_Location = string.Concat(SculptPrint_Folder, "test.stl");
+            var STL_Save_Location = string.Concat(mSculptPrint_Folder, "test.stl");
 
             // Export SolidWorks View
             model.ShowNamedView2("", (int)swStandardViews_e.swBottomView);
             model.ViewZoomtofit2();
-            var PNG_Save_Location = string.Concat(SculptPrint_Folder, "View_SW.png");
+            var PNG_Save_Location = string.Concat(mSculptPrint_Folder, "View_SW.png");
 
             // Export to fixed location
             bool saved = ExportModelAsStl(STL_Save_Location);
@@ -387,9 +363,13 @@ namespace SongTelenkoDFM2
 
             if (saved & savedPNG)
             {
+
+                UploadFile("View_SW.png");
+                UploadFile("test.stl");
+
                 // Show DFM Reults loading message box
                 // this message will remain open the following file exists ~\SculptPrint\test.txt
-                var FeedbackPNG_Save_Location = string.Concat(SculptPrint_Folder, "View_Researcher_Feedback.png");
+                var FeedbackPNG_Save_Location = string.Concat(mSculptPrint_Folder, "View_Researcher_Feedback.png");
 
                 MessageBox_DFMLoading DFMLoading = new MessageBox_DFMLoading(FeedbackPNG_Save_Location);
                 DialogResult DFM_Result = DFMLoading.ShowDialog();
@@ -734,6 +714,70 @@ namespace SongTelenkoDFM2
             NoteGrid.Children.Add(closeButton);
         }
 
+        #endregion
+
+        #region File Methods
+
+        private bool FileExistsOnServer(string fileName)
+        {
+            FtpWebResponse response = null;
+            var request = (FtpWebRequest)WebRequest.Create(string.Concat(mFTP[0], fileName));
+            request.Credentials = new NetworkCredential(mFTP[1], mFTP[2]);
+            request.Method = WebRequestMethods.Ftp.GetFileSize;
+
+            try
+            {
+                response = (FtpWebResponse)request.GetResponse();
+            }
+            catch (WebException ex)
+            {
+                response = (FtpWebResponse)ex.Response;
+                if (response.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private void DownloadFile(string fileName)
+        {
+            using (WebClient request = new WebClient())
+            {
+                request.Credentials = new NetworkCredential(mFTP[1], mFTP[2]);
+                byte[] fileData = request.DownloadData(string.Concat(mFTP[0], fileName));
+
+                using (FileStream file = File.Create(string.Concat(mSculptPrint_Folder, fileName)))
+                {
+                    file.Write(fileData, 0, fileData.Length);
+                    file.Close();
+                }
+            }
+        }
+
+        private void UploadFile(string fileName)
+        {
+            var request = (FtpWebRequest)WebRequest.Create(string.Concat(mFTP[0], fileName));
+            request.Method = WebRequestMethods.Ftp.UploadFile;
+            request.Credentials = new NetworkCredential(mFTP[1], mFTP[2]);
+
+            byte[] fileContents;
+            using (StreamReader sourceStream = new StreamReader(string.Concat(mSculptPrint_Folder, fileName)))
+            {
+                fileContents = Encoding.UTF8.GetBytes(sourceStream.ReadToEnd());
+            }
+            request.ContentLength = fileContents.Length;
+
+            using (Stream requestStream = request.GetRequestStream())
+            {
+                requestStream.Write(fileContents, 0, fileContents.Length);
+            }
+
+            using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
+            {
+                Console.WriteLine($"Upload File Complete, status {response.StatusDescription}");
+            }
+        }
         #endregion
     }
 }

@@ -49,7 +49,7 @@ namespace SongTelenkoDFM2
             else
             {
                 // Tell user success
-                Application.ShowMessageBox("Successfully exported model as STL");
+                //Application.ShowMessageBox("Successfully exported model as STL");
                 return true;
             }
         }
