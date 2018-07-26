@@ -39,7 +39,7 @@
             this.pictureBox.Location = new System.Drawing.Point(20, 20);
             this.pictureBox.Margin = new System.Windows.Forms.Padding(0);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(834, 435);
+            this.pictureBox.Size = new System.Drawing.Size(926, 433);
             this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox.TabIndex = 0;
             this.pictureBox.TabStop = false;
@@ -48,7 +48,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(874, 475);
+            this.ClientSize = new System.Drawing.Size(966, 473);
             this.Controls.Add(this.pictureBox);
             this.Name = "MessageBox_DFMResults";
             this.Padding = new System.Windows.Forms.Padding(20);

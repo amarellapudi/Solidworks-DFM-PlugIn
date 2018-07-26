@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SculptPrint_Feedback"
         mc:Ignorable="d"
-        Title="SculptPrint Feedback Tool" Height="565" Width="900" ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
+        Title="SculptPrint Feedback Tool" Height="600" Width="1000" ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
         Closing="Window_Closing">
     <Grid>
         <StackPanel>
@@ -25,7 +25,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="305"/>
+                    <RowDefinition Height="345"/>
                 </Grid.RowDefinitions>
                 <Border Grid.Column="1" Grid.Row="0" BorderBrush="Black" BorderThickness="1">
                     <StackPanel Background="Silver">
@@ -34,7 +34,7 @@
                         <Grid x:Name="SolidWorks_Grid">
                             <Image x:Name="View_SolidWorks" Source="IMG_No_Image.png" Margin="10 10 10 5"
                                    RenderOptions.BitmapScalingMode="Fant" MouseLeftButtonDown="View_SolidWorks_MouseLeftButtonDown" 
-                                   MouseMove="View_SolidWorks_MouseMove" MouseUp="View_SolidWorks_MouseUp" MinHeight="250"/>
+                                   MouseMove="View_SolidWorks_MouseMove" MouseUp="View_SolidWorks_MouseUp" MinHeight="300"/>
                             <Canvas x:Name="Canvas_SolidWorks" Margin="10 10 10 5"/>
                         </Grid>
                     </StackPanel>
@@ -47,7 +47,7 @@
                         <Grid x:Name="SculptPrint_Grid">
                             <Image x:Name="View_SculptPrint" Source="IMG_No_Image.png" Margin="10 10 10 5"
                                    RenderOptions.BitmapScalingMode="Fant" MouseLeftButtonDown="View_SculptPrint_MouseLeftButtonDown"
-                                   MouseMove="View_SculptPrint_MouseMove" MouseUp="View_SculptPrint_MouseUp" MinHeight="250"/>
+                                   MouseMove="View_SculptPrint_MouseMove" MouseUp="View_SculptPrint_MouseUp" MinHeight="300"/>
                             <Canvas x:Name="Canvas_SculptPrint" Margin="10 10 10 5"/>
                         </Grid>
                     </StackPanel>
