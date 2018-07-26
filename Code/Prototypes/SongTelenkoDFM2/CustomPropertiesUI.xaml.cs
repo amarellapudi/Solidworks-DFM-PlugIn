@@ -353,8 +353,8 @@ namespace SongTelenkoDFM2
             var PNG_Save_Location = string.Concat(SculptPrint_Folder, "View_SW.png");
 
             // Export to fixed location
-            bool savedPNG = ExportModelAsPNG(PNG_Save_Location);
             bool saved = ExportModelAsStl(STL_Save_Location);
+            bool savedPNG = ExportModelAsPNG(PNG_Save_Location);
 
             if (saved & savedPNG)
             {
