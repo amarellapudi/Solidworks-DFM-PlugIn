@@ -10,6 +10,8 @@ using System.Windows.Media;
 using System.Net;
 using System.Threading;
 using System.Text;
+using Renci.SshNet;
+using Renci.SshNet.Sftp;
 
 namespace SculptPrint_Feedback
 {
@@ -18,31 +20,43 @@ namespace SculptPrint_Feedback
     /// </summary>
     public partial class MainWindow : Window
     {
+        #region Public Members and Initialization
+
+        // SculptPrint folder and SW/SP view locations
         public string mSculptPrint_Folder;
         public string mSolidWorks_View_Location;
         public string mSculptPrint_View_Location;
+
+        // FTP credentials for marellapudi.com
         public string[] mFTP = { "ftp://www.marellapudi.com/public_ftp/", "apollome", "Aniruddh.123" };
 
         public MainWindow()
         {
+            // Initialization
             InitializeComponent();
 
+            // Set SculptPrint Folder and SW/SP view locations
             var home = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             mSculptPrint_Folder = home.Replace("\\Code\\Prototypes\\SculptPrint_Feedback\\SculptPrint_Feedback\\bin\\Debug", "\\SculptPrint\\");
             mSolidWorks_View_Location = string.Concat(mSculptPrint_Folder, "View_SW.png");
             mSculptPrint_View_Location = string.Concat(mSculptPrint_Folder, "View_SP.png");
         }
-        
+
+        #endregion
+
         #region Public Members for Drawing
 
+        // Start and end points for drawing on SolidWorks view
         System.Windows.Point mStart_SolidWorks = new System.Windows.Point(0, 0);
         System.Windows.Point mEnd_SolidWorks = new System.Windows.Point(0, 0);
         bool mDrawing_SolidWorks = false;
 
+        // Start and end points for drawing on SculptPrint view
         System.Windows.Point mStart_SculptPrint = new System.Windows.Point(0, 0);
         System.Windows.Point mEnd_SculptPrint = new System.Windows.Point(0, 0);
         bool mDrawing_SculptPrint = false;
 
+        // Methods for saving current screen as PNG
         public static RenderTargetBitmap GetImage()
         {
             System.Windows.Size size = new System.Windows.Size(((Panel)Application.Current.MainWindow.Content).ActualWidth,
@@ -62,7 +76,6 @@ namespace SculptPrint_Feedback
             result.Render(drawingvisual);
             return result;
         }
-
         public static void SaveAsPng(RenderTargetBitmap src, Stream outputStream)
         {
             PngBitmapEncoder encoder = new PngBitmapEncoder();
@@ -74,16 +87,19 @@ namespace SculptPrint_Feedback
 
         #region UI Button Click Events
 
+        // Called when "Reset SolidWorks View" is clicked
         private void Reset_SolidWorks_View_Click(object sender, RoutedEventArgs e)
         {
             Canvas_SolidWorks.Children.Clear();
         }
 
+        // Called when "Reset SculptPrint View" is clicked
         private void Reset_SculptPrint_View_Click(object sender, RoutedEventArgs e)
         {
             Canvas_SculptPrint.Children.Clear();
         }
 
+        // Called when "Load" is clicked. Loads SW/SP views from server into this app
         private void Load_Click(object sender, RoutedEventArgs e)
         {
             if (File.Exists(mSculptPrint_View_Location) && File.Exists(mSolidWorks_View_Location))
@@ -98,11 +114,9 @@ namespace SculptPrint_Feedback
 
             while (true)
             {
-                if (FileExistsOnServer(fileName))
-                {
-                    DownloadFile(fileName);
-                    break;
-                }
+                var client = SFTPConnect();
+                DownloadFile(client, "test.stl");
+                break;
             }
 
             fileName = "View_SW.png";
@@ -111,7 +125,7 @@ namespace SculptPrint_Feedback
             {
                 if (FileExistsOnServer(fileName))
                 {
-                    DownloadFile(fileName);
+                    //DownloadFile(fileName);
                     break;
                 }
             }
@@ -314,40 +328,45 @@ namespace SculptPrint_Feedback
 
         #region File Methods
 
+        private SftpClient SFTPConnect()
+        {
+            PrivateKeyFile key = new PrivateKeyFile("rsa.key", "Aniruddh123");
+            var connectionInfo = new ConnectionInfo("marellapudi.com", 18765, "apollome",
+                                        new PrivateKeyAuthenticationMethod("apollome", key));
+
+            SftpClient client = new SftpClient(connectionInfo);
+            client.Connect();
+            client.ChangeDirectory(client.WorkingDirectory + "/public_ftp/");
+            return client;
+        }
+
         private bool FileExistsOnServer(string fileName)
         {
-                FtpWebResponse response = null;
-                var request = (FtpWebRequest)WebRequest.Create(string.Concat(mFTP[0], fileName));
-                request.Credentials = new NetworkCredential(mFTP[1], mFTP[2]);
-                request.Method = WebRequestMethods.Ftp.GetFileSize;
+            FtpWebResponse response = null;
+            var request = (FtpWebRequest)WebRequest.Create(string.Concat(mFTP[0], fileName));
+            request.Credentials = new NetworkCredential(mFTP[1], mFTP[2]);
+            request.Method = WebRequestMethods.Ftp.GetFileSize;
 
-                try
+            try
+            {
+                response = (FtpWebResponse)request.GetResponse();
+            }
+            catch (WebException ex)
+            {
+                response = (FtpWebResponse)ex.Response;
+                if (response.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable)
                 {
-                    response = (FtpWebResponse)request.GetResponse();
+                    return false;
                 }
-                catch (WebException ex)
-                {
-                    response = (FtpWebResponse)ex.Response;
-                    if (response.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable)
-                    {
-                        return false;
-                    }
-                }
+            }
             return true;
         }
 
-        private void DownloadFile(string fileName)
+        private void DownloadFile(SftpClient client, string fileName)
         {
-            using (WebClient request = new WebClient())
+            using (Stream fileStream = File.Create(string.Concat(mSculptPrint_Folder, fileName)))
             {
-                request.Credentials = new NetworkCredential(mFTP[1], mFTP[2]);
-                byte[] fileData = request.DownloadData(string.Concat(mFTP[0], fileName));
-
-                using (FileStream file = File.Create(string.Concat(mSculptPrint_Folder, fileName)))
-                {
-                    file.Write(fileData, 0, fileData.Length);
-                    file.Close();
-                }
+                client.DownloadFile(fileName, fileStream);
             }
         }
 
