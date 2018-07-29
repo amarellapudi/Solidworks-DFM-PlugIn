@@ -13,6 +13,8 @@ using System.IO;
 using System.Reflection;
 using System.Net;
 using System.Text;
+using Renci.SshNet;
+using Renci.SshNet.Common;
 
 namespace SongTelenkoDFM2
 {    /// <summary>
@@ -23,6 +25,7 @@ namespace SongTelenkoDFM2
         #region Public Members
 
         public string mSculptPrint_Folder;
+        public string home;
         public string[] mFTP = { "ftp://www.marellapudi.com/public_ftp/", "apollome", "Aniruddh.123" };
 
         public class FeatureToleranceObject
@@ -62,8 +65,8 @@ namespace SongTelenkoDFM2
             DataContext = this;
             InitializeComponent();
             FeatureTolerance_Display.ItemsSource = mFeatureTolerances;
-            var home = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            mSculptPrint_Folder = home.Replace("\\Code\\Prototypes\\SongTelenkoDFM2\\bin\\Debug", "\\SculptPrint\\");
+            home = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            mSculptPrint_Folder = home.Replace("\\Code\\Prototypes\\SongTelenkoDFM2\\bin\\Debug", "\\SculptPrint\\Screenshots\\");
         }
 
         /// <summary>
@@ -363,9 +366,9 @@ namespace SongTelenkoDFM2
 
             if (saved & savedPNG)
             {
-
-                UploadFile("View_SW.png");
-                UploadFile("test.stl");
+                var client = SFTPConnect();
+                SFTPUploadFile(client, "View_SW.png");
+                SFTPUploadFile(client, "test.stl");
 
                 // Show DFM Reults loading message box
                 // this message will remain open the following file exists ~\SculptPrint\test.txt
@@ -718,25 +721,34 @@ namespace SongTelenkoDFM2
 
         #region File Methods
 
-        private bool FileExistsOnServer(string fileName)
+        private SftpClient SFTPConnect()
         {
-            FtpWebResponse response = null;
-            var request = (FtpWebRequest)WebRequest.Create(string.Concat(mFTP[0], fileName));
-            request.Credentials = new NetworkCredential(mFTP[1], mFTP[2]);
-            request.Method = WebRequestMethods.Ftp.GetFileSize;
+            PrivateKeyFile key = new PrivateKeyFile(home+"\\rsa.key", "Aniruddh123");
+            var connectionInfo = new ConnectionInfo("marellapudi.com", 18765, "apollome",
+                                        new PrivateKeyAuthenticationMethod("apollome", key));
 
+            SftpClient client = new SftpClient(connectionInfo);
+            client.Connect();
+            client.ChangeDirectory(client.WorkingDirectory + "/public_ftp/");
+            return client;
+        }
+
+        private bool SFTPUploadFile(SftpClient client, string fileName)
+        {
+            // Try uploading the file
             try
             {
-                response = (FtpWebResponse)request.GetResponse();
-            }
-            catch (WebException ex)
-            {
-                response = (FtpWebResponse)ex.Response;
-                if (response.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable)
+                using (var fileStream = File.Open((mSculptPrint_Folder + fileName), FileMode.Open))
                 {
-                    return false;
+                    client.UploadFile(fileStream, fileName);
                 }
             }
+            catch (SftpPathNotFoundException ex)
+            {
+                // The path/file was not found
+                return false;
+            }
+            // If we get here, we have successfully uploaded the file
             return true;
         }
 

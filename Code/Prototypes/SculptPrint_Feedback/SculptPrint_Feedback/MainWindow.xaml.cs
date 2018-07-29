@@ -7,11 +7,8 @@ using System.Windows.Input;
 using System.Windows.Controls;
 using System.IO;
 using System.Windows.Media;
-using System.Net;
-using System.Threading;
-using System.Text;
 using Renci.SshNet;
-using Renci.SshNet.Sftp;
+using Renci.SshNet.Common;
 
 namespace SculptPrint_Feedback
 {
@@ -23,23 +20,32 @@ namespace SculptPrint_Feedback
         #region Public Members and Initialization
 
         // SculptPrint folder and SW/SP view locations
+        public string mHome_Directory;
         public string mSculptPrint_Folder;
         public string mSolidWorks_View_Location;
         public string mSculptPrint_View_Location;
+        public SftpClient mClient;
 
-        // FTP credentials for marellapudi.com
-        public string[] mFTP = { "ftp://www.marellapudi.com/public_ftp/", "apollome", "Aniruddh.123" };
-
+        // Initialization
         public MainWindow()
         {
-            // Initialization
             InitializeComponent();
 
             // Set SculptPrint Folder and SW/SP view locations
-            var home = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            mSculptPrint_Folder = home.Replace("\\Code\\Prototypes\\SculptPrint_Feedback\\SculptPrint_Feedback\\bin\\Debug", "\\SculptPrint\\");
+            mHome_Directory = string.Concat(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "\\");
+
+            // IF DEBUGGING, UNCOMMENT THIS
+            mSculptPrint_Folder = mHome_Directory.Replace("\\Code\\Prototypes\\SculptPrint_Feedback\\SculptPrint_Feedback\\bin\\Debug\\", "\\SculptPrint\\Screenshots\\");
+
+            // IF BUILDING FOR SCULPTPRINT DIRECTOR, UNCOMMENT THIS
+            //mSculptPrint_Folder = mHome_Directory.Replace("\\SculptPrint Feeback Tool\\", "\\Screenshots\\");
+
+            // Set locations for SculptPrint and SolidWorks Views
             mSolidWorks_View_Location = string.Concat(mSculptPrint_Folder, "View_SW.png");
             mSculptPrint_View_Location = string.Concat(mSculptPrint_Folder, "View_SP.png");
+
+            // Connect SFTP client
+            mClient = SFTPConnect();
         }
 
         #endregion
@@ -47,19 +53,19 @@ namespace SculptPrint_Feedback
         #region Public Members for Drawing
 
         // Start and end points for drawing on SolidWorks view
-        System.Windows.Point mStart_SolidWorks = new System.Windows.Point(0, 0);
-        System.Windows.Point mEnd_SolidWorks = new System.Windows.Point(0, 0);
+        Point mStart_SolidWorks = new Point(0, 0);
+        Point mEnd_SolidWorks = new Point(0, 0);
         bool mDrawing_SolidWorks = false;
 
         // Start and end points for drawing on SculptPrint view
-        System.Windows.Point mStart_SculptPrint = new System.Windows.Point(0, 0);
-        System.Windows.Point mEnd_SculptPrint = new System.Windows.Point(0, 0);
+        Point mStart_SculptPrint = new Point(0, 0);
+        Point mEnd_SculptPrint = new Point(0, 0);
         bool mDrawing_SculptPrint = false;
 
         // Methods for saving current screen as PNG
         public static RenderTargetBitmap GetImage()
         {
-            System.Windows.Size size = new System.Windows.Size(((Panel)Application.Current.MainWindow.Content).ActualWidth,
+            Size size = new Size(((Panel)Application.Current.MainWindow.Content).ActualWidth,
                 ((Panel)Application.Current.MainWindow.Content).ActualHeight);
             if (size.IsEmpty)
                 return null;
@@ -69,7 +75,7 @@ namespace SculptPrint_Feedback
             DrawingVisual drawingvisual = new DrawingVisual();
             using (DrawingContext context = drawingvisual.RenderOpen())
             {
-                context.DrawRectangle(new VisualBrush((Panel)Application.Current.MainWindow.Content), null, new Rect(new System.Windows.Point(), size));
+                context.DrawRectangle(new VisualBrush((Panel)Application.Current.MainWindow.Content), null, new Rect(new Point(), size));
                 context.Close();
             }
 
@@ -102,20 +108,12 @@ namespace SculptPrint_Feedback
         // Called when "Load" is clicked. Loads SW/SP views from server into this app
         private void Load_Click(object sender, RoutedEventArgs e)
         {
-            if (File.Exists(mSculptPrint_View_Location) && File.Exists(mSolidWorks_View_Location))
-            {
-                string message = "Already Loaded Views";
-                string caption = "Error";
-                MessageBoxButton buttons = MessageBoxButton.OK;
-                MessageBox.Show(message, caption, buttons);
-                return;
-            }
+
             string fileName = "View_SP.png";
 
             while (true)
             {
-                var client = SFTPConnect();
-                DownloadFile(client, "test.stl");
+                if (!DownloadFile(mClient, fileName)) continue;
                 break;
             }
 
@@ -123,11 +121,8 @@ namespace SculptPrint_Feedback
 
             while (true)
             {
-                if (FileExistsOnServer(fileName))
-                {
-                    //DownloadFile(fileName);
-                    break;
-                }
+                if (!DownloadFile(mClient, fileName)) continue;
+                break;
             }
 
             string SolidWorks_View_Location = string.Concat(mSculptPrint_Folder, "View_SW.png");
@@ -135,25 +130,36 @@ namespace SculptPrint_Feedback
 
             View_SolidWorks.Source = new BitmapImage(new Uri(SolidWorks_View_Location, UriKind.Absolute));
             View_SculptPrint.Source = new BitmapImage(new Uri(SculptPrint_View_Location, UriKind.Absolute));
+
+            LoadButton.IsEnabled = false;
         }
 
+        // Called when "Submit" is clicked. Creates feedback screenshot and uploads it to server
         private void Submit_Click(object sender, RoutedEventArgs e)
         {
+            // Prepare view for screenshot. Uncheck all check check boxes, and hide the control buttons
+            Issue1.IsChecked = false; Issue2.IsChecked = false; Issue3.IsChecked = false;
+            Issue4.IsChecked = false; Issue5.IsChecked = false; Issue6.IsChecked = false;
+            Controls.Visibility = Visibility.Hidden;
 
+            // Create the screenshot
+            using (var fileStream = File.Create(mSculptPrint_Folder + "View_Researcher_Feedback.png"))
+            {
+                SaveAsPng(GetImage(), fileStream);
+                Controls.Visibility = Visibility.Visible;
+            }
+
+            // Re-enable the control buttons
+            Controls.Visibility = Visibility.Visible;
+
+            // Upload the screenshot to the server
+            UploadFile(mClient, "View_Researcher_Feedback.png");
         }
-
+        
+        // Called when the window is closing
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Issue1.IsChecked = false;
-            Issue2.IsChecked = false;
-            Issue3.IsChecked = false;
-            Issue4.IsChecked = false;
-            Issue5.IsChecked = false;
-            Issue6.IsChecked = false;
 
-            Controls.Visibility = Visibility.Hidden;
-            var fileStream = File.Create(mSculptPrint_Folder + "View_Researcher_Feedback.png");
-            SaveAsPng(GetImage(), fileStream);
         }
 
         #endregion
@@ -217,12 +223,12 @@ namespace SculptPrint_Feedback
 
         #endregion
 
-        #region Helper Functions
+        #region Drawing Helper Functions
 
         /// <summary>
         /// Draws a line in a given color on a given canvas
         /// </summary>
-        private void DrawLine(Canvas c, System.Windows.Point mStart, System.Windows.Point mEnd, System.Windows.Media.Brush color)
+        private void DrawLine(Canvas c, Point mStart, Point mEnd, Brush color)
         {
             var thickness = -1;
             if (color == System.Windows.Media.Brushes.Black) thickness = 0;
@@ -246,7 +252,7 @@ namespace SculptPrint_Feedback
         /// Sets brush color based on which manufacturing issue box is checked
         /// </summary>
         /// <returns></returns>
-        private System.Windows.Media.Brush IssueColor()
+        private Brush IssueColor()
         {
             if (Issue1.IsChecked == true) return Issue1.Background;
             else if (Issue2.IsChecked == true) return Issue2.Background;
@@ -326,73 +332,69 @@ namespace SculptPrint_Feedback
         }
         #endregion
 
-        #region File Methods
+        #region SFTP Methods
 
+        // Connect to the domain via SFTP
         private SftpClient SFTPConnect()
         {
-            PrivateKeyFile key = new PrivateKeyFile("rsa.key", "Aniruddh123");
+            // Find private key and set connection information
+            PrivateKeyFile key = new PrivateKeyFile(string.Concat(mHome_Directory, "rsa.key"), "Aniruddh123");
             var connectionInfo = new ConnectionInfo("marellapudi.com", 18765, "apollome",
                                         new PrivateKeyAuthenticationMethod("apollome", key));
 
+            // Connect STFP client
             SftpClient client = new SftpClient(connectionInfo);
             client.Connect();
+
+            // Change directory to ~/home/public_ftp/
             client.ChangeDirectory(client.WorkingDirectory + "/public_ftp/");
+
+            // return the client as a global variable
             return client;
         }
 
-        private bool FileExistsOnServer(string fileName)
+        // Download a file given it's file name with extension
+        private bool DownloadFile(SftpClient client, string fileName)
         {
-            FtpWebResponse response = null;
-            var request = (FtpWebRequest)WebRequest.Create(string.Concat(mFTP[0], fileName));
-            request.Credentials = new NetworkCredential(mFTP[1], mFTP[2]);
-            request.Method = WebRequestMethods.Ftp.GetFileSize;
-
+            // Try downloading the file
             try
             {
-                response = (FtpWebResponse)request.GetResponse();
-            }
-            catch (WebException ex)
-            {
-                response = (FtpWebResponse)ex.Response;
-                if (response.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable)
+                using (Stream fileStream = File.Create(string.Concat(mSculptPrint_Folder, fileName)))
                 {
-                    return false;
+                    client.DownloadFile(fileName, fileStream);
                 }
             }
+            catch (SftpPathNotFoundException ex)
+            {
+                // The path/file was not found 
+                return false;
+            }
+
+            // If we get here, we have successfully downloaded the file
             return true;
         }
 
-        private void DownloadFile(SftpClient client, string fileName)
+        // Upload a file given it's file name with extension
+        private bool UploadFile(SftpClient client, string fileName)
         {
-            using (Stream fileStream = File.Create(string.Concat(mSculptPrint_Folder, fileName)))
+            // Try uploading the file
+            try
             {
-                client.DownloadFile(fileName, fileStream);
+                using (var fileStream = File.Open((mSculptPrint_Folder + fileName), FileMode.Open))
+                {
+                    client.UploadFile(fileStream, fileName);
+                }
             }
+            catch (SftpPathNotFoundException ex)
+            {
+                // The path/file was not found
+                return false;
+            }
+            // If we get here, we have successfully uploaded the file
+            MessageBox.Show("Successfully uploaded results to cloud!");
+            return true;
         }
 
-        private void UploadFile(string fileName)
-        {
-            var request = (FtpWebRequest)WebRequest.Create(string.Concat(mFTP[0], fileName));
-            request.Method = WebRequestMethods.Ftp.UploadFile;
-            request.Credentials = new NetworkCredential(mFTP[1], mFTP[2]);
-            
-            byte[] fileContents;
-            using (StreamReader sourceStream = new StreamReader(string.Concat(mSculptPrint_Folder, fileName)))
-            {
-                fileContents = Encoding.UTF8.GetBytes(sourceStream.ReadToEnd());
-            }
-            request.ContentLength = fileContents.Length;
-
-            using (Stream requestStream = request.GetRequestStream())
-            {
-                requestStream.Write(fileContents, 0, fileContents.Length);
-            }
-
-            using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
-            {
-                Console.WriteLine($"Upload File Complete, status {response.StatusDescription}");
-            }
-        }
         #endregion
     }
 }

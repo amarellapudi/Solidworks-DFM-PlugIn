@@ -149,7 +149,7 @@
                         Click="Reset_SolidWorks_View_Click"/>
                     <Button Grid.Row="0" Grid.Column="5" Padding="2 8" Content="Reset SculptPrint View" 
                         Click="Reset_SculptPrint_View_Click"/>
-                    <Button Grid.Row="0" Grid.Column="1" Padding="2 8" Content="LOAD" FontWeight="Bold" Click="Load_Click"/>
+                    <Button x:Name="LoadButton" Grid.Row="0" Grid.Column="1" Padding="2 8" Content="LOAD" FontWeight="Bold" Click="Load_Click"/>
                     <Button Grid.Row="0" Grid.Column="7" Padding="2 8" Content="SUBMIT" FontWeight="Bold" Click="Submit_Click"/>
                 </Grid>
             </StackPanel>
