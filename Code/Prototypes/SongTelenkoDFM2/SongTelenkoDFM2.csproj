@@ -186,7 +186,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AngelSix.SolidDna">
-      <Version>1.0.1</Version>
+      <Version>1.0.1.4</Version>
     </PackageReference>
     <PackageReference Include="SSH.NET">
       <Version>2016.1.0</Version>

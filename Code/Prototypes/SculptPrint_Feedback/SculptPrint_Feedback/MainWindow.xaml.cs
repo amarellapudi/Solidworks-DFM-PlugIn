@@ -35,10 +35,10 @@ namespace SculptPrint_Feedback
             mHome_Directory = string.Concat(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "\\");
 
             // IF DEBUGGING, UNCOMMENT THIS
-            mSculptPrint_Folder = mHome_Directory.Replace("\\Code\\Prototypes\\SculptPrint_Feedback\\SculptPrint_Feedback\\bin\\Debug\\", "\\SculptPrint\\Screenshots\\");
+            //mSculptPrint_Folder = mHome_Directory.Replace("\\Code\\Prototypes\\SculptPrint_Feedback\\SculptPrint_Feedback\\bin\\Debug\\", "\\SculptPrint\\Experiment Files\\");
 
             // IF BUILDING FOR SCULPTPRINT DIRECTOR, UNCOMMENT THIS
-            //mSculptPrint_Folder = mHome_Directory.Replace("\\SculptPrint Feeback Tool\\", "\\Screenshots\\");
+            mSculptPrint_Folder = mHome_Directory.Replace("\\SculptPrint Feeback Tool\\", "\\Experiment Files\\");
 
             // Set locations for SculptPrint and SolidWorks Views
             mSolidWorks_View_Location = string.Concat(mSculptPrint_Folder, "View_SW.png");
@@ -108,22 +108,14 @@ namespace SculptPrint_Feedback
         // Called when "Load" is clicked. Loads SW/SP views from server into this app
         private void Load_Click(object sender, RoutedEventArgs e)
         {
-
-            string fileName = "View_SP.png";
-
             while (true)
             {
-                if (!DownloadFile(mClient, fileName)) continue;
+                if (!DownloadFile(mClient, "DONE")) continue;
                 break;
             }
 
-            fileName = "View_SW.png";
-
-            while (true)
-            {
-                if (!DownloadFile(mClient, fileName)) continue;
-                break;
-            }
+            DownloadFile(mClient, "View_SP.png");
+            DownloadFile(mClient, "View_SW.png");
 
             string SolidWorks_View_Location = string.Concat(mSculptPrint_Folder, "View_SW.png");
             string SculptPrint_View_Location = string.Concat(mSculptPrint_Folder, "View_SP.png");

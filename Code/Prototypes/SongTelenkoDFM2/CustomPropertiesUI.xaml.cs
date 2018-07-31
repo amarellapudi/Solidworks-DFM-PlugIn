@@ -66,7 +66,7 @@ namespace SongTelenkoDFM2
             InitializeComponent();
             FeatureTolerance_Display.ItemsSource = mFeatureTolerances;
             home = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            mSculptPrint_Folder = home.Replace("\\Code\\Prototypes\\SongTelenkoDFM2\\bin\\Debug", "\\SculptPrint\\Screenshots\\");
+            mSculptPrint_Folder = home.Replace("\\Code\\Prototypes\\SongTelenkoDFM2\\bin\\Debug", "\\SculptPrint\\Experiment Files\\");
         }
 
         /// <summary>
@@ -364,14 +364,30 @@ namespace SongTelenkoDFM2
             bool saved = ExportModelAsStl(STL_Save_Location);
             bool savedPNG = ExportModelAsPNG(PNG_Save_Location);
 
+            try
+            {
+                // Create the file.
+                using (FileStream fs = File.Create(mSculptPrint_Folder+"DONE"))
+                {
+                    var info = new UTF8Encoding(true).GetBytes("");
+                    // Add some information to the file.
+                    fs.Write(info, 0, info.Length);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+
+
             if (saved & savedPNG)
             {
                 var client = SFTPConnect();
                 SFTPUploadFile(client, "View_SW.png");
                 SFTPUploadFile(client, "test.stl");
+                SFTPUploadFile(client, "DONE");
 
                 // Show DFM Reults loading message box
-                // this message will remain open the following file exists ~\SculptPrint\test.txt
                 var FeedbackPNG_Save_Location = string.Concat(mSculptPrint_Folder, "View_Researcher_Feedback.png");
 
                 MessageBox_DFMLoading DFMLoading = new MessageBox_DFMLoading(FeedbackPNG_Save_Location);
