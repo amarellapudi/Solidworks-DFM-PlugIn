@@ -9,6 +9,9 @@ using System.IO;
 using System.Windows.Media;
 using Renci.SshNet;
 using Renci.SshNet.Common;
+using System.Management.Automation;
+using System.Collections.ObjectModel;
+using System.Text;
 
 namespace SculptPrint_Feedback
 {
@@ -20,11 +23,11 @@ namespace SculptPrint_Feedback
         #region Public Members and Initialization
 
         // SculptPrint folder and SW/SP view locations
-        public string mHome_Directory;
-        public string mSculptPrint_Folder;
+        public static string MHome_Directory;
+        public static string MSculptPrint_Folder;
         public string mSolidWorks_View_Location;
         public string mSculptPrint_View_Location;
-        public SftpClient mClient;
+        public static SftpClient MClient;
 
         // Initialization
         public MainWindow()
@@ -32,20 +35,20 @@ namespace SculptPrint_Feedback
             InitializeComponent();
 
             // Set SculptPrint Folder and SW/SP view locations
-            mHome_Directory = string.Concat(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "\\");
+            MHome_Directory = string.Concat(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "\\");
 
             // IF DEBUGGING, UNCOMMENT THIS
             //mSculptPrint_Folder = mHome_Directory.Replace("\\Code\\Prototypes\\SculptPrint_Feedback\\SculptPrint_Feedback\\bin\\Debug\\", "\\SculptPrint\\Experiment Files\\");
 
             // IF BUILDING FOR SCULPTPRINT DIRECTOR, UNCOMMENT THIS
-            mSculptPrint_Folder = mHome_Directory.Replace("\\SculptPrint Feeback Tool\\", "\\Experiment Files\\");
+            MSculptPrint_Folder = MHome_Directory.Replace("\\SculptPrint Feeback Tool\\", "\\Experiment Files\\");
 
             // Set locations for SculptPrint and SolidWorks Views
-            mSolidWorks_View_Location = string.Concat(mSculptPrint_Folder, "View_SW.png");
-            mSculptPrint_View_Location = string.Concat(mSculptPrint_Folder, "View_SP.png");
+            mSolidWorks_View_Location = string.Concat(MSculptPrint_Folder, "View_SW.png");
+            mSculptPrint_View_Location = string.Concat(MSculptPrint_Folder, "View_SP.png");
 
             // Connect SFTP client
-            mClient = SFTPConnect();
+            MClient = SFTPConnect();
         }
 
         #endregion
@@ -108,19 +111,12 @@ namespace SculptPrint_Feedback
         // Called when "Load" is clicked. Loads SW/SP views from server into this app
         private void Load_Click(object sender, RoutedEventArgs e)
         {
-            while (true)
-            {
-                if (!DownloadFile(mClient, "DONE")) continue;
-                break;
-            }
-
-            DownloadFile(mClient, "View_SP.png");
-            DownloadFile(mClient, "View_SW.png");
-
-            string SolidWorks_View_Location = string.Concat(mSculptPrint_Folder, "View_SW.png");
-            string SculptPrint_View_Location = string.Concat(mSculptPrint_Folder, "View_SP.png");
-
+            MessageBox_Loading loading = new MessageBox_Loading(MClient);
+            var result = loading.ShowDialog();
+            string SolidWorks_View_Location = string.Concat(MSculptPrint_Folder, "View_SW.png");
             View_SolidWorks.Source = new BitmapImage(new Uri(SolidWorks_View_Location, UriKind.Absolute));
+
+            string SculptPrint_View_Location = string.Concat(MSculptPrint_Folder, "View_SP.png");
             View_SculptPrint.Source = new BitmapImage(new Uri(SculptPrint_View_Location, UriKind.Absolute));
 
             LoadButton.IsEnabled = false;
@@ -135,7 +131,7 @@ namespace SculptPrint_Feedback
             Controls.Visibility = Visibility.Hidden;
 
             // Create the screenshot
-            using (var fileStream = File.Create(mSculptPrint_Folder + "View_Researcher_Feedback.png"))
+            using (var fileStream = File.Create(MSculptPrint_Folder + "View_Researcher_Feedback.png"))
             {
                 SaveAsPng(GetImage(), fileStream);
                 Controls.Visibility = Visibility.Visible;
@@ -145,7 +141,9 @@ namespace SculptPrint_Feedback
             Controls.Visibility = Visibility.Visible;
 
             // Upload the screenshot to the server
-            UploadFile(mClient, "View_Researcher_Feedback.png");
+            UploadFile(MClient, "View_Researcher_Feedback.png");
+            CreateFinishedFlag();
+            MessageBox.Show("Successfully uploaded results to cloud!");
         }
         
         // Called when the window is closing
@@ -255,7 +253,7 @@ namespace SculptPrint_Feedback
             else
             {
                 string message = "Please select a color check-box";
-                string caption = "Error: No Color Selected";
+                string caption = "No Color Selected";
                 MessageBoxButton buttons = MessageBoxButton.OK;
                 MessageBox.Show(message, caption, buttons);
                 return System.Windows.Media.Brushes.Black;
@@ -324,13 +322,13 @@ namespace SculptPrint_Feedback
         }
         #endregion
 
-        #region SFTP Methods
+        #region SFTP and File Methods
 
         // Connect to the domain via SFTP
-        private SftpClient SFTPConnect()
+        public static SftpClient SFTPConnect()
         {
             // Find private key and set connection information
-            PrivateKeyFile key = new PrivateKeyFile(string.Concat(mHome_Directory, "rsa.key"), "Aniruddh123");
+            PrivateKeyFile key = new PrivateKeyFile(string.Concat(MHome_Directory, "rsa.key"), "Aniruddh123");
             var connectionInfo = new ConnectionInfo("marellapudi.com", 18765, "apollome",
                                         new PrivateKeyAuthenticationMethod("apollome", key));
 
@@ -346,12 +344,12 @@ namespace SculptPrint_Feedback
         }
 
         // Download a file given it's file name with extension
-        private bool DownloadFile(SftpClient client, string fileName)
+        public static bool DownloadFile(SftpClient client, string fileName)
         {
             // Try downloading the file
             try
             {
-                using (Stream fileStream = File.Create(string.Concat(mSculptPrint_Folder, fileName)))
+                using (Stream fileStream = File.Create(string.Concat(MSculptPrint_Folder, fileName)))
                 {
                     client.DownloadFile(fileName, fileStream);
                 }
@@ -367,12 +365,12 @@ namespace SculptPrint_Feedback
         }
 
         // Upload a file given it's file name with extension
-        private bool UploadFile(SftpClient client, string fileName)
+        public static bool UploadFile(SftpClient client, string fileName)
         {
             // Try uploading the file
             try
             {
-                using (var fileStream = File.Open((mSculptPrint_Folder + fileName), FileMode.Open))
+                using (var fileStream = File.Open((MSculptPrint_Folder + fileName), FileMode.Open))
                 {
                     client.UploadFile(fileStream, fileName);
                 }
@@ -383,8 +381,28 @@ namespace SculptPrint_Feedback
                 return false;
             }
             // If we get here, we have successfully uploaded the file
-            MessageBox.Show("Successfully uploaded results to cloud!");
             return true;
+        }
+
+        // Upload a file named "DONE_subject" to reflect completion of subject's portion
+        // of the work flow (uploading test.stl and View_SW.png)
+        public static void CreateFinishedFlag()
+        {
+            try
+            {
+                // Create the file.
+                using (FileStream fs = File.Create(MSculptPrint_Folder + "DONE_researcher"))
+                {
+                    var info = new UTF8Encoding(true).GetBytes("");
+                    // Add some information to the file.
+                    fs.Write(info, 0, info.Length);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            UploadFile(MClient, "DONE_researcher");
         }
 
         #endregion

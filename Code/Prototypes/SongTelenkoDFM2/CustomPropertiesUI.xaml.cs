@@ -11,7 +11,6 @@ using SolidWorks.Interop.swconst;
 using static SongTelenkoDFM2.Methods_FileExporting;
 using System.IO;
 using System.Reflection;
-using System.Net;
 using System.Text;
 using Renci.SshNet;
 using Renci.SshNet.Common;
@@ -24,9 +23,10 @@ namespace SongTelenkoDFM2
     {
         #region Public Members
 
-        public string mSculptPrint_Folder;
-        public string home;
+        public static string MSculptPrint_Folder;
+        public string mHome;
         public string[] mFTP = { "ftp://www.marellapudi.com/public_ftp/", "apollome", "Aniruddh.123" };
+        public static SftpClient MClient;
 
         public class FeatureToleranceObject
         {
@@ -65,8 +65,9 @@ namespace SongTelenkoDFM2
             DataContext = this;
             InitializeComponent();
             FeatureTolerance_Display.ItemsSource = mFeatureTolerances;
-            home = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            mSculptPrint_Folder = home.Replace("\\Code\\Prototypes\\SongTelenkoDFM2\\bin\\Debug", "\\SculptPrint\\Experiment Files\\");
+            mHome = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            MSculptPrint_Folder = mHome.Replace("\\Code\\Prototypes\\SongTelenkoDFM2\\bin\\Debug", "\\SculptPrint\\Experiment Files\\");
+            MClient = SFTPConnect();
         }
 
         /// <summary>
@@ -353,44 +354,24 @@ namespace SongTelenkoDFM2
             model.ClearSelection();
            
             // Set export location
-            var STL_Save_Location = string.Concat(mSculptPrint_Folder, "test.stl");
+            var STL_Save_Location = string.Concat(MSculptPrint_Folder, "test.stl");
 
             // Export SolidWorks View
             model.ShowNamedView2("", (int)swStandardViews_e.swBottomView);
             model.ViewZoomtofit2();
-            var PNG_Save_Location = string.Concat(mSculptPrint_Folder, "View_SW.png");
+            var PNG_Save_Location = string.Concat(MSculptPrint_Folder, "View_SW.png");
 
             // Export to fixed location
             bool saved = ExportModelAsStl(STL_Save_Location);
             bool savedPNG = ExportModelAsPNG(PNG_Save_Location);
 
-            try
-            {
-                // Create the file.
-                using (FileStream fs = File.Create(mSculptPrint_Folder+"DONE"))
-                {
-                    var info = new UTF8Encoding(true).GetBytes("");
-                    // Add some information to the file.
-                    fs.Write(info, 0, info.Length);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-
-
             if (saved & savedPNG)
             {
-                var client = SFTPConnect();
-                SFTPUploadFile(client, "View_SW.png");
-                SFTPUploadFile(client, "test.stl");
-                SFTPUploadFile(client, "DONE");
-
                 // Show DFM Reults loading message box
-                var FeedbackPNG_Save_Location = string.Concat(mSculptPrint_Folder, "View_Researcher_Feedback.png");
+                var FeedbackPNG_Save_Location = string.Concat(MSculptPrint_Folder, "View_Researcher_Feedback.png");
+                var FeedbackPNG_FileName = "View_Researcher_Feedback.png";
 
-                MessageBox_DFMLoading DFMLoading = new MessageBox_DFMLoading(FeedbackPNG_Save_Location);
+                MessageBox_DFMLoading DFMLoading = new MessageBox_DFMLoading(FeedbackPNG_FileName, MClient);
                 DialogResult DFM_Result = DFMLoading.ShowDialog();
 
                 // If the form outputs a DialogResult of Yes, then we have the file!
@@ -399,6 +380,8 @@ namespace SongTelenkoDFM2
                     DFMLoading.Close();
                     MessageBox_DFMResults DFMResults = new MessageBox_DFMResults(FeedbackPNG_Save_Location);
                     DFMResults.ShowDialog();
+
+                    SFTPClean(MClient);
                 }
             }
         }
@@ -737,9 +720,10 @@ namespace SongTelenkoDFM2
 
         #region File Methods
 
+        // Connect to the domain via SFTP
         private SftpClient SFTPConnect()
         {
-            PrivateKeyFile key = new PrivateKeyFile(home+"\\rsa.key", "Aniruddh123");
+            PrivateKeyFile key = new PrivateKeyFile(mHome+"\\rsa.key", "Aniruddh123");
             var connectionInfo = new ConnectionInfo("marellapudi.com", 18765, "apollome",
                                         new PrivateKeyAuthenticationMethod("apollome", key));
 
@@ -749,12 +733,13 @@ namespace SongTelenkoDFM2
             return client;
         }
 
-        private bool SFTPUploadFile(SftpClient client, string fileName)
+        // Upload a file given it's file name with extension
+        public static bool SFTPUploadFile(SftpClient client, string fileName)
         {
             // Try uploading the file
             try
             {
-                using (var fileStream = File.Open((mSculptPrint_Folder + fileName), FileMode.Open))
+                using (var fileStream = File.Open((MSculptPrint_Folder + fileName), FileMode.Open))
                 {
                     client.UploadFile(fileStream, fileName);
                 }
@@ -768,44 +753,58 @@ namespace SongTelenkoDFM2
             return true;
         }
 
-        private void DownloadFile(string fileName)
+        // Download a file given it's file name with extension
+        public static bool DownloadFile(SftpClient client, string fileName)
         {
-            using (WebClient request = new WebClient())
+            // Try downloading the file
+            try
             {
-                request.Credentials = new NetworkCredential(mFTP[1], mFTP[2]);
-                byte[] fileData = request.DownloadData(string.Concat(mFTP[0], fileName));
-
-                using (FileStream file = File.Create(string.Concat(mSculptPrint_Folder, fileName)))
+                using (Stream fileStream = File.Create(string.Concat(MSculptPrint_Folder, fileName)))
                 {
-                    file.Write(fileData, 0, fileData.Length);
-                    file.Close();
+                    client.DownloadFile(fileName, fileStream);
                 }
             }
+            catch (SftpPathNotFoundException ex)
+            {
+                // The path/file was not found 
+                return false;
+            }
+
+            // If we get here, we have successfully downloaded the file
+            return true;
         }
 
-        private void UploadFile(string fileName)
+        // Upload a file named "DONE_subject" to reflect completion of subject's portion
+        // of the work flow (uploading test.stl and View_SW.png)
+        public static void CreateFinishedFlag()
         {
-            var request = (FtpWebRequest)WebRequest.Create(string.Concat(mFTP[0], fileName));
-            request.Method = WebRequestMethods.Ftp.UploadFile;
-            request.Credentials = new NetworkCredential(mFTP[1], mFTP[2]);
-
-            byte[] fileContents;
-            using (StreamReader sourceStream = new StreamReader(string.Concat(mSculptPrint_Folder, fileName)))
+            try
             {
-                fileContents = Encoding.UTF8.GetBytes(sourceStream.ReadToEnd());
+                // Create the file.
+                using (FileStream fs = File.Create(MSculptPrint_Folder + "DONE_subject"))
+                {
+                    var info = new UTF8Encoding(true).GetBytes("");
+                    // Add some information to the file.
+                    fs.Write(info, 0, info.Length);
+                }
             }
-            request.ContentLength = fileContents.Length;
-
-            using (Stream requestStream = request.GetRequestStream())
+            catch (Exception ex)
             {
-                requestStream.Write(fileContents, 0, fileContents.Length);
+                Console.WriteLine(ex.ToString());
             }
-
-            using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
-            {
-                Console.WriteLine($"Upload File Complete, status {response.StatusDescription}");
-            }
+            SFTPUploadFile(MClient, "DONE_subject");
         }
+
+        // Remove experiment files from the server
+        public static void SFTPClean(SftpClient client)
+        {
+            client.DeleteFile("DONE_researcher");
+            client.DeleteFile("DONE_subject");
+            client.DeleteFile("test.stl");
+            client.DeleteFile("View_SW.png");
+            client.DeleteFile("View_Researcher_Feedback.png");
+        }
+
         #endregion
     }
 }

@@ -1,20 +1,26 @@
-﻿using System;
+﻿using Renci.SshNet;
+using System;
 using System.ComponentModel;
-using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace SongTelenkoDFM2
 {
     public partial class MessageBox_DFMLoading : Form
     {
-        
-        public MessageBox_DFMLoading(string location)
+        public string FileName { get; set; }
+        public SftpClient Client { get; set; }
+
+        public MessageBox_DFMLoading(string fileName, SftpClient client)
         {
             InitializeComponent();
-            FileLocation = location;
-        }
+            FileName = fileName;
+            Client = client;
 
-        public string FileLocation { get; set; }
+            CustomPropertiesUI.SFTPUploadFile(client, "View_SW.png");
+            CustomPropertiesUI.SFTPUploadFile(client, "test.stl");
+            CustomPropertiesUI.CreateFinishedFlag();
+        }
 
         public void Window_ContentRendered(object sender, EventArgs e)
         {
@@ -27,9 +33,11 @@ namespace SongTelenkoDFM2
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            FileInfo results = new FileInfo(FileLocation);
-            
-            while (!results.Exists) results = new FileInfo(FileLocation);
+            while (!CustomPropertiesUI.DownloadFile(Client, "DONE_researcher"))
+            {
+                Thread.Sleep(75);
+            }
+            CustomPropertiesUI.DownloadFile(Client, FileName);
 
             DialogResult = DialogResult.Yes;
         }
