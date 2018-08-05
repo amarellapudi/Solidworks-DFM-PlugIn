@@ -6,7 +6,9 @@
         xmlns:local="clr-namespace:SculptPrint_Feedback"
         mc:Ignorable="d"
         Title="SculptPrint Feedback Tool" Height="600" Width="1000" ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
-        Closing="Window_Closing">
+        Closing="Window_Closing"
+        Loaded="Window_Loaded">
+    
     <Grid>
         <StackPanel>
 
@@ -129,28 +131,31 @@
             <!-- ########################## -->
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="4*"/>
-                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="4*"/>
-                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="4*"/>
-                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="4*"/>
-                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
 
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
-
-                    <Button Grid.Row="0" Grid.Column="3" Padding="2 8" Content="Reset SolidWorks View" 
-                        Click="Reset_SolidWorks_View_Click"/>
-                    <Button Grid.Row="0" Grid.Column="5" Padding="2 8" Content="Reset SculptPrint View" 
-                        Click="Reset_SculptPrint_View_Click"/>
-                    <Button x:Name="LoadButton" Grid.Row="0" Grid.Column="1" Padding="2 8" Content="LOAD" FontWeight="Bold" Click="Load_Click"/>
-                    <Button Grid.Row="0" Grid.Column="7" Padding="2 8" Content="SUBMIT" FontWeight="Bold" Click="Submit_Click"/>
+                    <Button Grid.Column="1" Grid.Row="0" Padding="2 8" Content="Clean" Click="Clean_Click"></Button>
+                    <Button Grid.Column="3" Grid.Row="0" Padding="2 8" FontWeight="Bold" 
+                            x:Name="LoadButton" Click="Load_Click" Content="LOAD"/>
+                    <Button Grid.Column="5" Grid.Row="0" Padding="2 8" Content="Reset SolidWorks View" x:Name="Reset_SolidWorks_View"
+                            Click="Reset_SolidWorks_View_Click"/>
+                    <Button Grid.Column="7" Grid.Row="0" Padding="2 8" Content="Reset SculptPrint View" x:Name="Reset_SculptPrint_View"
+                            Click="Reset_SculptPrint_View_Click"/>
+                    <Button Grid.Column="9" Grid.Row="0" Padding="2 8" Content="SUBMIT" FontWeight="Bold" Click="Submit_Click"/>
                 </Grid>
             </StackPanel>
         </StackPanel>

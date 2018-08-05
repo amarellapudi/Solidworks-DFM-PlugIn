@@ -12,6 +12,7 @@ using Renci.SshNet.Common;
 using System.Management.Automation;
 using System.Collections.ObjectModel;
 using System.Text;
+using Renci.SshNet.Sftp;
 
 namespace SculptPrint_Feedback
 {
@@ -28,6 +29,7 @@ namespace SculptPrint_Feedback
         public string mSolidWorks_View_Location;
         public string mSculptPrint_View_Location;
         public static SftpClient MClient;
+        public static ImageSource Default_Image;
 
         // Initialization
         public MainWindow()
@@ -46,6 +48,9 @@ namespace SculptPrint_Feedback
             // Set locations for SculptPrint and SolidWorks Views
             mSolidWorks_View_Location = string.Concat(MSculptPrint_Folder, "View_SW.png");
             mSculptPrint_View_Location = string.Concat(MSculptPrint_Folder, "View_SP.png");
+
+            // Default load image screen
+            Default_Image = View_SolidWorks.Source.CloneCurrentValue();
 
             // Connect SFTP client
             MClient = SFTPConnect();
@@ -113,11 +118,9 @@ namespace SculptPrint_Feedback
         {
             MessageBox_Loading loading = new MessageBox_Loading(MClient);
             var result = loading.ShowDialog();
-            string SolidWorks_View_Location = string.Concat(MSculptPrint_Folder, "View_SW.png");
-            View_SolidWorks.Source = new BitmapImage(new Uri(SolidWorks_View_Location, UriKind.Absolute));
 
-            string SculptPrint_View_Location = string.Concat(MSculptPrint_Folder, "View_SP.png");
-            View_SculptPrint.Source = new BitmapImage(new Uri(SculptPrint_View_Location, UriKind.Absolute));
+            View_SolidWorks.Source = new BitmapImage(new Uri(mSolidWorks_View_Location, UriKind.Absolute));
+            View_SculptPrint.Source = new BitmapImage(new Uri(mSculptPrint_View_Location, UriKind.Absolute));
 
             LoadButton.IsEnabled = false;
         }
@@ -144,6 +147,12 @@ namespace SculptPrint_Feedback
             UploadFile(MClient, "View_Researcher_Feedback.png");
             CreateFinishedFlag();
             MessageBox.Show("Successfully uploaded results to cloud!");
+
+            Clean(MClient);
+            Reset_SculptPrint_View_Click(sender, e);
+            Reset_SolidWorks_View_Click(sender, e);
+
+            Load_Click(sender, e);
         }
         
         // Called when the window is closing
@@ -151,6 +160,19 @@ namespace SculptPrint_Feedback
         {
 
         }
+
+        // Called when the "Clean" button is clicked
+        private void Clean_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        // Called when the window is loaded
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            Load_Click(sender, e);
+        }
+
 
         #endregion
 
@@ -403,6 +425,33 @@ namespace SculptPrint_Feedback
                 Console.WriteLine(ex.ToString());
             }
             UploadFile(MClient, "DONE_researcher");
+        }
+
+        // Remove experiment files from the server
+        public void Clean(SftpClient client)
+        {
+            // Reset SolidWorks and SculptPrint views to default images
+            View_SolidWorks.Source = new BitmapImage(
+                new Uri(string.Concat(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "\\IMG_No_Image.png"),
+                UriKind.Absolute));
+            View_SculptPrint.Source = new BitmapImage(
+                new Uri(string.Concat(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "\\IMG_No_Image.png"),
+                UriKind.Absolute));
+
+            // Move STL and PNG view files
+            var now = DateTime.Now.ToString("ddMMyyyy_HHmmss");
+            var dataFolder = now + "/";
+            MClient.CreateDirectory(now);
+            MClient.RenameFile("test.stl", dataFolder + "test.stl");
+            MClient.RenameFile("View_SW.png", dataFolder + "View_SW.png");
+
+            MClient.UploadFile(
+                File.Open((MSculptPrint_Folder + "View_Researcher_Feedback.png"), FileMode.Open), 
+                dataFolder + "View_Researcher_Feedback.png"
+            );
+
+            // Then remove DONE_subject and DONE_researcher flags 
+            client.DeleteFile("DONE_subject");
         }
 
         #endregion

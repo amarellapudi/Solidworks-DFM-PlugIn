@@ -126,7 +126,9 @@
     <Resource Include="logo-small.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="IMG_No_Image.png" />
+    <Content Include="IMG_No_Image.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

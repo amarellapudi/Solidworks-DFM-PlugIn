@@ -380,8 +380,8 @@ namespace SongTelenkoDFM2
                     DFMLoading.Close();
                     MessageBox_DFMResults DFMResults = new MessageBox_DFMResults(FeedbackPNG_Save_Location);
                     DFMResults.ShowDialog();
-
-                    SFTPClean(MClient);
+                    MClient.DeleteFile("DONE_researcher");
+                    MClient.DeleteFile("View_Researcher_Feedback.png");
                 }
             }
         }
@@ -793,16 +793,6 @@ namespace SongTelenkoDFM2
                 Console.WriteLine(ex.ToString());
             }
             SFTPUploadFile(MClient, "DONE_subject");
-        }
-
-        // Remove experiment files from the server
-        public static void SFTPClean(SftpClient client)
-        {
-            client.DeleteFile("DONE_researcher");
-            client.DeleteFile("DONE_subject");
-            client.DeleteFile("test.stl");
-            client.DeleteFile("View_SW.png");
-            client.DeleteFile("View_Researcher_Feedback.png");
         }
 
         #endregion
