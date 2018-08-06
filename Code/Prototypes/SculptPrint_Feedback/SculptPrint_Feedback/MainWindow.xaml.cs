@@ -29,7 +29,9 @@ namespace SculptPrint_Feedback
         public string mSolidWorks_View_Location;
         public string mSculptPrint_View_Location;
         public static SftpClient MClient;
-        public static ImageSource Default_Image;
+        public byte mRun_Number = 0;
+        public BitmapImage mSW;
+        public BitmapImage mSP;
 
         // Initialization
         public MainWindow()
@@ -49,11 +51,23 @@ namespace SculptPrint_Feedback
             mSolidWorks_View_Location = string.Concat(MSculptPrint_Folder, "View_SW.png");
             mSculptPrint_View_Location = string.Concat(MSculptPrint_Folder, "View_SP.png");
 
-            // Default load image screen
-            Default_Image = View_SolidWorks.Source.CloneCurrentValue();
-
             // Connect SFTP client
             MClient = SFTPConnect();
+
+            // Delete previous local experiment files
+            DeleteLocal(MSculptPrint_Folder + "DONE_researcher");
+            DeleteLocal(MSculptPrint_Folder + "DONE_subject");
+            DeleteLocal(MSculptPrint_Folder + "test.stl");
+            DeleteLocal(MSculptPrint_Folder + "View_SW.png");
+            DeleteLocal(MSculptPrint_Folder + "View_SP.png");
+            DeleteLocal(MSculptPrint_Folder + "View_Researcher_Feedback.png");
+
+            // Delete previous cloud experiment files
+            DeleteFile_Cloud("DONE_subject");
+            DeleteFile_Cloud("DONE_researcher");
+            DeleteFile_Cloud("View_Researcher_Feedback.png");
+            DeleteFile_Cloud("test.stl");
+            DeleteFile_Cloud("View_SW.png");
         }
 
         #endregion
@@ -118,9 +132,29 @@ namespace SculptPrint_Feedback
         {
             MessageBox_Loading loading = new MessageBox_Loading(MClient);
             var result = loading.ShowDialog();
+            
+            // Save image into stream so we can do more operations on the View_SW.png
+            BitmapImage res = new BitmapImage();
+            Stream stream = new MemoryStream();
+            System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(mSolidWorks_View_Location);
+            bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);  
+            bitmap.Dispose();   
+            res.BeginInit();
+            res.StreamSource = stream; 
+            res.EndInit();
 
-            View_SolidWorks.Source = new BitmapImage(new Uri(mSolidWorks_View_Location, UriKind.Absolute));
-            View_SculptPrint.Source = new BitmapImage(new Uri(mSculptPrint_View_Location, UriKind.Absolute));
+            // Save image into stream so we can do more operations on the View_SP.png
+            BitmapImage res2 = new BitmapImage();
+            Stream stream2 = new MemoryStream();
+            System.Drawing.Bitmap bitmap2 = new System.Drawing.Bitmap(mSculptPrint_View_Location);
+            bitmap2.Save(stream2, System.Drawing.Imaging.ImageFormat.Png);
+            bitmap2.Dispose();
+            res2.BeginInit();
+            res2.StreamSource = stream2;
+            res2.EndInit();
+            
+            View_SolidWorks.Source = res;
+            View_SculptPrint.Source = res2;
 
             LoadButton.IsEnabled = false;
         }
@@ -128,6 +162,9 @@ namespace SculptPrint_Feedback
         // Called when "Submit" is clicked. Creates feedback screenshot and uploads it to server
         private void Submit_Click(object sender, RoutedEventArgs e)
         {
+            // Remove DONE_subject
+            MClient.DeleteFile("DONE_subject");
+
             // Prepare view for screenshot. Uncheck all check check boxes, and hide the control buttons
             Issue1.IsChecked = false; Issue2.IsChecked = false; Issue3.IsChecked = false;
             Issue4.IsChecked = false; Issue5.IsChecked = false; Issue6.IsChecked = false;
@@ -146,7 +183,6 @@ namespace SculptPrint_Feedback
             // Upload the screenshot to the server
             UploadFile(MClient, "View_Researcher_Feedback.png");
             CreateFinishedFlag();
-            MessageBox.Show("Successfully uploaded results to cloud!");
 
             Clean(MClient);
             Reset_SculptPrint_View_Click(sender, e);
@@ -161,19 +197,12 @@ namespace SculptPrint_Feedback
 
         }
 
-        // Called when the "Clean" button is clicked
-        private void Clean_Click(object sender, RoutedEventArgs e)
-        {
-            
-        }
-
         // Called when the window is loaded
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Load_Click(sender, e);
         }
-
-
+        
         #endregion
 
         #region SolidWorks View Button Click Events
@@ -378,7 +407,7 @@ namespace SculptPrint_Feedback
             }
             catch (SftpPathNotFoundException ex)
             {
-                // The path/file was not found 
+                // The path/file was not found
                 return false;
             }
 
@@ -445,15 +474,35 @@ namespace SculptPrint_Feedback
             MClient.RenameFile("test.stl", dataFolder + "test.stl");
             MClient.RenameFile("View_SW.png", dataFolder + "View_SW.png");
 
-            MClient.UploadFile(
-                File.Open((MSculptPrint_Folder + "View_Researcher_Feedback.png"), FileMode.Open), 
-                dataFolder + "View_Researcher_Feedback.png"
-            );
+            MClient.UploadFile( File.Open((MSculptPrint_Folder + "View_Researcher_Feedback.png"), FileMode.Open), 
+                dataFolder + "View_Researcher_Feedback.png" );
 
-            // Then remove DONE_subject and DONE_researcher flags 
-            client.DeleteFile("DONE_subject");
+            MClient.UploadFile( File.Open((MSculptPrint_Folder + "View_SP.png"), FileMode.Open),
+                dataFolder + "View_SP.png" );
         }
 
+        // Delete local file - used to clear SculptPrint experiment files when intializing
+        private void DeleteLocal(string path)
+        {
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+        }
+
+        // Delete cloud file - used to clear cloud directory before running experiment
+        private void DeleteFile_Cloud(string fileName)
+        {
+            try
+            {
+                MClient.DeleteFile(fileName);
+            }
+            catch(Exception a)
+            {
+                return;
+            }
+            return;
+        }
         #endregion
     }
 }

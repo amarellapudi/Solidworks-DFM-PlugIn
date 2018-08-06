@@ -68,6 +68,14 @@ namespace SongTelenkoDFM2
             mHome = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             MSculptPrint_Folder = mHome.Replace("\\Code\\Prototypes\\SongTelenkoDFM2\\bin\\Debug", "\\SculptPrint\\Experiment Files\\");
             MClient = SFTPConnect();
+
+            // Delete previous experiment files
+            DeleteLocal(MSculptPrint_Folder + "DONE_researcher");
+            DeleteLocal(MSculptPrint_Folder + "DONE_subject");
+            DeleteLocal(MSculptPrint_Folder + "test.stl");
+            DeleteLocal(MSculptPrint_Folder + "View_SW.png");
+            DeleteLocal(MSculptPrint_Folder + "View_SP.png");
+            DeleteLocal(MSculptPrint_Folder + "View_Researcher_Feedback.png");
         }
 
         /// <summary>
@@ -344,7 +352,6 @@ namespace SongTelenkoDFM2
         /// <param name="e"></param>
         private void ManufacturingCheck_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-
             // Disable translation of part into positive space when exporting
             SldWorks app = SolidWorksEnvironment.Application.UnsafeObject;
             app.SetUserPreferenceToggle(((int)swUserPreferenceToggle_e.swSTLDontTranslateToPositive), true);
@@ -793,6 +800,15 @@ namespace SongTelenkoDFM2
                 Console.WriteLine(ex.ToString());
             }
             SFTPUploadFile(MClient, "DONE_subject");
+        }
+
+        // Delete local file - used to clear SculptPrint experiment files when intializing
+        private void DeleteLocal(string path)
+        {
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
         }
 
         #endregion

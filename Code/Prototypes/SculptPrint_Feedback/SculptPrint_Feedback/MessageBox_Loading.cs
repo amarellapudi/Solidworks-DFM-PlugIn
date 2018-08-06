@@ -54,7 +54,6 @@ namespace SculptPrint_Feedback
             label1.Text = "Downloading SolidWorks View";
             Refresh();
             MainWindow.DownloadFile(Client, "View_SW.png");
-            // Code fails here on the second trial
             
             progressBar1.Value = 40;
             label1.Text = "Downloading Test Part";
