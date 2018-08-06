@@ -185,11 +185,11 @@
                                     <TextBlock FontWeight="Bold" FontSize="14" Margin="0,0,0,5">3. Analyze in SculptPrint</TextBlock>
                                     <Border BorderBrush="Silver" BorderThickness="0,0.5,0,0" Margin="0 2 0 2" />
                                     <TextBlock>
-                                    Click "Export to SculptPrint" to analyze
+                                    Click "Check for Manufacturability" to
                                     <LineBreak />
-                                    the part and highlight any warnings
+                                    analyze the part and highlight any
                                     <LineBreak />
-                                    or errors in the design.
+                                    warnings or errors in the design.
                                     </TextBlock>
                                 </StackPanel>
                             </Button.ToolTip>
