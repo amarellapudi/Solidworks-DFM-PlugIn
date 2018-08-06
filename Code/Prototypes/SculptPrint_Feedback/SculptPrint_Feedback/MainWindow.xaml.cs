@@ -132,15 +132,15 @@ namespace SculptPrint_Feedback
         {
             MessageBox_Loading loading = new MessageBox_Loading(MClient);
             var result = loading.ShowDialog();
-            
+
             // Save image into stream so we can do more operations on the View_SW.png
             BitmapImage res = new BitmapImage();
             Stream stream = new MemoryStream();
             System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(mSolidWorks_View_Location);
-            bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);  
-            bitmap.Dispose();   
+            bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+            bitmap.Dispose();
             res.BeginInit();
-            res.StreamSource = stream; 
+            res.StreamSource = stream;
             res.EndInit();
 
             // Save image into stream so we can do more operations on the View_SP.png
@@ -152,7 +152,7 @@ namespace SculptPrint_Feedback
             res2.BeginInit();
             res2.StreamSource = stream2;
             res2.EndInit();
-            
+
             View_SolidWorks.Source = res;
             View_SculptPrint.Source = res2;
 
@@ -190,7 +190,7 @@ namespace SculptPrint_Feedback
 
             Load_Click(sender, e);
         }
-        
+
         // Called when the window is closing
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -202,7 +202,7 @@ namespace SculptPrint_Feedback
         {
             Load_Click(sender, e);
         }
-        
+
         #endregion
 
         #region SolidWorks View Button Click Events
@@ -219,8 +219,8 @@ namespace SculptPrint_Feedback
             {
                 if (e.LeftButton == MouseButtonState.Pressed)
                 {
-            if (mDrawing_SolidWorks)
-                    mEnd_SolidWorks = e.GetPosition(Canvas_SolidWorks);
+                    if (mDrawing_SolidWorks)
+                        mEnd_SolidWorks = e.GetPosition(Canvas_SolidWorks);
                     DrawLine(Canvas_SolidWorks, mStart_SolidWorks, mEnd_SolidWorks, IssueColor());
                 }
                 mStart_SolidWorks = mEnd_SolidWorks;
@@ -273,7 +273,7 @@ namespace SculptPrint_Feedback
         {
             var thickness = -1;
             if (color == System.Windows.Media.Brushes.Black) thickness = 0;
-            else thickness = 2; 
+            else thickness = 2;
 
             Line newLine = new Line()
             {
@@ -474,11 +474,11 @@ namespace SculptPrint_Feedback
             MClient.RenameFile("test.stl", dataFolder + "test.stl");
             MClient.RenameFile("View_SW.png", dataFolder + "View_SW.png");
 
-            MClient.UploadFile( File.Open((MSculptPrint_Folder + "View_Researcher_Feedback.png"), FileMode.Open), 
-                dataFolder + "View_Researcher_Feedback.png" );
+            MClient.UploadFile(File.Open((MSculptPrint_Folder + "View_Researcher_Feedback.png"), FileMode.Open),
+                dataFolder + "View_Researcher_Feedback.png");
 
-            MClient.UploadFile( File.Open((MSculptPrint_Folder + "View_SP.png"), FileMode.Open),
-                dataFolder + "View_SP.png" );
+            MClient.UploadFile(File.Open((MSculptPrint_Folder + "View_SP.png"), FileMode.Open),
+                dataFolder + "View_SP.png");
         }
 
         // Delete local file - used to clear SculptPrint experiment files when intializing
@@ -497,12 +497,13 @@ namespace SculptPrint_Feedback
             {
                 MClient.DeleteFile(fileName);
             }
-            catch(Exception a)
+            catch (Exception a)
             {
                 return;
             }
             return;
         }
         #endregion
+
     }
 }

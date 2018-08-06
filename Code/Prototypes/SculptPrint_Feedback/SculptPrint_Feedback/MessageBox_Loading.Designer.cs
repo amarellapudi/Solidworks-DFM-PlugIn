@@ -56,10 +56,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(458, 133);
+            this.ClientSize = new System.Drawing.Size(458, 134);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.label1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "MessageBox_Loading";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;

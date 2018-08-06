@@ -53,7 +53,7 @@
             this.Name = "MessageBox_DFMResults";
             this.Padding = new System.Windows.Forms.Padding(20);
             this.ShowIcon = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "SculptPrint DFM Result";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             this.ResumeLayout(false);

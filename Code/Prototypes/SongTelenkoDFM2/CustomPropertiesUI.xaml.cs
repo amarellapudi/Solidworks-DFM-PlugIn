@@ -386,9 +386,7 @@ namespace SongTelenkoDFM2
                 {
                     DFMLoading.Close();
                     MessageBox_DFMResults DFMResults = new MessageBox_DFMResults(FeedbackPNG_Save_Location);
-                    DFMResults.ShowDialog();
-                    MClient.DeleteFile("DONE_researcher");
-                    MClient.DeleteFile("View_Researcher_Feedback.png");
+                    DFMResults.Show();
                 }
             }
         }
