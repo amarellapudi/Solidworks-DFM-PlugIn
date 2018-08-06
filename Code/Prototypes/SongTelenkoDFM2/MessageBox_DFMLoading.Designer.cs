@@ -34,7 +34,7 @@
             // 
             // ProgresBar_DFM
             // 
-            this.ProgresBar_DFM.Location = new System.Drawing.Point(50, 88);
+            this.ProgresBar_DFM.Location = new System.Drawing.Point(49, 106);
             this.ProgresBar_DFM.MarqueeAnimationSpeed = 15;
             this.ProgresBar_DFM.Maximum = 1000000000;
             this.ProgresBar_DFM.Name = "ProgresBar_DFM";
@@ -45,20 +45,22 @@
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
+            this.label1.Dock = System.Windows.Forms.DockStyle.Top;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-            this.label1.Location = new System.Drawing.Point(92, 27);
+            this.label1.Location = new System.Drawing.Point(0, 0);
+            this.label1.Margin = new System.Windows.Forms.Padding(0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(225, 36);
+            this.label1.Padding = new System.Windows.Forms.Padding(0, 10, 0, 0);
+            this.label1.Size = new System.Drawing.Size(427, 103);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Please wait while the\r\nSculptPrint DFM Result is loaded\r\n";
+            this.label1.Text = "Please wait while the\r\nSculptPrint DFM Result is loaded";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // MessageBox_DFMLoading
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(427, 139);
+            this.ClientSize = new System.Drawing.Size(427, 156);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.ProgresBar_DFM);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -71,7 +73,6 @@
             this.Text = "SculptPrint DFM Result";
             this.Load += new System.EventHandler(this.Window_ContentRendered);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
