@@ -36,10 +36,11 @@
             // 
             this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox.ImageLocation = "";
-            this.pictureBox.Location = new System.Drawing.Point(20, 20);
+            this.pictureBox.Location = new System.Drawing.Point(0, 0);
             this.pictureBox.Margin = new System.Windows.Forms.Padding(0);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(926, 433);
+            this.pictureBox.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.pictureBox.Size = new System.Drawing.Size(1015, 599);
             this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox.TabIndex = 0;
             this.pictureBox.TabStop = false;
@@ -48,13 +49,16 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(966, 473);
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ClientSize = new System.Drawing.Size(1015, 599);
             this.Controls.Add(this.pictureBox);
             this.Name = "MessageBox_DFMResults";
-            this.Padding = new System.Windows.Forms.Padding(20);
             this.ShowIcon = false;
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "SculptPrint DFM Result";
+            this.TopMost = true;
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MessageBox_DFMResults_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             this.ResumeLayout(false);
 

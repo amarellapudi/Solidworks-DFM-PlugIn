@@ -13,6 +13,7 @@ using System.Management.Automation;
 using System.Collections.ObjectModel;
 using System.Text;
 using Renci.SshNet.Sftp;
+using System.Threading;
 
 namespace SculptPrint_Feedback
 {
@@ -217,20 +218,20 @@ namespace SculptPrint_Feedback
         {
             if (mDrawing_SolidWorks)
             {
-                if (e.LeftButton == MouseButtonState.Pressed)
-                {
-                    if (mDrawing_SolidWorks)
-                        mEnd_SolidWorks = e.GetPosition(Canvas_SolidWorks);
-                    DrawLine(Canvas_SolidWorks, mStart_SolidWorks, mEnd_SolidWorks, IssueColor());
-                }
-                mStart_SolidWorks = mEnd_SolidWorks;
+                //if (e.LeftButton == MouseButtonState.Pressed)
+                //{
+                //    if (mDrawing_SolidWorks) mEnd_SolidWorks = e.GetPosition(Canvas_SolidWorks);
+                //    DrawRectangle(Canvas_SolidWorks, mStart_SolidWorks, mEnd_SolidWorks, IssueColor());
+                //}
+                //mStart_SolidWorks = mEnd_SolidWorks;
             }
         }
 
         private void View_SolidWorks_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            mEnd_SolidWorks = e.GetPosition(Canvas_SolidWorks);
             mDrawing_SolidWorks = false;
-            DrawLine(Canvas_SolidWorks, mStart_SolidWorks, mEnd_SolidWorks, IssueColor());
+            DrawRectangle(Canvas_SolidWorks, mStart_SolidWorks, mEnd_SolidWorks, IssueColor());
         }
 
         #endregion
@@ -271,9 +272,9 @@ namespace SculptPrint_Feedback
         /// </summary>
         private void DrawLine(Canvas c, Point mStart, Point mEnd, Brush color)
         {
-            var thickness = -1;
+            double thickness = -1;
             if (color == System.Windows.Media.Brushes.Black) thickness = 0;
-            else thickness = 2;
+            else thickness = 1.5;
 
             Line newLine = new Line()
             {
@@ -287,6 +288,30 @@ namespace SculptPrint_Feedback
             };
 
             c.Children.Add(newLine);
+        }
+
+        /// <summary>
+        /// Draws a rectangle in a given color on a given canvas
+        /// </summary>
+        private Rectangle DrawRectangle(Canvas c, Point mStart, Point mEnd, Brush color)
+        {
+            double thickness = -1;
+            if (color == System.Windows.Media.Brushes.Black) thickness = 0;
+            else thickness = 1.5;
+
+            Rectangle rect = new Rectangle()
+            {
+                Stroke = color,
+                Width = Math.Abs(Convert.ToDouble(mStart.X - mEnd.X)),
+                Height = Math.Abs(Convert.ToDouble(mStart.Y - mEnd.Y)),
+                StrokeThickness = thickness,
+            };
+            
+            c.Children.Add(rect);
+            Canvas.SetTop(rect, Math.Min(mStart.Y, mEnd.Y));
+            Canvas.SetLeft(rect, Math.Min(mStart.X, mEnd.X));
+
+            return rect;
         }
 
         /// <summary>

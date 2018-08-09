@@ -45,6 +45,7 @@
             // 
             // label1
             // 
+            this.label1.Cursor = System.Windows.Forms.Cursors.AppStarting;
             this.label1.Dock = System.Windows.Forms.DockStyle.Top;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
             this.label1.Location = new System.Drawing.Point(0, 0);
@@ -63,6 +64,7 @@
             this.ClientSize = new System.Drawing.Size(427, 156);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.ProgresBar_DFM);
+            this.Cursor = System.Windows.Forms.Cursors.AppStarting;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;

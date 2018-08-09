@@ -24,12 +24,16 @@ namespace SongTelenkoDFM
     {
         #region Public Members
 
+        // Instance
+        public static UI_SolidWorks_SideBar_PlugIn Instance;
+
         // This assembly's location
         public string mHome;
 
         // Location of the SculptPrint folder relative to this assembly's location
         public static string MSculptPrint_Folder;
-        
+        public static string FeedbackPNG_Save_Location;
+
         // Our SFTP client, logged into www.marellapudi.com/public_ftp/
         public static SftpClient MClient;
 
@@ -74,6 +78,7 @@ namespace SongTelenkoDFM
         {
             // Default Initialization
             InitializeComponent();
+            Instance = this;
 
             // Set the data context globally, and the item source for the  FeatureTolerance List
             DataContext = this;
@@ -88,6 +93,7 @@ namespace SongTelenkoDFM
             // IMPORTANT: This is where files are exported to and uploaded from using SFTP
             // Keep this folder hierarchy consistent with that defined in SolidWorks_DFM_PlugIn_Documentation.docx, Section 2c
             MSculptPrint_Folder = mHome.Replace("\\Code\\Prototypes\\SongTelenkoDFM\\bin\\Debug", "\\SculptPrint\\Experiment Files\\");
+            FeedbackPNG_Save_Location = string.Concat(MSculptPrint_Folder, "View_Researcher_Feedback.png");
 
             // Connect to SFTP client
             MClient = SFTPConnect();
@@ -376,6 +382,9 @@ namespace SongTelenkoDFM
         /// <param name="e"></param>
         private void ManufacturingCheck_Click(object sender, System.Windows.RoutedEventArgs e)
         {
+            // Disable the manufacturing check button while we load
+            ManufacturingCheck.IsEnabled = false;
+
             // Disable translation of part into positive space when exporting
             SldWorks app = SolidWorksEnvironment.Application.UnsafeObject;
             app.SetUserPreferenceToggle(((int)swUserPreferenceToggle_e.swSTLDontTranslateToPositive), true);
@@ -387,8 +396,11 @@ namespace SongTelenkoDFM
             // Set export location
             var STL_Save_Location = string.Concat(MSculptPrint_Folder, "test.stl");
 
-            // Export SolidWorks View
+            // Export SolidWorks View - bottom, z-symmetric view for lathe pieces
             model.ShowNamedView2("", (int)swStandardViews_e.swBottomView);
+
+            // Isometric view useful for mill parts
+            //model.ShowNamedView2("", (int)swStandardViews_e.swIsometricView);
             model.ViewZoomtofit2();
             var PNG_Save_Location = string.Concat(MSculptPrint_Folder, "View_SW.png");
 
@@ -399,10 +411,8 @@ namespace SongTelenkoDFM
             if (saved & savedPNG)
             {
                 // Show DFM Reults loading message box
-                var FeedbackPNG_Save_Location = string.Concat(MSculptPrint_Folder, "View_Researcher_Feedback.png");
-                var FeedbackPNG_FileName = "View_Researcher_Feedback.png";
 
-                MessageBox_DFMLoading DFMLoading = new MessageBox_DFMLoading(FeedbackPNG_FileName, MClient);
+                MessageBox_DFMLoading DFMLoading = new MessageBox_DFMLoading("View_Researcher_Feedback.png", MClient);
                 DialogResult DFM_Result = DFMLoading.ShowDialog();
 
                 // If the form outputs a DialogResult of Yes, then we have the file!
@@ -413,6 +423,12 @@ namespace SongTelenkoDFM
                     DFMResults.Show();
                 }
             }
+        }
+
+        private void ReloadResults_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox_DFMResults DFMResults = new MessageBox_DFMResults(FeedbackPNG_Save_Location);
+            DFMResults.Show();
         }
 
         #endregion
@@ -738,8 +754,8 @@ namespace SongTelenkoDFM
             NoteGrid.Children.Add(newNote);
             NoteGrid.Children.Add(closeButton);
         }
-
-        #endregion
+        
+        #endregion 
 
         #region File Methods
 
@@ -828,5 +844,6 @@ namespace SongTelenkoDFM
         }
 
         #endregion
+
     }
 }

@@ -9,7 +9,10 @@ namespace SongTelenkoDFM
         public MessageBox_DFMResults(string location)
         { 
             InitializeComponent();
-            Thread.Sleep(250);
+            UI_SolidWorks_SideBar_PlugIn.Instance.DesignCheckButton.IsEnabled = false;
+            UI_SolidWorks_SideBar_PlugIn.Instance.ManufacturingCheck.IsEnabled = false;
+            UI_SolidWorks_SideBar_PlugIn.Instance.ReloadResults.IsEnabled = false;
+            Thread.Sleep(50);
             pictureBox.ImageLocation = location;
 
             Rectangle screenSize = GetScreen();
@@ -19,6 +22,13 @@ namespace SongTelenkoDFM
         public Rectangle GetScreen()
         {
             return Screen.FromControl(this).Bounds;
+        }
+
+        private void MessageBox_DFMResults_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            UI_SolidWorks_SideBar_PlugIn.Instance.DesignCheckButton.IsEnabled = true;
+            UI_SolidWorks_SideBar_PlugIn.Instance.ManufacturingCheck.IsEnabled = true;
+            UI_SolidWorks_SideBar_PlugIn.Instance.ReloadResults.IsEnabled = true;
         }
     }
 }

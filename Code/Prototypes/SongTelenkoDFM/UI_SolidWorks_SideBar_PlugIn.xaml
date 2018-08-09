@@ -201,6 +201,10 @@
                         <Button x:Name="ManufacturingCheck" Padding="4 2" FontSize="11" HorizontalAlignment="Center" 
                             Width="Auto" IsEnabled="True" Margin="0 0 0 10" Click="ManufacturingCheck_Click"
                             Content="Check for Manufacturability"/>
+
+                        <Button x:Name="ReloadResults" Padding="4 2" FontSize="11" HorizontalAlignment="Center" 
+                            Width="Auto" IsEnabled="False" Margin="0 0 0 10" Click="ReloadResults_Click"
+                            Content="Show Previous Feedback"/>
                     </StackPanel>
                 </Border>
 
