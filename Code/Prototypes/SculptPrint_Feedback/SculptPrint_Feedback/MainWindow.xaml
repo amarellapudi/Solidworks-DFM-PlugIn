@@ -6,7 +6,6 @@
         xmlns:local="clr-namespace:SculptPrint_Feedback"
         mc:Ignorable="d"
         Title="SculptPrint Feedback Tool" Height="600" Width="1000" ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
-        Closing="Window_Closing"
         Loaded="Window_Loaded">
     
     <Grid>
@@ -31,26 +30,44 @@
                 </Grid.RowDefinitions>
                 <Border Grid.Column="1" Grid.Row="0" BorderBrush="Black" BorderThickness="1">
                     <StackPanel Background="Silver">
-                        <TextBlock Text="SolidWorks View" HorizontalAlignment="Center"
-                               Margin="0 10 0 0" FontWeight="Bold" FontSize="14"/>
-                        <Grid x:Name="SolidWorks_Grid">
-                            <Image x:Name="View_SolidWorks" Source="IMG_No_Image.png" Margin="10 10 10 5"
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="1" Text="SolidWorks View" HorizontalAlignment="Center"
+                               Margin="0 10 0 0" FontWeight="Bold" FontSize="16"/>
+                            <Button Grid.Column="2" Width="50" Height="24" VerticalAlignment="Bottom" 
+                                    x:Name="View_SolidWorks_Undo" Content="Undo" Click="View_SolidWorks_Undo_Drawing"/>
+                        </Grid>
+                        <Grid x:Name="SolidWorks_Grid" Margin="10 10 10 10">
+                            <Image x:Name="View_SolidWorks" Source="IMG_No_Image.png" Margin="0"
                                    RenderOptions.BitmapScalingMode="Fant" MouseLeftButtonDown="View_SolidWorks_MouseLeftButtonDown" 
-                                   MouseMove="View_SolidWorks_MouseMove" MouseUp="View_SolidWorks_MouseUp" MinHeight="300"/>
-                            <Canvas x:Name="Canvas_SolidWorks" Margin="10 10 10 5"/>
+                                   MouseUp="View_SolidWorks_MouseUp" MinHeight="300"/>
+                            <Canvas x:Name="Canvas_SolidWorks" Margin="0"/>
                         </Grid>
                     </StackPanel>
                 </Border>
 
                 <Border Grid.Column="3" Grid.Row="0" BorderBrush="Black" BorderThickness="1">
                     <StackPanel Background="Silver">
-                        <TextBlock Text="SculptPrint View" HorizontalAlignment="Center" 
-                                   Margin="0 10 0 0" FontWeight="Bold" FontSize="14"/>
-                        <Grid x:Name="SculptPrint_Grid">
-                            <Image x:Name="View_SculptPrint" Source="IMG_No_Image.png" Margin="10 10 10 5"
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="1" Text="SculptPrint View" HorizontalAlignment="Center" 
+                                   Margin="0 10 0 0" FontWeight="Bold" FontSize="16"/>
+                            <Button Grid.Column="2" Width="50" Height="24" VerticalAlignment="Bottom" 
+                                    x:Name="View_SculptPrint_Undo" Content="Undo" Click="View_SculptPrint_Undo_Drawing"/>
+                        </Grid>
+                        <Grid x:Name="SculptPrint_Grid" Margin="10 10 10 5">
+                            <Image x:Name="View_SculptPrint" Source="IMG_No_Image.png" Margin="0"
                                    RenderOptions.BitmapScalingMode="Fant" MouseLeftButtonDown="View_SculptPrint_MouseLeftButtonDown"
-                                   MouseMove="View_SculptPrint_MouseMove" MouseUp="View_SculptPrint_MouseUp" MinHeight="300"/>
-                            <Canvas x:Name="Canvas_SculptPrint" Margin="10 10 10 5"/>
+                                   MouseUp="View_SculptPrint_MouseUp" MinHeight="300"/>
+                            <Canvas x:Name="Canvas_SculptPrint" Margin="0"/>
                         </Grid>
                     </StackPanel>
                 </Border>

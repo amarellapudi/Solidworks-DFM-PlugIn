@@ -9,11 +9,7 @@ using System.IO;
 using System.Windows.Media;
 using Renci.SshNet;
 using Renci.SshNet.Common;
-using System.Management.Automation;
-using System.Collections.ObjectModel;
 using System.Text;
-using Renci.SshNet.Sftp;
-using System.Threading;
 
 namespace SculptPrint_Feedback
 {
@@ -78,12 +74,10 @@ namespace SculptPrint_Feedback
         // Start and end points for drawing on SolidWorks view
         Point mStart_SolidWorks = new Point(0, 0);
         Point mEnd_SolidWorks = new Point(0, 0);
-        bool mDrawing_SolidWorks = false;
 
         // Start and end points for drawing on SculptPrint view
         Point mStart_SculptPrint = new Point(0, 0);
         Point mEnd_SculptPrint = new Point(0, 0);
-        bool mDrawing_SculptPrint = false;
 
         // Methods for saving current screen as PNG
         public static RenderTargetBitmap GetImage()
@@ -115,6 +109,12 @@ namespace SculptPrint_Feedback
         #endregion
 
         #region UI Button Click Events
+
+        // Called when the window is loaded
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            Load_Click(sender, e);
+        }
 
         // Called when "Reset SolidWorks View" is clicked
         private void Reset_SolidWorks_View_Click(object sender, RoutedEventArgs e)
@@ -170,16 +170,19 @@ namespace SculptPrint_Feedback
             Issue1.IsChecked = false; Issue2.IsChecked = false; Issue3.IsChecked = false;
             Issue4.IsChecked = false; Issue5.IsChecked = false; Issue6.IsChecked = false;
             Controls.Visibility = Visibility.Hidden;
+            View_SolidWorks_Undo.Visibility = Visibility.Hidden;
+            View_SculptPrint_Undo.Visibility = Visibility.Hidden;
 
             // Create the screenshot
             using (var fileStream = File.Create(MSculptPrint_Folder + "View_Researcher_Feedback.png"))
             {
                 SaveAsPng(GetImage(), fileStream);
-                Controls.Visibility = Visibility.Visible;
             }
 
             // Re-enable the control buttons
             Controls.Visibility = Visibility.Visible;
+            View_SolidWorks_Undo.Visibility = Visibility.Visible;
+            View_SculptPrint_Undo.Visibility = Visibility.Visible;
 
             // Upload the screenshot to the server
             UploadFile(MClient, "View_Researcher_Feedback.png");
@@ -192,45 +195,44 @@ namespace SculptPrint_Feedback
             Load_Click(sender, e);
         }
 
-        // Called when the window is closing
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        // Called when "Undo" button is clicked in SculptPrint View
+        private void View_SculptPrint_Undo_Drawing(object sender, RoutedEventArgs e)
         {
+            // Get all children (drawn rectangles) of the SculptPrint Canvas
+            var group = Canvas_SculptPrint.Children;
 
+            // Remove the last one
+            if (group.Count >= 1)
+            {
+                group.RemoveAt(group.Count - 1);
+            }
         }
 
-        // Called when the window is loaded
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        // Called when "Undo" button is clicked in SolidWorks View
+        private void View_SolidWorks_Undo_Drawing(object sender, RoutedEventArgs e)
         {
-            Load_Click(sender, e);
+            // Get all children (drawn rectangles) of the SolidWorks Canvas
+            var group = Canvas_SolidWorks.Children;
+
+            // Remove the last one
+            if (group.Count >= 1)
+            {
+                group.RemoveAt(group.Count - 1);
+            }
         }
 
         #endregion
 
         #region SolidWorks View Button Click Events
 
-        private void View_SolidWorks_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void View_SolidWorks_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             mStart_SolidWorks = e.GetPosition(Canvas_SolidWorks);
-            mDrawing_SolidWorks = true;
-        }
-
-        private void View_SolidWorks_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (mDrawing_SolidWorks)
-            {
-                //if (e.LeftButton == MouseButtonState.Pressed)
-                //{
-                //    if (mDrawing_SolidWorks) mEnd_SolidWorks = e.GetPosition(Canvas_SolidWorks);
-                //    DrawRectangle(Canvas_SolidWorks, mStart_SolidWorks, mEnd_SolidWorks, IssueColor());
-                //}
-                //mStart_SolidWorks = mEnd_SolidWorks;
-            }
         }
 
         private void View_SolidWorks_MouseUp(object sender, MouseButtonEventArgs e)
         {
             mEnd_SolidWorks = e.GetPosition(Canvas_SolidWorks);
-            mDrawing_SolidWorks = false;
             DrawRectangle(Canvas_SolidWorks, mStart_SolidWorks, mEnd_SolidWorks, IssueColor());
         }
 
@@ -238,29 +240,15 @@ namespace SculptPrint_Feedback
 
         #region SculptPrint View Button Click Events
 
-        private void View_SculptPrint_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void View_SculptPrint_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             mStart_SculptPrint = e.GetPosition(Canvas_SculptPrint);
-            mDrawing_SculptPrint = true;
-        }
-
-        private void View_SculptPrint_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (mDrawing_SculptPrint)
-            {
-                if (e.LeftButton == MouseButtonState.Pressed)
-                {
-                    mEnd_SculptPrint = e.GetPosition(Canvas_SculptPrint);
-                    DrawLine(Canvas_SculptPrint, mStart_SculptPrint, mEnd_SculptPrint, IssueColor());
-                }
-                mStart_SculptPrint = mEnd_SculptPrint;
-            }
         }
 
         private void View_SculptPrint_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            mDrawing_SculptPrint = false;
-            DrawLine(Canvas_SculptPrint, mStart_SculptPrint, mEnd_SculptPrint, IssueColor());
+            mEnd_SculptPrint = e.GetPosition(Canvas_SculptPrint);
+            DrawRectangle(Canvas_SculptPrint, mStart_SculptPrint, mEnd_SculptPrint, IssueColor());
         }
 
         #endregion
@@ -268,35 +256,12 @@ namespace SculptPrint_Feedback
         #region Drawing Helper Functions
 
         /// <summary>
-        /// Draws a line in a given color on a given canvas
-        /// </summary>
-        private void DrawLine(Canvas c, Point mStart, Point mEnd, Brush color)
-        {
-            double thickness = -1;
-            if (color == System.Windows.Media.Brushes.Black) thickness = 0;
-            else thickness = 1.5;
-
-            Line newLine = new Line()
-            {
-                Stroke = color,
-                X1 = mStart.X,
-                Y1 = mStart.Y,
-                X2 = mEnd.X,
-                Y2 = mEnd.Y,
-
-                StrokeThickness = thickness
-            };
-
-            c.Children.Add(newLine);
-        }
-
-        /// <summary>
         /// Draws a rectangle in a given color on a given canvas
         /// </summary>
-        private Rectangle DrawRectangle(Canvas c, Point mStart, Point mEnd, Brush color)
+        private void DrawRectangle(Canvas c, Point mStart, Point mEnd, Brush color)
         {
             double thickness = -1;
-            if (color == System.Windows.Media.Brushes.Black) thickness = 0;
+            if (color == Brushes.Black) thickness = 0;
             else thickness = 1.5;
 
             Rectangle rect = new Rectangle()
@@ -310,8 +275,6 @@ namespace SculptPrint_Feedback
             c.Children.Add(rect);
             Canvas.SetTop(rect, Math.Min(mStart.Y, mEnd.Y));
             Canvas.SetLeft(rect, Math.Min(mStart.X, mEnd.X));
-
-            return rect;
         }
 
         /// <summary>
@@ -332,7 +295,7 @@ namespace SculptPrint_Feedback
                 string caption = "No Color Selected";
                 MessageBoxButton buttons = MessageBoxButton.OK;
                 MessageBox.Show(message, caption, buttons);
-                return System.Windows.Media.Brushes.Black;
+                return Brushes.Black;
             }
         }
 

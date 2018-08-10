@@ -76,12 +76,14 @@ namespace SongTelenkoDFM
         /// </summary>
         public UI_SolidWorks_SideBar_PlugIn()
         {
+            // Set data context for FeatureTolerance List
+            DataContext = this;
+
             // Default Initialization
             InitializeComponent();
             Instance = this;
 
-            // Set the data context globally, and the item source for the  FeatureTolerance List
-            DataContext = this;
+            // Set the data context globally, and the item source for the FeatureTolerance List
             FeatureTolerance_Display.ItemsSource = mFeatureTolerances;
 
             // Set home location to the location of this assembly (aka where this compiled .dll file is)
