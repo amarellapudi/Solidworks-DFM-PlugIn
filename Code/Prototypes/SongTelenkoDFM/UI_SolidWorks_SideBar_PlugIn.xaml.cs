@@ -230,7 +230,7 @@ namespace SongTelenkoDFM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ReadButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void ReadButton_Click(object sender, RoutedEventArgs e)
         {
             ReadDetails();
         }
@@ -240,7 +240,7 @@ namespace SongTelenkoDFM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ResetButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void ResetButton_Click(object sender, RoutedEventArgs e)
         {
             var model = SolidWorksEnvironment.Application.ActiveModel;
             var model2 = (ModelDoc2)SolidWorksEnvironment.Application.UnsafeObject.ActiveDoc;
@@ -273,7 +273,7 @@ namespace SongTelenkoDFM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ApplyButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void ApplyButton_Click(object sender, RoutedEventArgs e)
         {
             var model = SolidWorksEnvironment.Application.ActiveModel;
             var model2 = (ModelDoc2)SolidWorksEnvironment.Application.UnsafeObject.ActiveDoc;
@@ -327,7 +327,7 @@ namespace SongTelenkoDFM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void AddNote_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void AddNote_Click(object sender, RoutedEventArgs e)
         {
             AddNewNote();
         }
@@ -337,7 +337,7 @@ namespace SongTelenkoDFM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void DeleteNote_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void DeleteNote_Click(object sender, RoutedEventArgs e)
         {
             // Use enumerator to iterate through the grid
             // the item before our sender (the close button) is the item to remove
