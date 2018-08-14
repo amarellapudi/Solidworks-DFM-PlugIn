@@ -16,10 +16,6 @@ namespace SongTelenkoDFM
             InitializeComponent();
             FileName = fileName;
             Client = client;
-
-            UI_SolidWorks_SideBar_PlugIn.SFTPUploadFile(client, "View_SW.png");
-            UI_SolidWorks_SideBar_PlugIn.SFTPUploadFile(client, "test.stl");
-            UI_SolidWorks_SideBar_PlugIn.CreateFinishedFlag();
         }
 
         // Disable close button
@@ -45,6 +41,10 @@ namespace SongTelenkoDFM
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
+            UI_SolidWorks_SideBar_PlugIn.SFTPUploadFile(Client, "View_SW.png");
+            UI_SolidWorks_SideBar_PlugIn.SFTPUploadFile(Client, "test.stl");
+            UI_SolidWorks_SideBar_PlugIn.CreateFinishedFlag();
+
             while (!UI_SolidWorks_SideBar_PlugIn.DownloadFile(Client, "DONE_researcher"))
             {
                 Thread.Sleep(75);
