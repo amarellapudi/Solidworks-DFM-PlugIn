@@ -1,4 +1,5 @@
 ﻿using AngelSix.SolidDna;
+using static AngelSix.SolidDna.SolidWorksEnvironment;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -47,6 +48,10 @@ namespace SongTelenkoDFM
         // List of all FeatureTolerances
         // Used when writing custom properties to the .SLDPRT file
         public List<FeatureToleranceObject> mFeatureTolerances = new List<FeatureToleranceObject>();
+
+        // Global variable for whether we have a mill or lathe part
+        // we need to communicate this to the researcher feedback app
+        //public bool millOrLathe = false;
 
         #endregion
 
@@ -139,6 +144,8 @@ namespace SongTelenkoDFM
             ReadDetails();
         }
 
+        
+
         /// <summary>
         /// Checks for change in model selection
         /// Currently unused, but can be used to determine what the user is clicking on (feature, face, drawing, dimension, etc)
@@ -172,11 +179,12 @@ namespace SongTelenkoDFM
                     // Show No Part screen
                     NoPartContent.Visibility = Visible;
                     MainContent.Visibility = Hidden;
-
                     return;
                 }
 
                 // If we got here, we have a part
+                var filePath = model.FilePath.Split(new string[] { "\\" }, StringSplitOptions.None);
+                var fileName = filePath[filePath.Count() - 1];
 
                 // Listen out for selection changes
                 model.SelectionChanged += Model_SelectionChanged;
@@ -481,11 +489,11 @@ namespace SongTelenkoDFM
         /// <param name="feature">SolidWorks feature currently selected</param>
         private FeatureToleranceObject GetFeatureTolerance(Feature feature)
         {
-            // Default tolerance is +/- 0.1mm
-            string default_tolerance = "+/- 0.1mm";
+            // Default tolerance is +/- 0.25mm
+            string default_tolerance = "+/- 0.25mm";
 
             // Configure the message box to ask user if this feature is critical
-            string messageBoxText = "Does the highlighted feature,\r\n" + feature.Name + ",\r\n need a very tight tolerance?";
+            string messageBoxText = "Does the highlighted feature,\r\n" + feature.Name + ",\r\n need a specific tolerance?";
             string formTitle = "Critical Features";
 
             // Use the custom FeatureCriticalMessageBox class to ask the user
@@ -496,7 +504,7 @@ namespace SongTelenkoDFM
             if (criticalFeature_result == DialogResult.Yes)
             {
                 // User has identified this feature as critical, so it may require a tighter tolerance
-                string messageBoxText2 = "The default tolerance is +/- 0.1mm. Would you like to change this value for " + feature.Name + "?";
+                string messageBoxText2 = "The default tolerance is +/- 0.25mm. Would you like to change this value for " + feature.Name + "?";
                 string formTitle2 = "Critical Feature Tolerance";
 
                 // Display Tolerance Message Box to the user and wait for tolerance selection

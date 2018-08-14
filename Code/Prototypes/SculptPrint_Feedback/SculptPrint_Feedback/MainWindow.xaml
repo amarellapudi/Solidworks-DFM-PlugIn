@@ -107,33 +107,43 @@
                         <TextBlock Grid.Column="1" Grid.ColumnSpan="3" Text="Design Recommendations" HorizontalAlignment="Center" 
                         Margin="10" FontWeight="Bold" FontSize="14"/>
 
-                        <CheckBox Grid.Column="1" Grid.Row="1" Margin="2" Background="Red" x:Name="Issue1" Checked="Issue1_Checked">
+                        <CheckBox Grid.Column="1" Grid.Row="1" Margin="2" Background="Red" x:Name="Issue1" Checked="Issue1_Checked"
+                                  HorizontalContentAlignment="Center" Width="180">
                             <TextBlock Text="Sharp internal corner"/>
                         </CheckBox>
 
-                        <CheckBox Grid.Column="1" Grid.Row="2" Margin="2" Background="Yellow" x:Name="Issue2" Checked="Issue2_Checked">
+                        <CheckBox Grid.Column="1" Grid.Row="2" Margin="2" Background="Yellow" x:Name="Issue2" Checked="Issue2_Checked"
+                                  HorizontalContentAlignment="Center" Width="180">
                             <TextBlock Text="Non-standard drill size"/>
                         </CheckBox>
 
-                        <CheckBox Grid.Column="1" Grid.Row="3" Margin="2" Background="LimeGreen" x:Name="Issue3" Checked="Issue3_Checked">
+                        <CheckBox Grid.Column="1" Grid.Row="3" Margin="2" Background="Green" x:Name="Issue3" Checked="Issue3_Checked"
+                                  HorizontalContentAlignment="Center" Width="180">
                             <TextBlock Text="Overhang"/>
                         </CheckBox>
 
-                        <CheckBox Grid.Column="2" Grid.Row="1" Margin="2" Background="Blue" x:Name="Issue4" Checked="Issue4_Checked">
+                        <CheckBox Grid.Column="2" Grid.Row="1" Margin="2" Background="Blue" x:Name="Issue4" Checked="Issue4_Checked"
+                                  HorizontalContentAlignment="Center" Width="180">
                             <TextBlock Text="Fillet on outer edge"/>
                         </CheckBox>
 
-                        <CheckBox Grid.Column="2" Grid.Row="2" Margin="2" Background="HotPink" x:Name="Issue5" Checked="Issue5_Checked">
-                            <TextBlock Text="Non-orthogonal Drill"/>
+                        <CheckBox Grid.Column="2" Grid.Row="2" Margin="2" Background="HotPink" x:Name="Issue5" Checked="Issue5_Checked"
+                                  HorizontalContentAlignment="Center" Width="180">
+                            <TextBlock Text="Non-orthogonal drill"/>
                         </CheckBox>
 
-                        <CheckBox Grid.Column="2" Grid.Row="3" Margin="2" Background="Purple" x:Name="Issue6" Checked="Issue6_Checked">
-                            <TextBlock Text="Manufacturing Problem 6"/>
+                        <CheckBox Grid.Column="2" Grid.Row="3" Margin="2" Background="Purple" x:Name="Issue6" Checked="Issue6_Checked"
+                                  HorizontalContentAlignment="Center" Width="180">
+                            <TextBlock Text="Tool collision warning"/>
                         </CheckBox>
 
-                        <TextBox Grid.Column="3" Grid.Row="1" Margin="2"/>
-                        <TextBox Grid.Column="3" Grid.Row="2" Margin="2"/>
-                        <TextBox Grid.Column="3" Grid.Row="3" Margin="2"/>
+                        <CheckBox Grid.Column="3" Grid.Row="1" Margin="2" Background="LightGreen" VerticalContentAlignment="Center"
+                                  HorizontalContentAlignment="Center" Width="140">
+                            <TextBlock FontWeight="Bold" Text="DFM Check Passed"/>
+                        </CheckBox>
+
+                        <TextBlock HorizontalAlignment="Center" Text="Additional Notes" Grid.Column="3" Grid.Row="2" Margin="2"/>
+                        <TextBox HorizontalAlignment="Center" Grid.Column="3" Grid.Row="3" Margin="2" Width="200"/>
 
                         <Separator Grid.Column="2" Grid.Row="4" Height="10" Background="Transparent"/>
                     </Grid>

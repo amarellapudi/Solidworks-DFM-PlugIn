@@ -61,9 +61,12 @@ namespace SongTelenkoDFM
             // domainUpDown1
             // 
             this.domainUpDown1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.163636F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.domainUpDown1.Items.Add("+/- 0.1 mm");
-            this.domainUpDown1.Items.Add("+/- 0.01 mm");
-            this.domainUpDown1.Items.Add("+/- 0.001 mm");
+            this.domainUpDown1.Items.Add("+/- 1.0 mm");
+            this.domainUpDown1.Items.Add("+/- 0.5 mm");
+            this.domainUpDown1.Items.Add("+/- 0.25 mm");
+            this.domainUpDown1.Items.Add("+/- 0.10 mm");
+            this.domainUpDown1.Items.Add("+/- 0.05 mm");
+            this.domainUpDown1.Items.Add("+/- 0.016 mm");
             this.domainUpDown1.Location = new System.Drawing.Point(93, 91);
             this.domainUpDown1.Margin = new System.Windows.Forms.Padding(2);
             this.domainUpDown1.Name = "domainUpDown1";
