@@ -394,7 +394,8 @@ namespace SongTelenkoDFM
             model.ShowNamedView2("", (int)swStandardViews_e.swBottomView);
 
             // Isometric view useful for mill parts
-            model.ShowNamedView2("", (int)swStandardViews_e.swIsometricView);
+            //model.ShowNamedView2("", (int)swStandardViews_e.swIsometricView);
+
             model.ViewZoomtofit2();
             var PNG_Save_Location = string.Concat(MSculptPrint_Folder, "View_SW.png");
 
