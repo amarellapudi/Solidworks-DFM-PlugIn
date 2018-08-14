@@ -59,7 +59,9 @@
             this.ClientSize = new System.Drawing.Size(458, 134);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.label1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "MessageBox_Loading";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;

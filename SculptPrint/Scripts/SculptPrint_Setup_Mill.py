@@ -33,7 +33,7 @@ sculptprint.hide_no_cut_plane()
 sculptprint.hide_stock_geometry()
 sculptprint.hide_cutting_tool()
 sculptprint.hide_part_volume()
-sculptprint.export_standard_view(r'\\prism.nas.gatech.edu\rsong8\vlab\desktop\SculptPrint\Experiment Files\View_SP.png', r'bottom')
+sculptprint.export_standard_view(r'\\prism.nas.gatech.edu\rsong8\vlab\desktop\SculptPrint\Experiment Files\View_SP.png', r'isometric')
 
 # Save SculptPrint *.scpr file if necessary
 #sculptprint.save_as(r'\\prism.nas.gatech.edu\rsong8\vlab\desktop\SculptPrint\Experiment Files\test.scpr')
