@@ -201,10 +201,6 @@ namespace SongTelenkoDFM
                     // This way, if a part is opened having many Note custom properties,
                     // then we load them in properly
                     foreach (CustomProperty note in noteFound) AddNewNote(note.Value);
-
-                    // Read the Design Recommendations custom property
-                    Recommendation1.Text = properties.FirstOrDefault(property => string.Equals(CustomPropertyRecommendation, property.Name, StringComparison.InvariantCultureIgnoreCase))?.Value;
-
                 });
 
                 // Mass
@@ -270,7 +266,6 @@ namespace SongTelenkoDFM
 
             NoteGrid.Children.Clear();
             AddNewNote();
-            Recommendation1.Text = string.Empty;
         }
 
         /// <summary>
@@ -308,9 +303,6 @@ namespace SongTelenkoDFM
                 }
             }
             
-            // Design Recommendations
-            model.SetCustomProperty(CustomPropertyRecommendation, Recommendation1.Text);
-
             // Feature Tolerances
             for (int i = 0; i < mFeatureTolerances.Count; i++)
             {

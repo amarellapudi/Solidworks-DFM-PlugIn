@@ -12,6 +12,7 @@ namespace SongTelenkoDFM
             UI_SolidWorks_SideBar_PlugIn.Instance.DesignCheckButton.IsEnabled = false;
             UI_SolidWorks_SideBar_PlugIn.Instance.ManufacturingCheck.IsEnabled = false;
             UI_SolidWorks_SideBar_PlugIn.Instance.ReloadResults.IsEnabled = false;
+            UI_SolidWorks_SideBar_PlugIn.Instance.Submit_Button.IsEnabled = false;
             Thread.Sleep(50);
             pictureBox.ImageLocation = location;
 
@@ -29,6 +30,7 @@ namespace SongTelenkoDFM
             UI_SolidWorks_SideBar_PlugIn.Instance.DesignCheckButton.IsEnabled = true;
             UI_SolidWorks_SideBar_PlugIn.Instance.ManufacturingCheck.IsEnabled = true;
             UI_SolidWorks_SideBar_PlugIn.Instance.ReloadResults.IsEnabled = true;
+            UI_SolidWorks_SideBar_PlugIn.Instance.Submit_Button.IsEnabled = true;
         }
     }
 }
