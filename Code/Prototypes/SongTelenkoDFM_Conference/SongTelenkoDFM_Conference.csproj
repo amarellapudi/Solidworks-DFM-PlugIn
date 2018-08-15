@@ -168,6 +168,12 @@
     <Content Include="Image_Logo.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="View_Researcher_Doorstop1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="View_Researcher_Doorstop2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="View_Researcher_Pawn1.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -97,6 +97,7 @@ namespace SongTelenkoDFM_Conference
             // IMPORTANT: The location of this assembly relative to the SculptPrint folder matters
             // The folder hierarchy is defined in SolidWorks_DFM_PlugIn_Documentation.docx, Section 2c
             mHome = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            mHome += "\\";
 
             // Define the SculptPrint Folder
             // IMPORTANT: This is where files are exported to and uploaded from using SFTP
@@ -141,6 +142,7 @@ namespace SongTelenkoDFM_Conference
         /// </summary>
         private void Application_ActiveModelInformationChanged(Model obj)
         {
+            step = 0;
             // When the active model is changed (meaning, when the user opens or closes a part, assembly, or drawing),
             // read the details of the changed model
             ReadDetails();
@@ -386,6 +388,8 @@ namespace SongTelenkoDFM_Conference
         /// <param name="e"></param>
         private void ManufacturingCheck_Click(object sender, System.Windows.RoutedEventArgs e)
         {
+            step++;
+
             // Disable the manufacturing check button while we load
             ManufacturingCheck.IsEnabled = false;
 
@@ -420,7 +424,7 @@ namespace SongTelenkoDFM_Conference
             {
                 if (mill == false)
                 {
-                    if (step == 0)
+                    if (step == 1)
                     {
                         // Show DFM Reults loading message box
                         MessageBox_DFMLoading DFMLoading = new MessageBox_DFMLoading("View_Researcher_Pawn1.png");
@@ -430,15 +434,13 @@ namespace SongTelenkoDFM_Conference
                         if (DFM_Result == DialogResult.Yes)
                         {
                             DFMLoading.Close();
-                            MessageBox_DFMResults DFMResults = new MessageBox_DFMResults(FeedbackPNG_Save_Location);
+                            MessageBox_DFMResults DFMResults = new MessageBox_DFMResults("View_Researcher_Pawn1.png");
                             DFMResults.Show();
                         }
-
-                        step++;
                         return;
                     }
 
-                    if (step == 1)
+                    if (step >= 2)
                     {
                         // Show DFM Reults loading message box
                         MessageBox_DFMLoading DFMLoading = new MessageBox_DFMLoading("View_Researcher_Pawn2.png");
@@ -448,7 +450,40 @@ namespace SongTelenkoDFM_Conference
                         if (DFM_Result == DialogResult.Yes)
                         {
                             DFMLoading.Close();
-                            MessageBox_DFMResults DFMResults = new MessageBox_DFMResults(FeedbackPNG_Save_Location);
+                            MessageBox_DFMResults DFMResults = new MessageBox_DFMResults("View_Researcher_Pawn2.png");
+                            DFMResults.Show();
+                        }
+                    }
+                }
+                else if (mill == true)
+                {
+                    if (step == 1)
+                    {
+                        // Show DFM Reults loading message box
+                        MessageBox_DFMLoading DFMLoading = new MessageBox_DFMLoading("View_Researcher_Doorstop1.png");
+                        DialogResult DFM_Result = DFMLoading.ShowDialog();
+
+                        // If the form outputs a DialogResult of Yes, then we have the file!
+                        if (DFM_Result == DialogResult.Yes)
+                        {
+                            DFMLoading.Close();
+                            MessageBox_DFMResults DFMResults = new MessageBox_DFMResults("View_Researcher_Doorstop1.png");
+                            DFMResults.Show();
+                        }
+                        return;
+                    }
+
+                    if (step >= 2)
+                    {
+                        // Show DFM Reults loading message box
+                        MessageBox_DFMLoading DFMLoading = new MessageBox_DFMLoading("View_Researcher_Doorstop2.png");
+                        DialogResult DFM_Result = DFMLoading.ShowDialog();
+
+                        // If the form outputs a DialogResult of Yes, then we have the file!
+                        if (DFM_Result == DialogResult.Yes)
+                        {
+                            DFMLoading.Close();
+                            MessageBox_DFMResults DFMResults = new MessageBox_DFMResults("View_Researcher_Doorstop2.png");
                             DFMResults.Show();
                         }
                     }
@@ -456,10 +491,44 @@ namespace SongTelenkoDFM_Conference
             }
         }
 
+        /// <summary>
+        /// Called when the "Reload Previous Feedback" button is clicked
+        /// </summary>
         private void ReloadResults_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox_DFMResults DFMResults = new MessageBox_DFMResults(FeedbackPNG_Save_Location);
+            MessageBox_DFMResults DFMResults;
+            if (mill == false)
+            {
+                if (step <= 1)
+                {
+                    DFMResults = new MessageBox_DFMResults("View_Researcher_Pawn1.png");
+                }
+                else
+                {
+                    DFMResults = new MessageBox_DFMResults("View_Researcher_Pawn2.png");
+                }
+            }
+            else
+            {
+                if (step <= 1)
+                {
+                    DFMResults = new MessageBox_DFMResults("View_Researcher_Doorstop1.png");
+                }
+                else
+                {
+                    DFMResults = new MessageBox_DFMResults("View_Researcher_Doorstop2.png");
+                }
+            }
             DFMResults.Show();
+        }
+
+        /// <summary>
+        /// Called when "Submit Final Design" is clicked
+        /// </summary>
+        private void Submit_Button_Click(object sender, RoutedEventArgs e)
+        {
+            //SldWorks app = SolidWorksEnvironment.Application.UnsafeObject;
+            //app.CloseAllDocuments(true);
         }
 
         #endregion

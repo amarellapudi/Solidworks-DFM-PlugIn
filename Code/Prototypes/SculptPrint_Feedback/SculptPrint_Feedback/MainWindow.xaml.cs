@@ -114,6 +114,28 @@ namespace SculptPrint_Feedback
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Load_Click(sender, e);
+
+            //BitmapImage res = new BitmapImage();
+            //Stream stream = new MemoryStream();
+            //System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap("View_SW2.png");
+            //bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+            //bitmap.Dispose();
+            //res.BeginInit();
+            //res.StreamSource = stream;
+            //res.EndInit();
+
+            //// Save image into stream so we can do more operations on the View_SP.png
+            //BitmapImage res2 = new BitmapImage();
+            //Stream stream2 = new MemoryStream();
+            //System.Drawing.Bitmap bitmap2 = new System.Drawing.Bitmap("View_SP2.png");
+            //bitmap2.Save(stream2, System.Drawing.Imaging.ImageFormat.Png);
+            //bitmap2.Dispose();
+            //res2.BeginInit();
+            //res2.StreamSource = stream2;
+            //res2.EndInit();
+
+            //View_SolidWorks.Source = res;
+            //View_SculptPrint.Source = res2;
         }
 
         // Called when "Reset SolidWorks View" is clicked
@@ -448,12 +470,8 @@ namespace SculptPrint_Feedback
         public void Clean(SftpClient client)
         {
             // Reset SolidWorks and SculptPrint views to default images
-            View_SolidWorks.Source = new BitmapImage(
-                new Uri(string.Concat(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "\\IMG_No_Image.png"),
-                UriKind.Absolute));
-            View_SculptPrint.Source = new BitmapImage(
-                new Uri(string.Concat(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "\\IMG_No_Image.png"),
-                UriKind.Absolute));
+            View_SolidWorks.Source = new BitmapImage(new Uri(MHome_Directory + "\\IMG_No_Image.png", UriKind.Absolute));
+            View_SculptPrint.Source = new BitmapImage(new Uri(MHome_Directory + "\\IMG_No_Image.png", UriKind.Absolute));
 
             // Move STL and PNG view files
             var now = DateTime.Now.ToString("ddMMyyyy_HHmmss");

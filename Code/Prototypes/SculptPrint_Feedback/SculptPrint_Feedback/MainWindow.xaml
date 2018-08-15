@@ -134,7 +134,7 @@
 
                         <CheckBox Grid.Column="2" Grid.Row="3" Margin="2" Background="Purple" x:Name="Issue6" Checked="Issue6_Checked"
                                   HorizontalContentAlignment="Center" Width="180">
-                            <TextBlock Text="Tool collision warning"/>
+                            <TextBlock Text="Inaccessible Features"/>
                         </CheckBox>
 
                         <CheckBox Grid.Column="3" Grid.Row="1" Margin="2" Background="LightGreen" VerticalContentAlignment="Center"
