@@ -1,5 +1,4 @@
 ﻿using AngelSix.SolidDna;
-using static AngelSix.SolidDna.SolidWorksEnvironment;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -51,7 +50,7 @@ namespace SongTelenkoDFM
 
         // Global variable for whether we have a mill or lathe part
         // we need to communicate this to the researcher feedback app
-        //public bool millOrLathe = false;
+        public bool mill = false;
 
         #endregion
 
@@ -185,6 +184,8 @@ namespace SongTelenkoDFM
                 // If we got here, we have a part
                 var filePath = model.FilePath.Split(new string[] { "\\" }, StringSplitOptions.None);
                 var fileName = filePath[filePath.Count() - 1];
+                if (fileName.Contains("pawn")) mill = false;
+                if (fileName.Contains("door")) mill = true;
 
                 // Listen out for selection changes
                 model.SelectionChanged += Model_SelectionChanged;
@@ -402,7 +403,10 @@ namespace SongTelenkoDFM
             model.ShowNamedView2("", (int)swStandardViews_e.swBottomView);
 
             // Isometric view useful for mill parts
-            //model.ShowNamedView2("", (int)swStandardViews_e.swIsometricView);
+            if (mill == true)
+            {
+                model.ShowNamedView2("", (int)swStandardViews_e.swIsometricView);
+            }
 
             model.ViewZoomtofit2();
             var PNG_Save_Location = string.Concat(MSculptPrint_Folder, "View_SW.png");
@@ -428,10 +432,23 @@ namespace SongTelenkoDFM
             }
         }
 
+        /// <summary>
+        /// Called when the "Reload Previous Feedback" button is clicked
+        /// </summary>
         private void ReloadResults_Click(object sender, RoutedEventArgs e)
         {
             MessageBox_DFMResults DFMResults = new MessageBox_DFMResults(FeedbackPNG_Save_Location);
             DFMResults.Show();
+        }
+
+        /// <summary>
+        /// Called when "Submit Final Design" is clicked
+        /// </summary>
+        private void Submit_Button_Click(object sender, RoutedEventArgs e)
+        {
+            // TO DO: Clean up web host
+            //SldWorks app = SolidWorksEnvironment.Application.UnsafeObject;
+            //app.CloseAllDocuments(true);
         }
 
         #endregion
