@@ -103,7 +103,6 @@ namespace SongTelenkoDFM_Conference
             // IMPORTANT: This is where files are exported to and uploaded from using SFTP
             // Keep this folder hierarchy consistent with that defined in SolidWorks_DFM_PlugIn_Documentation.docx, Section 2c
             MSculptPrint_Folder = mHome.Replace("\\Code\\Prototypes\\SongTelenkoDFM_Conference\\bin\\Debug", "\\SculptPrint\\Experiment Files\\");
-            FeedbackPNG_Save_Location = string.Concat(MSculptPrint_Folder, "View_Researcher_Feedback.png");
 
             // Connect to SFTP client
             //MClient = SFTPConnect();
@@ -427,14 +426,14 @@ namespace SongTelenkoDFM_Conference
                     if (step == 1)
                     {
                         // Show DFM Reults loading message box
-                        MessageBox_DFMLoading DFMLoading = new MessageBox_DFMLoading("View_Researcher_Pawn1.png");
+                        MessageBox_DFMLoading DFMLoading = new MessageBox_DFMLoading(mHome + "View_Researcher_Pawn1.png");
                         DialogResult DFM_Result = DFMLoading.ShowDialog();
 
                         // If the form outputs a DialogResult of Yes, then we have the file!
                         if (DFM_Result == DialogResult.Yes)
                         {
                             DFMLoading.Close();
-                            MessageBox_DFMResults DFMResults = new MessageBox_DFMResults("View_Researcher_Pawn1.png");
+                            MessageBox_DFMResults DFMResults = new MessageBox_DFMResults(mHome + "View_Researcher_Pawn1.png");
                             DFMResults.Show();
                         }
                         return;
@@ -443,14 +442,14 @@ namespace SongTelenkoDFM_Conference
                     if (step >= 2)
                     {
                         // Show DFM Reults loading message box
-                        MessageBox_DFMLoading DFMLoading = new MessageBox_DFMLoading("View_Researcher_Pawn2.png");
+                        MessageBox_DFMLoading DFMLoading = new MessageBox_DFMLoading(mHome + "View_Researcher_Pawn2.png");
                         DialogResult DFM_Result = DFMLoading.ShowDialog();
 
                         // If the form outputs a DialogResult of Yes, then we have the file!
                         if (DFM_Result == DialogResult.Yes)
                         {
                             DFMLoading.Close();
-                            MessageBox_DFMResults DFMResults = new MessageBox_DFMResults("View_Researcher_Pawn2.png");
+                            MessageBox_DFMResults DFMResults = new MessageBox_DFMResults(mHome + "View_Researcher_Pawn2.png");
                             DFMResults.Show();
                         }
                     }
@@ -460,14 +459,14 @@ namespace SongTelenkoDFM_Conference
                     if (step == 1)
                     {
                         // Show DFM Reults loading message box
-                        MessageBox_DFMLoading DFMLoading = new MessageBox_DFMLoading("View_Researcher_Doorstop1.png");
+                        MessageBox_DFMLoading DFMLoading = new MessageBox_DFMLoading(mHome + "View_Researcher_Doorstop1.png");
                         DialogResult DFM_Result = DFMLoading.ShowDialog();
 
                         // If the form outputs a DialogResult of Yes, then we have the file!
                         if (DFM_Result == DialogResult.Yes)
                         {
                             DFMLoading.Close();
-                            MessageBox_DFMResults DFMResults = new MessageBox_DFMResults("View_Researcher_Doorstop1.png");
+                            MessageBox_DFMResults DFMResults = new MessageBox_DFMResults(mHome + "View_Researcher_Doorstop1.png");
                             DFMResults.Show();
                         }
                         return;
@@ -476,14 +475,14 @@ namespace SongTelenkoDFM_Conference
                     if (step >= 2)
                     {
                         // Show DFM Reults loading message box
-                        MessageBox_DFMLoading DFMLoading = new MessageBox_DFMLoading("View_Researcher_Doorstop2.png");
+                        MessageBox_DFMLoading DFMLoading = new MessageBox_DFMLoading(mHome + "View_Researcher_Doorstop2.png");
                         DialogResult DFM_Result = DFMLoading.ShowDialog();
 
                         // If the form outputs a DialogResult of Yes, then we have the file!
                         if (DFM_Result == DialogResult.Yes)
                         {
                             DFMLoading.Close();
-                            MessageBox_DFMResults DFMResults = new MessageBox_DFMResults("View_Researcher_Doorstop2.png");
+                            MessageBox_DFMResults DFMResults = new MessageBox_DFMResults(mHome + "View_Researcher_Doorstop2.png");
                             DFMResults.Show();
                         }
                     }
@@ -501,22 +500,22 @@ namespace SongTelenkoDFM_Conference
             {
                 if (step <= 1)
                 {
-                    DFMResults = new MessageBox_DFMResults("View_Researcher_Pawn1.png");
+                    DFMResults = new MessageBox_DFMResults(mHome + "View_Researcher_Pawn1.png");
                 }
                 else
                 {
-                    DFMResults = new MessageBox_DFMResults("View_Researcher_Pawn2.png");
+                    DFMResults = new MessageBox_DFMResults(mHome + "View_Researcher_Pawn2.png");
                 }
             }
             else
             {
                 if (step <= 1)
                 {
-                    DFMResults = new MessageBox_DFMResults("View_Researcher_Doorstop1.png");
+                    DFMResults = new MessageBox_DFMResults(mHome + "View_Researcher_Doorstop1.png");
                 }
                 else
                 {
-                    DFMResults = new MessageBox_DFMResults("View_Researcher_Doorstop2.png");
+                    DFMResults = new MessageBox_DFMResults(mHome + "View_Researcher_Doorstop2.png");
                 }
             }
             DFMResults.Show();
