@@ -156,30 +156,49 @@ namespace SculptPrint_Feedback
             MessageBox_Loading loading = new MessageBox_Loading(MClient);
             var result = loading.ShowDialog();
 
-            // Save image into stream so we can do more operations on the View_SW.png
-            BitmapImage res = new BitmapImage();
-            Stream stream = new MemoryStream();
-            System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(mSolidWorks_View_Location);
-            bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-            bitmap.Dispose();
-            res.BeginInit();
-            res.StreamSource = stream;
-            res.EndInit();
+            if (result == System.Windows.Forms.DialogResult.Yes)
+            {
+                // Save image into stream so we can do more operations on the View_SW.png
+                BitmapImage res = new BitmapImage();
+                Stream stream = new MemoryStream();
+                System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(mSolidWorks_View_Location);
+                bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                bitmap.Dispose();
+                res.BeginInit();
+                res.StreamSource = stream;
+                res.EndInit();
 
-            // Save image into stream so we can do more operations on the View_SP.png
-            BitmapImage res2 = new BitmapImage();
-            Stream stream2 = new MemoryStream();
-            System.Drawing.Bitmap bitmap2 = new System.Drawing.Bitmap(mSculptPrint_View_Location);
-            bitmap2.Save(stream2, System.Drawing.Imaging.ImageFormat.Png);
-            bitmap2.Dispose();
-            res2.BeginInit();
-            res2.StreamSource = stream2;
-            res2.EndInit();
+                // Save image into stream so we can do more operations on the View_SP.png
+                BitmapImage res2 = new BitmapImage();
+                Stream stream2 = new MemoryStream();
+                System.Drawing.Bitmap bitmap2 = new System.Drawing.Bitmap(mSculptPrint_View_Location);
+                bitmap2.Save(stream2, System.Drawing.Imaging.ImageFormat.Png);
+                bitmap2.Dispose();
+                res2.BeginInit();
+                res2.StreamSource = stream2;
+                res2.EndInit();
 
-            View_SolidWorks.Source = res;
-            View_SculptPrint.Source = res2;
+                View_SolidWorks.Source = res;
+                View_SculptPrint.Source = res2;
 
-            LoadButton.IsEnabled = false;
+                LoadButton.IsEnabled = false;
+            }
+
+            else
+            {
+                string message = "The subject has finalized the submission of the plug-in form.\r\n" +
+                    "Click OK to finish this trial. This window wil close.";
+                string caption = "Subject Submission Finished";
+                MessageBoxButton buttons = MessageBoxButton.OK;
+                MessageBox.Show(message, caption, buttons);
+                
+                MClient.DeleteFile("DONE_subject");
+                MClient.DeleteFile("FINISHED_subject.txt");
+
+                Clean(MClient, true);
+
+                Close();
+            }
         }
 
         // Called when "Submit" is clicked. Creates feedback screenshot and uploads it to server
@@ -210,7 +229,7 @@ namespace SculptPrint_Feedback
             UploadFile(MClient, "View_Researcher_Feedback.png");
             CreateFinishedFlag();
 
-            Clean(MClient);
+            Clean(MClient, false);
             Reset_SculptPrint_View_Click(sender, e);
             Reset_SolidWorks_View_Click(sender, e);
 
@@ -467,24 +486,45 @@ namespace SculptPrint_Feedback
         }
 
         // Remove experiment files from the server
-        public void Clean(SftpClient client)
+        public void Clean(SftpClient client, bool userFinished)
         {
             // Reset SolidWorks and SculptPrint views to default images
             View_SolidWorks.Source = new BitmapImage(new Uri(MHome_Directory + "\\IMG_No_Image.png", UriKind.Absolute));
             View_SculptPrint.Source = new BitmapImage(new Uri(MHome_Directory + "\\IMG_No_Image.png", UriKind.Absolute));
-
+            
             // Move STL and PNG view files
             var now = DateTime.Now.ToString("ddMMyyyy_HHmmss");
-            var dataFolder = now + "/";
-            MClient.CreateDirectory(now);
-            MClient.RenameFile("test.stl", dataFolder + "test.stl");
+            string dataFolder = now;
+            if (userFinished)
+            {
+                now += "_FIN";
+                dataFolder = now + "/";
+            }
+            else
+            {
+                dataFolder = now + "/";
+            }
+            MClient.CreateDirectory(dataFolder);
+
+            try
+            {
+                MClient.RenameFile("test.stl", dataFolder + "test.stl");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+            
             MClient.RenameFile("View_SW.png", dataFolder + "View_SW.png");
 
-            MClient.UploadFile(File.Open((MSculptPrint_Folder + "View_Researcher_Feedback.png"), FileMode.Open),
+            if (!userFinished)
+            {
+                MClient.UploadFile(File.Open((MSculptPrint_Folder + "View_Researcher_Feedback.png"), FileMode.Open),
                 dataFolder + "View_Researcher_Feedback.png");
 
-            MClient.UploadFile(File.Open((MSculptPrint_Folder + "View_SP.png"), FileMode.Open),
-                dataFolder + "View_SP.png");
+                MClient.UploadFile(File.Open((MSculptPrint_Folder + "View_SP.png"), FileMode.Open),
+                    dataFolder + "View_SP.png");
+            }
         }
 
         // Delete local file - used to clear SculptPrint experiment files when intializing

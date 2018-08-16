@@ -14,6 +14,8 @@ using System.Reflection;
 using System.Text;
 using Renci.SshNet;
 using Renci.SshNet.Common;
+using MessageBox = System.Windows.Forms.MessageBox;
+using System.Threading;
 
 namespace SongTelenkoDFM
 {    /// <summary>
@@ -446,9 +448,41 @@ namespace SongTelenkoDFM
         /// </summary>
         private void Submit_Button_Click(object sender, RoutedEventArgs e)
         {
-            // TO DO: Clean up web host
-            //SldWorks app = SolidWorksEnvironment.Application.UnsafeObject;
-            //app.CloseAllDocuments(true);
+            DialogResult dialogResult = MessageBox.Show("Are you sure you want to submit your final design?", "Submit Final Design", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                // Clear current selection so STL export contains all bodies
+                SldWorks app = SolidWorksEnvironment.Application.UnsafeObject;
+                var model = (ModelDoc2)app.ActiveDoc;
+                model.ClearSelection();
+
+                // Set export locations
+                var STL_Save_Location = string.Concat(MSculptPrint_Folder, "test.stl");
+                var PNG_Save_Location = string.Concat(MSculptPrint_Folder, "View_SW.png");
+
+                // Export SolidWorks View - bottom, z-symmetric view for lathe pieces
+                model.ShowNamedView2("", (int)swStandardViews_e.swBottomView);
+
+                // Isometric view useful for mill parts
+                if (mill == true) model.ShowNamedView2("", (int)swStandardViews_e.swIsometricView);
+
+                // Zoom to fit and set
+                model.ViewZoomtofit2();
+
+                // Export to fixed location
+                bool savedPNG = ExportModelAsPNG(PNG_Save_Location);
+                bool saved = ExportModelAsStl(STL_Save_Location);
+
+                // Upload final design files (.PNG, .STL, and FINISHED_subject flag)
+                SFTPUploadFile(MClient, "View_SW.png");
+                SFTPUploadFile(MClient, "test.stl");
+                WriteTXT("FINISHED_subject.txt", "user has finished submission");
+                CreateFinishedFlag();
+
+                Thread.Sleep(250);
+                
+                app.CloseAllDocuments(true);
+            }
         }
 
         #endregion
@@ -663,6 +697,7 @@ namespace SongTelenkoDFM
 
         /// <summary>
         /// Get all dimensions relating to a feature
+        /// This is useful when finding hole-diameters and extrusion depths
         /// </summary>
         /// <param name="feature"></param>
         /// <returns></returns>
@@ -852,6 +887,26 @@ namespace SongTelenkoDFM
                 Console.WriteLine(ex.ToString());
             }
             SFTPUploadFile(MClient, "DONE_subject");
+        }
+
+        // Upload a text file with a specified name and specified content
+        public static void WriteTXT(string fileName="FINISHED_subject.txt", string message="")
+        {
+            try
+            {
+                // Create the file.
+                using (FileStream fs = File.Create(MSculptPrint_Folder + fileName))
+                {
+                    var info = new UTF8Encoding(true).GetBytes(message);
+                    // Add some information to the file.
+                    fs.Write(info, 0, info.Length);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            SFTPUploadFile(MClient, fileName);
         }
 
         // Delete local file - used to clear SculptPrint experiment files when intializing

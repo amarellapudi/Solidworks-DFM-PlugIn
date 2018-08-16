@@ -20,18 +20,6 @@ namespace SculptPrint_Feedback
             Client = client;
         }
 
-        // Disable close button
-        //private const int CP_NOCLOSE_BUTTON = 0x200;
-        //protected override CreateParams CreateParams
-        //{
-        //    get
-        //    {
-        //        CreateParams myCp = base.CreateParams;
-        //        myCp.ClassStyle = myCp.ClassStyle | CP_NOCLOSE_BUTTON;
-        //        return myCp;
-        //    }
-        //}
-
         public void Window_ContentRendered(object sender, EventArgs e)
         {
             var worker = new BackgroundWorker();
@@ -44,16 +32,23 @@ namespace SculptPrint_Feedback
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
-
             while (!MainWindow.DownloadFile(Client, "DONE_subject"))
             {
                 Thread.Sleep(75);
             }
+            Thread.Sleep(100);
         }
 
         private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            DownloadFilesAndRun();
+            if (MainWindow.DownloadFile(Client, "FINISHED_subject.txt"))
+            {
+                DownloadFiles_SubjectFinished();
+            }
+            else
+            {
+                DownloadFilesAndRun();
+            }
         }
 
         private void DownloadFilesAndRun()
@@ -86,6 +81,27 @@ namespace SculptPrint_Feedback
             progressBar1.Value = 100;
 
             DialogResult = DialogResult.Yes;
+        }
+
+        private void DownloadFiles_SubjectFinished()
+        {
+            progressBar1.MarqueeAnimationSpeed = 0;
+            progressBar1.Style = ProgressBarStyle.Blocks;
+            progressBar1.Value = 2;
+
+            progressBar1.Value = 20;
+            label1.Text = "Downloading SolidWorks View";
+            Refresh();
+            MainWindow.DownloadFile(Client, "View_SW.png");
+
+            progressBar1.Value = 40;
+            label1.Text = "Downloading Final Part";
+            Refresh();
+            MainWindow.DownloadFile(Client, "test.stl");
+
+            progressBar1.Value = 100;
+
+            DialogResult = DialogResult.No;
         }
     }
 }

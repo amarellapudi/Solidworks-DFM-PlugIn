@@ -308,7 +308,7 @@
                 <Border Style="{StaticResource stackBorderStyle}">
                     <StackPanel Style="{StaticResource graySectionStackPanel}">
                         <Button x:Name="Submit_Button" Margin="0 10 0 10" Content="Submit Final Design" HorizontalAlignment="Center" Padding="10 4"
-                        HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" Click="Submit_Button_Click"/>
+                        HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" Click="Submit_Button_Click" IsEnabled="False"/>
                     </StackPanel>
                 </Border>
             </StackPanel>
