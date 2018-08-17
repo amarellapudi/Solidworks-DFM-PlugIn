@@ -118,7 +118,7 @@ namespace SculptPrint_Feedback
 
             //BitmapImage res = new BitmapImage();
             //Stream stream = new MemoryStream();
-            //System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap("View_SW2.png");
+            //System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap("View_SW1.png");
             //bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
             //bitmap.Dispose();
             //res.BeginInit();
@@ -128,7 +128,7 @@ namespace SculptPrint_Feedback
             //// Save image into stream so we can do more operations on the View_SP.png
             //BitmapImage res2 = new BitmapImage();
             //Stream stream2 = new MemoryStream();
-            //System.Drawing.Bitmap bitmap2 = new System.Drawing.Bitmap("View_SP2.png");
+            //System.Drawing.Bitmap bitmap2 = new System.Drawing.Bitmap("View_SP1.png");
             //bitmap2.Save(stream2, System.Drawing.Imaging.ImageFormat.Png);
             //bitmap2.Dispose();
             //res2.BeginInit();
