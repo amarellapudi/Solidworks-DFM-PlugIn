@@ -29,6 +29,7 @@ namespace SculptPrint_Feedback
         public byte mRun_Number = 0;
         public BitmapImage mSW;
         public BitmapImage mSP;
+        public bool Check_Failed = true;
 
         // Initialization
         public MainWindow()
@@ -87,7 +88,7 @@ namespace SculptPrint_Feedback
             if (size.IsEmpty)
                 return null;
 
-            RenderTargetBitmap result = new RenderTargetBitmap((int)size.Width, (int)size.Height - 45, 96, 96, PixelFormats.Pbgra32);
+            RenderTargetBitmap result = new RenderTargetBitmap((int)size.Width, (int)size.Height, 96, 96, PixelFormats.Pbgra32);
 
             DrawingVisual drawingvisual = new DrawingVisual();
             using (DrawingContext context = drawingvisual.RenderOpen())
@@ -139,13 +140,13 @@ namespace SculptPrint_Feedback
         }
 
         // Called when "Reset SolidWorks View" is clicked
-        private void Reset_SolidWorks_View_Click(object sender, RoutedEventArgs e)
+        private void Reset_SolidWorks_View_Click()
         {
             Canvas_SolidWorks.Children.Clear();
         }
 
         // Called when "Reset SculptPrint View" is clicked
-        private void Reset_SculptPrint_View_Click(object sender, RoutedEventArgs e)
+        private void Reset_SculptPrint_View_Click()
         {
             Canvas_SculptPrint.Children.Clear();
         }
@@ -210,7 +211,8 @@ namespace SculptPrint_Feedback
             // Prepare view for screenshot. Uncheck all check check boxes, and hide the control buttons
             Issue1.IsChecked = false; Issue2.IsChecked = false; Issue3.IsChecked = false;
             Issue4.IsChecked = false; Issue5.IsChecked = false; Issue6.IsChecked = false;
-            Controls.Visibility = Visibility.Hidden;
+            LoadButton.Visibility = Visibility.Hidden;
+            SubmitButton.Visibility = Visibility.Hidden;
             View_SolidWorks_Undo.Visibility = Visibility.Hidden;
             View_SculptPrint_Undo.Visibility = Visibility.Hidden;
 
@@ -221,7 +223,8 @@ namespace SculptPrint_Feedback
             }
 
             // Re-enable the control buttons
-            Controls.Visibility = Visibility.Visible;
+            LoadButton.Visibility = Visibility.Visible;
+            SubmitButton.Visibility = Visibility.Visible;
             View_SolidWorks_Undo.Visibility = Visibility.Visible;
             View_SculptPrint_Undo.Visibility = Visibility.Visible;
 
@@ -230,10 +233,26 @@ namespace SculptPrint_Feedback
             CreateFinishedFlag();
 
             Clean(MClient, false);
-            Reset_SculptPrint_View_Click(sender, e);
-            Reset_SolidWorks_View_Click(sender, e);
+            Reset_SculptPrint_View_Click();
+            Reset_SolidWorks_View_Click();
 
             Load_Click(sender, e);
+        }
+
+        // Called when the red button containing "DFM Check Failed" is clicked
+        private void Check_Passed_Button_Click(object sender, RoutedEventArgs e)
+        {
+            Check_Failed = !Check_Failed;
+            if (Check_Failed)
+            {
+                Check_Passed_Button.Background = Brushes.Red;
+                Check_Passed_Button.Content = "DFM Check Failed";
+            }
+            else
+            {
+                Check_Passed_Button.Background = Brushes.LightGreen;
+                Check_Passed_Button.Content = "DFM Check Passed";
+            }
         }
 
         // Called when "Undo" button is clicked in SculptPrint View
@@ -550,6 +569,5 @@ namespace SculptPrint_Feedback
             return;
         }
         #endregion
-
     }
 }

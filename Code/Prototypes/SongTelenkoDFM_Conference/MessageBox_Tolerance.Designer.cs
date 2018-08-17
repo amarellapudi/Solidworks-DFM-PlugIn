@@ -38,7 +38,7 @@ namespace SongTelenkoDFM_Conference
             // btnAccept
             // 
             this.btnAccept.Enabled = false;
-            this.btnAccept.Location = new System.Drawing.Point(130, 132);
+            this.btnAccept.Location = new System.Drawing.Point(148, 169);
             this.btnAccept.Name = "btnAccept";
             this.btnAccept.Size = new System.Drawing.Size(70, 25);
             this.btnAccept.TabIndex = 0;
@@ -49,11 +49,14 @@ namespace SongTelenkoDFM_Conference
             // lblMessage
             // 
             this.lblMessage.BackColor = System.Drawing.SystemColors.Control;
+            this.lblMessage.Dock = System.Windows.Forms.DockStyle.Top;
             this.lblMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblMessage.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblMessage.Location = new System.Drawing.Point(10, 7);
+            this.lblMessage.Location = new System.Drawing.Point(0, 0);
+            this.lblMessage.Margin = new System.Windows.Forms.Padding(3, 15, 3, 0);
             this.lblMessage.Name = "lblMessage";
-            this.lblMessage.Size = new System.Drawing.Size(314, 65);
+            this.lblMessage.Padding = new System.Windows.Forms.Padding(0, 12, 0, 0);
+            this.lblMessage.Size = new System.Drawing.Size(362, 115);
             this.lblMessage.TabIndex = 2;
             this.lblMessage.Text = "message";
             this.lblMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -67,7 +70,7 @@ namespace SongTelenkoDFM_Conference
             this.domainUpDown1.Items.Add("+/- 0.10 mm");
             this.domainUpDown1.Items.Add("+/- 0.05 mm");
             this.domainUpDown1.Items.Add("+/- 0.016 mm");
-            this.domainUpDown1.Location = new System.Drawing.Point(93, 91);
+            this.domainUpDown1.Location = new System.Drawing.Point(109, 130);
             this.domainUpDown1.Margin = new System.Windows.Forms.Padding(2);
             this.domainUpDown1.Name = "domainUpDown1";
             this.domainUpDown1.ReadOnly = true;
@@ -84,7 +87,7 @@ namespace SongTelenkoDFM_Conference
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(334, 169);
+            this.ClientSize = new System.Drawing.Size(362, 206);
             this.Controls.Add(this.domainUpDown1);
             this.Controls.Add(this.lblMessage);
             this.Controls.Add(this.btnAccept);

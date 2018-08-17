@@ -274,6 +274,7 @@ namespace SongTelenkoDFM
             FeatureTolerance_Display.Items.Refresh();
 
             RawMaterialList.SelectedIndex = -1;
+            OverallTolerance.SelectedIndex = 2;
 
             NoteGrid.Children.Clear();
             AddNewNote();
@@ -313,7 +314,12 @@ namespace SongTelenkoDFM
                     j++;
                 }
             }
-            
+
+            // Set overall tolerance
+            var overallTol = OverallTolerance.SelectedItem.ToString();
+            overallTol = overallTol.Split(':')[1].TrimStart(' ');
+            model.SetCustomProperty("Overall Part Tolerance", overallTol);
+
             // Feature Tolerances
             for (int i = 0; i < mFeatureTolerances.Count; i++)
             {
@@ -321,14 +327,14 @@ namespace SongTelenkoDFM
                 string CustomPropertyName = CustomPropertyFeatureTolerance + item.FeatureName;
                 model.SetCustomProperty(CustomPropertyName, item.FeatureTolerance);
             }
-            
+
             // If user does not have a material selected, clear it
             if (RawMaterialList.SelectedIndex < 0)
                 model.SetMaterial(null);
             // Otherwise set the material to the selected one
             else
                 model.SetMaterial((Material)RawMaterialList.SelectedItem);
-
+            
             // Re-read details to confirm they are correct
             ReadDetails();
         }
@@ -545,7 +551,7 @@ namespace SongTelenkoDFM
 
             // Configure the message box to ask user if this feature is critical
             string messageBoxText = "Does the highlighted feature,\r\n" + feature.Name + ",\r\n need a specific tolerance?";
-            string formTitle = "Critical Features";
+            string formTitle = "Design Tolerances";
 
             // Use the custom FeatureCriticalMessageBox class to ask the user
             MessageBox_FeatureCritical isFeatureCritical = new MessageBox_FeatureCritical(messageBoxText, formTitle);
@@ -555,7 +561,8 @@ namespace SongTelenkoDFM
             if (criticalFeature_result == DialogResult.Yes)
             {
                 // User has identified this feature as critical, so it may require a tighter tolerance
-                string messageBoxText2 = "The default tolerance is +/- 0.25mm. Would you like to change this value for " + feature.Name + "?";
+                string messageBoxText2 = "The default tolerance is +/- 0.25mm. Choosing a tolerance under +/- 0.1mm will increase manufacturing cost and time.\r\n" +
+                    "\r\n Please specify a tolerance value for\r\n" + feature.Name + ":";
                 string formTitle2 = "Critical Feature Tolerance";
 
                 // Display Tolerance Message Box to the user and wait for tolerance selection
@@ -613,6 +620,8 @@ namespace SongTelenkoDFM
                 else if (((Feature)feature).Name == "Ambient") return null;
                 else if (((Feature)feature).Name.Contains("Directional")) return null;
                 else if (((Feature)feature).Name.Contains("Sketch")) return null;
+                else if (((Feature)feature).Name.Contains("Mirror")) return null;
+                else if (((Feature)feature).Name.Contains("Plane")) return null;
                 else
                 {
                     return (Feature)feature;

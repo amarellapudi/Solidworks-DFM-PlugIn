@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SculptPrint_Feedback"
         mc:Ignorable="d"
-        Title="SculptPrint Feedback Tool" Height="600" Width="1000" ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
+        Title="SculptPrint Feedback Tool" Height="755" Width="1100" ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
         Loaded="Window_Loaded">
     
     <Grid>
@@ -28,7 +28,8 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="345"/>
                 </Grid.RowDefinitions>
-                <Border Grid.Column="1" Grid.Row="0" BorderBrush="Black" BorderThickness="1">
+                <Border Grid.Column="1" Grid.Row="0" BorderBrush="Black" BorderThickness="1" Background="Silver" 
+                        Padding="0 0 0 10">
                     <StackPanel Background="Silver">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -41,7 +42,7 @@
                             <Button Grid.Column="2" Width="50" Height="24" VerticalAlignment="Bottom" 
                                     x:Name="View_SolidWorks_Undo" Content="Undo" Click="View_SolidWorks_Undo_Drawing"/>
                         </Grid>
-                        <Grid x:Name="SolidWorks_Grid" Margin="10 10 10 10">
+                        <Grid x:Name="SolidWorks_Grid" Margin="10 5 10 0">
                             <Image x:Name="View_SolidWorks" Source="IMG_No_Image.png" Margin="0"
                                    RenderOptions.BitmapScalingMode="Fant" MouseLeftButtonDown="View_SolidWorks_MouseLeftButtonDown" 
                                    MouseUp="View_SolidWorks_MouseUp" MinHeight="300"/>
@@ -50,7 +51,8 @@
                     </StackPanel>
                 </Border>
 
-                <Border Grid.Column="3" Grid.Row="0" BorderBrush="Black" BorderThickness="1">
+                <Border Grid.Column="3" Grid.Row="0" BorderBrush="Black" BorderThickness="1" Background="Silver" 
+                        Padding="0 0 0 10">
                     <StackPanel Background="Silver">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -63,7 +65,7 @@
                             <Button Grid.Column="2" Width="50" Height="24" VerticalAlignment="Bottom" 
                                     x:Name="View_SculptPrint_Undo" Content="Undo" Click="View_SculptPrint_Undo_Drawing"/>
                         </Grid>
-                        <Grid x:Name="SculptPrint_Grid" Margin="10 10 10 5">
+                        <Grid x:Name="SculptPrint_Grid" Margin="10 5 10 0">
                             <Image x:Name="View_SculptPrint" Source="IMG_No_Image.png" Margin="0"
                                    RenderOptions.BitmapScalingMode="Fant" MouseLeftButtonDown="View_SculptPrint_MouseLeftButtonDown"
                                    MouseUp="View_SculptPrint_MouseUp" MinHeight="300"/>
@@ -74,7 +76,7 @@
             </Grid>
             
             <!-- ###################################### -->
-            <Separator Height="15" Background="Transparent"/>
+            <Separator Height="12" Background="Transparent"/>
             <!-- ################### -->
             <!--    Text Feedback    -->
             <!-- ################### -->
@@ -89,9 +91,8 @@
                     <Grid Background="Silver">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="6*"/>
-                            <ColumnDefinition Width="6*"/>
-                            <ColumnDefinition Width="6*"/>
+                            <ColumnDefinition Width="20*"/>
+                            <ColumnDefinition Width="20*"/>
                             <ColumnDefinition Width="*"/>
 
                         </Grid.ColumnDefinitions>
@@ -102,48 +103,68 @@
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
                         <TextBlock Grid.Column="1" Grid.ColumnSpan="3" Text="Design Recommendations" HorizontalAlignment="Center" 
                         Margin="10" FontWeight="Bold" FontSize="14"/>
-
+                        
                         <CheckBox Grid.Column="1" Grid.Row="1" Margin="2" Background="Red" x:Name="Issue1" Checked="Issue1_Checked"
-                                  HorizontalContentAlignment="Center" Width="180">
-                            <TextBlock Text="Sharp internal corner"/>
+                                  HorizontalContentAlignment="Center" Width="180" FontWeight="Bold">
+                            <TextBlock Text="1. Turning Angle"/>
                         </CheckBox>
+                        <TextBlock Grid.Column="1" Grid.Row="2" HorizontalAlignment="Center" Margin="0 -2 0 8" TextAlignment="Center">
+                        The feature(s) cannot be machined in one turning path. <LineBreak/> 
+                        Add fillets/chamfers can decrease production time and cost.
+                        </TextBlock>
 
-                        <CheckBox Grid.Column="1" Grid.Row="2" Margin="2" Background="Yellow" x:Name="Issue2" Checked="Issue2_Checked"
-                                  HorizontalContentAlignment="Center" Width="180">
-                            <TextBlock Text="Non-standard drill size"/>
+                            <CheckBox Grid.Column="1" Grid.Row="3" Margin="2" Background="Yellow" x:Name="Issue2" Checked="Issue2_Checked"
+                                  HorizontalContentAlignment="Center" Width="180" FontWeight="Bold">
+                            <TextBlock Text="2. Non-Standard Drill Size"/>
                         </CheckBox>
+                        <TextBlock Grid.Column="1" Grid.Row="4" HorizontalAlignment="Center" Margin="0 -2 0 8" TextAlignment="Center">
+                            Unusual hole diameters increase manufacturing cost. <LineBreak/>
+                            Create holes using Hole Wizard instead of Extruded Cut.
+                        </TextBlock>
 
-                        <CheckBox Grid.Column="1" Grid.Row="3" Margin="2" Background="Green" x:Name="Issue3" Checked="Issue3_Checked"
-                                  HorizontalContentAlignment="Center" Width="180">
-                            <TextBlock Text="Overhang"/>
+                        <CheckBox Grid.Column="1" Grid.Row="5" Margin="2" Background="LawnGreen" x:Name="Issue3" Checked="Issue3_Checked"
+                                  HorizontalContentAlignment="Center" Width="180" FontWeight="Bold">
+                            <TextBlock Text="3. Inaccessible Feature"/>
                         </CheckBox>
+                        <TextBlock Grid.Column="1" Grid.Row="6" HorizontalAlignment="Center" Margin="0 -2 0 8" TextAlignment="Center">
+                            Features should be easily accessible for machining in the required direction. <LineBreak/>
+                            Avoid undercuts because they often require separate operations with custom tools.
+                        </TextBlock>
 
-                        <CheckBox Grid.Column="2" Grid.Row="1" Margin="2" Background="Blue" x:Name="Issue4" Checked="Issue4_Checked"
-                                  HorizontalContentAlignment="Center" Width="180">
-                            <TextBlock Text="Fillet on outer edge"/>
+                        <CheckBox Grid.Column="2" Grid.Row="1" Margin="2" Background="SkyBlue" x:Name="Issue4" Checked="Issue4_Checked"
+                                  HorizontalContentAlignment="Center" Width="180" FontWeight="Bold">
+                            <TextBlock Text="4. Sharp Internal Corner"/>
                         </CheckBox>
+                        <TextBlock Grid.Column="2" Grid.Row="2" HorizontalAlignment="Center" Margin="0 -2 0 8" TextAlignment="Center">
+                            Avoid designs that require sharp internal corners, as they cannot be  <LineBreak/>
+                            achieved with traditional milling and require nontraditional machining processes.
+                        </TextBlock>
 
-                        <CheckBox Grid.Column="2" Grid.Row="2" Margin="2" Background="HotPink" x:Name="Issue5" Checked="Issue5_Checked"
-                                  HorizontalContentAlignment="Center" Width="180">
-                            <TextBlock Text="Non-orthogonal drill"/>
+                        <CheckBox Grid.Column="2" Grid.Row="3" Margin="2" Background="HotPink" x:Name="Issue5" Checked="Issue5_Checked"
+                                  HorizontalContentAlignment="Center" Width="180" FontWeight="Bold">
+                            <TextBlock Text="5. Fillet on Outer Edge"/>
                         </CheckBox>
+                        <TextBlock Grid.Column="2" Grid.Row="4" HorizontalAlignment="Center" Margin="0 -2 0 8" TextAlignment="Center">
+                            For outer edges, chamfers are preferred to fillets. An outer fillet requires<LineBreak/>
+                            a form-relieved cutter and a precise setup, both of which are expensive.
+                        </TextBlock>
 
-                        <CheckBox Grid.Column="2" Grid.Row="3" Margin="2" Background="Purple" x:Name="Issue6" Checked="Issue6_Checked"
-                                  HorizontalContentAlignment="Center" Width="180">
-                            <TextBlock Text="Inaccessible Features"/>
+                        <CheckBox Grid.Column="2" Grid.Row="5" Margin="2" Background="Orange" x:Name="Issue6" Checked="Issue6_Checked"
+                                  HorizontalContentAlignment="Center" Width="180" FontWeight="Bold">
+                            <TextBlock Text="6. Hole with Flat Bottom"/>
                         </CheckBox>
-
-                        <CheckBox Grid.Column="3" Grid.Row="1" Margin="2" Background="LightGreen" VerticalContentAlignment="Center"
-                                  HorizontalContentAlignment="Center" Width="140">
-                            <TextBlock FontWeight="Bold" Text="DFM Check Passed"/>
-                        </CheckBox>
-
-                        <TextBlock HorizontalAlignment="Center" Text="Additional Notes" Grid.Column="3" Grid.Row="2" Margin="2"/>
-                        <TextBox HorizontalAlignment="Center" Grid.Column="3" Grid.Row="3" Margin="2" Width="200"/>
+                        <TextBlock Grid.Column="2" Grid.Row="6" HorizontalAlignment="Center" Margin="0 -2 0 8" TextAlignment="Center">
+                            Blind holes should be cone-bottomed rather than flat-bottomed. <LineBreak/>
+                            Flat-bottomed holes cause problems with operations such as reaming. <LineBreak/>
+                            Create holes using Hole Wizard instead of Extruded Cut.
+                        </TextBlock>
 
                         <Separator Grid.Column="2" Grid.Row="4" Height="10" Background="Transparent"/>
                     </Grid>
@@ -152,34 +173,36 @@
 
             <StackPanel x:Name="Controls">
                 <!-- ###################################### -->
-            <Separator Height="15" Background="Transparent"/>
+            <Separator Height="12" Background="Transparent"/>
             <!-- ########################## -->
-            <!--    Submit/Reset Buttons    -->
+            <!--    Load/Submit/Check-Passed Buttons    -->
             <!-- ########################## -->
             <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="4*"/>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="4*"/>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="4*"/>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="4*"/>
-                    <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="4*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="8*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="4*"/>
+                        <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
 
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
-                        <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
                     <Button Grid.Column="1" Grid.Row="0" Padding="2 8" FontWeight="Bold" Content="LOAD" x:Name="LoadButton" 
-                            Click="Load_Click"/>
-                    <Button Grid.Column="3" Grid.Row="0" Padding="2 8" Content="Reset SolidWorks View" x:Name="Reset_SolidWorks_View"
-                            Click="Reset_SolidWorks_View_Click"/>
-                    <Button Grid.Column="5" Grid.Row="0" Padding="2 8" Content="Reset SculptPrint View" x:Name="Reset_SculptPrint_View"
-                            Click="Reset_SculptPrint_View_Click"/>
-                    <Button Grid.Column="7" Grid.Row="0" Padding="2 8" Content="SUBMIT" FontWeight="Bold" Click="Submit_Click"/>
+                            Click="Load_Click" Height="50"/>
+                    <Border Grid.Column="3" Grid.Row="0" BorderBrush="Black" BorderThickness="1" Background="Silver">
+                        <StackPanel x:Name="Check_Passed_Field" Margin="0 3 0 8">
+                            <TextBlock HorizontalAlignment="Center" Text="Additional Notes" FontWeight="Bold" Margin="0 2 0 0"/>
+                            <TextBox HorizontalAlignment="Center" Margin="0 0 0 10" Padding="2" Width="300"/>
+                            <Button x:Name="Check_Passed_Button" Width="175" Height="25" Margin="10 0 10 0" Background="Red"
+                                            Click="Check_Passed_Button_Click" Content="DFM Check Failed" FontWeight="Bold"/>
+                        </StackPanel>
+                    </Border>
+                    <Button Grid.Column="5" Grid.Row="0" Padding="2 8" Content="SUBMIT" FontWeight="Bold" Click="Submit_Click"
+                            Height="50" x:Name="SubmitButton"/>
                 </Grid>
             </StackPanel>
         </StackPanel>
