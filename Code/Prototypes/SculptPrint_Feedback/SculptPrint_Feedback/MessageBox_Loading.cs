@@ -70,8 +70,25 @@ namespace SculptPrint_Feedback
             progressBar1.Value = 80;
             label1.Text = "Running SculptPrint Script";
             Refresh();
-            string text = File.ReadAllText(@"\\prism.nas.gatech.edu\rsong8\vlab\desktop\SculptPrint\Scripts\Run.ps1");
+            MainWindow.DownloadFile(Client, "DONE_subject_info.txt");
 
+            // This text can include many comma-separated-values
+            // Currently this just tells us if we have a mill piece or lathe piece
+            string mill = File.ReadAllText(MainWindow.MSculptPrint_Folder+"DONE_subject_info.txt").Split(',')[0];
+
+            // Determine if we run the SculptPrint mill setup or the lathe setup
+            // TO DO: Fill out the mill script so that mill pieces are properly simulated
+            string text;
+            if (mill=="mill")
+            {
+                text = "pushd \"\\\\prism.nas.gatech.edu\\rsong8\\vlab\\desktop\\SculptPrint\\Scripts\\\"\r\n\r\npython SculptPrint_Setup_Mill.py";
+            }
+            else
+            {
+                text = "pushd \"\\\\prism.nas.gatech.edu\\rsong8\\vlab\\desktop\\SculptPrint\\Scripts\\\"\r\n\r\npython SculptPrint_Setup_Lathe.py";
+            }
+
+            // Run a powershell script that invokes either the mill or lathe SculptPrint script
             using (PowerShell PowerShellInstance = PowerShell.Create())
             {
                 PowerShellInstance.AddScript(text);

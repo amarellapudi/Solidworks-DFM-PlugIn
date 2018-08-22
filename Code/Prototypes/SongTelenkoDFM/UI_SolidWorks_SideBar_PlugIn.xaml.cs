@@ -425,9 +425,22 @@ namespace SongTelenkoDFM
 
             if (saved & savedPNG)
             {
-                // Show DFM Reults loading message box
+                // Write text file containing mill/lathe information
+                // Feature specific information can also be communicated by writing comma-separated data
+                // For example: WriteTXT("DONE_subject_info.txt", "mill,holeDiam1=3mm,holeDiam2=0.5mm")
 
+                if (mill == true)
+                {
+                    WriteTXT("DONE_subject_info.txt", "mill");
+                }
+                else
+                {
+                    WriteTXT("DONE_subject_info.txt", "lathe");
+                }
+
+                // Show DFM Reults loading message box
                 MessageBox_DFMLoading DFMLoading = new MessageBox_DFMLoading("View_Researcher_Feedback.png", MClient);
+                
                 DialogResult DFM_Result = DFMLoading.ShowDialog();
 
                 // If the form outputs a DialogResult of Yes, then we have the file!
