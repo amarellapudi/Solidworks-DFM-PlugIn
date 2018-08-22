@@ -62,6 +62,8 @@ namespace SculptPrint_Feedback
 
             // Delete previous cloud experiment files
             DeleteFile_Cloud("DONE_subject");
+            DeleteFile_Cloud("DONE_subject_info.txt");
+            DeleteFile_Cloud("FINSHED_subject.txt");
             DeleteFile_Cloud("DONE_researcher");
             DeleteFile_Cloud("View_Researcher_Feedback.png");
             DeleteFile_Cloud("test.stl");
@@ -205,8 +207,9 @@ namespace SculptPrint_Feedback
         // Called when "Submit" is clicked. Creates feedback screenshot and uploads it to server
         private void Submit_Click(object sender, RoutedEventArgs e)
         {
-            // Remove DONE_subject
+            // Remove DONE_subject flags
             MClient.DeleteFile("DONE_subject");
+            MClient.DeleteFile("DONE_subject_info.txt");
 
             // Prepare view for screenshot. Uncheck all check check boxes, and hide the control buttons
             Issue1.IsChecked = false; Issue2.IsChecked = false; Issue3.IsChecked = false;
