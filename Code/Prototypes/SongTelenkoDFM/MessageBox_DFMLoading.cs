@@ -49,6 +49,7 @@ namespace SongTelenkoDFM
             {
                 Thread.Sleep(75);
             }
+
             UI_SolidWorks_SideBar_PlugIn.DownloadFile(Client, FileName);
             Client.DeleteFile("DONE_researcher");
             Client.DeleteFile("View_Researcher_Feedback.png");
