@@ -68,7 +68,7 @@ namespace SongTelenkoDFM_Conference
         /// <summary>
         /// My Add-in title
         /// </summary>
-        public override string AddInTitle => "SongTelenkoDFM v1.2";
+        public override string AddInTitle => "SongTelenkoDFM v1.2b";
 
         #endregion
 
