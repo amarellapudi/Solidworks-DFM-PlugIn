@@ -63,7 +63,7 @@ namespace SongTelenkoDFM_Conference
         /// <summary>
         /// My Add-in description
         /// </summary>
-        public override string AddInDescription => "Making machining knowledge more accessible to novices";
+        public override string AddInDescription => "Making machining knowledge more accessible (offline)";
 
         /// <summary>
         /// My Add-in title
