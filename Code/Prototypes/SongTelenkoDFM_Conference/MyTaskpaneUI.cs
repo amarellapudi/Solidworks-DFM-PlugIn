@@ -12,7 +12,7 @@ namespace SongTelenkoDFM_Conference
         /// <summary>
         /// Our unique ProgId for SolidWorks to find and load us
         /// </summary>
-        private const string MyProgId = "AngelSix.SolidDna.Taskpane";
+        private const string MyProgId = "SongTelenkoDFM_Offline";
 
         #endregion
 
